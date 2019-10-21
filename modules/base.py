@@ -19,6 +19,7 @@ class BaseModule:
     sharpener_basedir = None
     output_form = None
     data_basedir = None
+    data_source = None
     configfilename = None
     cube = None
     NBEAMS = 40
