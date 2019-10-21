@@ -8,9 +8,10 @@ import os
 import sys
 import logging
 import argparse
+from lib.setup_logger import setup_logger
 
 
-def run_apersharp(taskid, sharpener_basedir, data_basedir=None, steps=None, user=None, output_form="pdf", cubes="0", configfilename=None):
+def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, steps=None, user=None, output_form="pdf", cubes="0", configfilename=None):
     """
     Main function run apersharp.
 
@@ -25,7 +26,20 @@ def run_apersharp(taskid, sharpener_basedir, data_basedir=None, steps=None, user
     configfilename (str): Default config file name to run SHARPener. Taken from SHARPener by default
     """
 
+    def abort_function(abort_message):
+        """
+        Simple abort function if non-existing features are triggered
+        """
+        logger = logging.getLogger(__name__)
+        logger.error(abort_message)
+        raise RuntimeError(abort_message)
+
     # Create logfile
+    logfile = os.path.join(sharpener_basedir, "test.log")
+    setup_logger('DEBUG', logfile=logfile)
+    logger = logging.getLogger(__name__)
+
+    abort_function("No further functionality available")
 
     # Check local directory for available data
 
@@ -46,7 +60,7 @@ if __name__ == "__main__":
     parser.add_argument("taskid", type=str,
                         help='Taskid of the observation')
 
-    parser.add_argument("sharpener_basedir", type=str,
+    parser.add_argument("--sharpener_basedir", type=str, default='',
                         help='Directory for the directory where the data should be stored for processing')
 
     parser.add_argument("--data_basedir", type=str, default='',
