@@ -8,10 +8,14 @@ import os
 import sys
 import logging
 import argparse
+from time import time
+
 from lib.setup_logger import setup_logger
+from lib.abort_function import abort_function
+from modules.prepare import prepare
 
 
-def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, steps=None, user=None, output_form="pdf", cubes="0", configfilename=None):
+def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='happili', steps=None, user=None, output_form="pdf", cubes="0", configfilename=None):
     """
     Main function run apersharp.
 
@@ -19,6 +23,7 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, steps=None, u
     taskid (str): Name of the taskid to process
     sharpener_basedir (str): Directory for the directory where the data should be stored for processing
     data_basedir (str): (Remote-)directory where the taskid is located
+    data_source (str): Name of remote server to get the data from
     steps (str): List of steps to run through.
     user (str): The username for getting data from Happili
     output_form (str): Choose between "pdf" and "html" for the output plots
@@ -26,28 +31,53 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, steps=None, u
     configfilename (str): Default config file name to run SHARPener. Taken from SHARPener by default
     """
 
-    def abort_function(abort_message):
-        """
-        Simple abort function if non-existing features are triggered
-        """
-        logger = logging.getLogger(__name__)
-        logger.error(abort_message)
-        raise RuntimeError(abort_message)
+    # get the start time of the function call
+    start_time = time()
+
+    # check the output directory
+    if sharpener_basedir == '':
+        sharpener_basedir = os.path.join(os.getcwd(), taskid)
+    else:
+        sharpener_basedir = os.path.join(sharpener_basedir, taskid)
+    if not os.path.exists(sharpener_basedir):
+        os.mkdir(sharpener_basedir)
 
     # Create logfile
-    logfile = os.path.join(sharpener_basedir, "test.log")
+    logfile = os.path.join(sharpener_basedir, "apersharp_main.log")
     setup_logger('DEBUG', logfile=logfile)
     logger = logging.getLogger(__name__)
 
-    abort_function("No further functionality available")
+    # check the steps
+    if steps is None:
+        steps = ["prepare", "sharpener", "quicklook"]
 
-    # Check local directory for available data
+    logger.info("#### Apersched called with:")
+    logger.info("taskid: {}".format(taskid))
+    logger.info("basedir: {}".format(sharpener_basedir))
+    logger.info("steps: {}".format(str(steps)))
+    logger.info("output format: {}".format(output_form))
+    logger.info("cubes: {}".format(cubes))
+    logger.info("####")
 
-    # get data
+    # get a list of cubes
+    cube_list = cubes.split(",")
 
-    # run sharpener
+    # now go through the list of cubes
+    for cube in cube_list:
 
-    # overwrite products
+        # start time for processing this cube
+        start_time_cube = time()
+
+        p = prepare()
+        p.go()
+
+        abort_function("No further functionality available")
+
+        # get data
+
+        # run sharpener
+
+        # overwrite products
 
 
 if __name__ == "__main__":
@@ -66,7 +96,10 @@ if __name__ == "__main__":
     parser.add_argument("--data_basedir", type=str, default='',
                         help='(Remote-)directory where the taskid is located')
 
-    parser.add_argument("--steps", type=str, default=None,
+    parser.add_argument("--data_source", type=str, default='happili',
+                        help='Name of remote server to get the data from')
+
+    parser.add_argument("--steps", type=list, default=None,
                         help='List of steps to run through.')
 
     parser.add_argument("--user", type=str, default=None,
