@@ -22,4 +22,5 @@ class BaseModule:
     data_source = None
     configfilename = None
     cube = None
+    cube_dir = None
     NBEAMS = 40
