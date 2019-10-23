@@ -15,7 +15,7 @@ from lib.abort_function import abort_function
 from modules.prepare import prepare
 
 
-def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='happili', steps=None, user=None, output_form="pdf", cubes="0", configfilename=None):
+def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='ALTA', steps=None, user=None, output_form="pdf", cubes="0", configfilename=None):
     """
     Main function run apersharp.
 
@@ -62,6 +62,19 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
     # get a list of cubes
     cube_list = cubes.split(",")
 
+    def set_params(p):
+        """
+        Helper to set the base parameters for the module
+        """
+
+        p.taskid = taskid
+        p.sharpener_basedir = sharpener_basedir
+        p.data_basedir = data_basedir
+        p.data_source = data_source
+        p.output_form = output_form
+        p.cube = cube
+        p.configfilename = configfilename
+
     # now go through the list of cubes
     for cube in cube_list:
 
@@ -69,6 +82,7 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
         start_time_cube = time()
 
         p = prepare()
+        set_params(p)
         p.go()
 
         abort_function("No further functionality available")
@@ -96,7 +110,7 @@ if __name__ == "__main__":
     parser.add_argument("--data_basedir", type=str, default='',
                         help='(Remote-)directory where the taskid is located')
 
-    parser.add_argument("--data_source", type=str, default='happili',
+    parser.add_argument("--data_source", type=str, default='ALTA',
                         help='Name of remote server to get the data from')
 
     parser.add_argument("--steps", type=list, default=None,
@@ -116,5 +130,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    run_apersharp(args.taskid, args.sharpener_basedir, data_basedir=args.data_basedir,
+    run_apersharp(args.taskid, args.sharpener_basedir, data_basedir=args.data_basedir, data_source=args.data_source,
                   steps=args.steps, user=args.user, output_form=args.output_form, cubes=args.cubes, configfilename=args.configfilename)
