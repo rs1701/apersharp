@@ -26,18 +26,34 @@ class BaseModule:
     beam_list = None
     continuum_image_list = None
     steps = None
+    n_cores = None
+    do_sdss = False
     NBEAMS = 40
+
+    def get_cube_dir(self):
+        """
+        Function to return the directory of the cube for a given beam
+        """
+
+        return os.path.join(self.sharpener_basedir, "cube_{0}".format(self.cube))
+
+    def get_cube_beam_dir(self, beam):
+        """
+        Function to return the directory of the cube for a given beam
+        """
+
+        return os.path.join(self.sharpener_basedir, "cube_{0}/{1}".format(self.cube, beam.zfill(2)))
 
     def get_cube_path(self, beam):
         """
         Function to return the path of the line cube in the sharpener directory for a given beam
         """
 
-        return os.path.join(self.sharpener_basedir, "cube_{0}/{1:02d}/HI_image_cube{0}.fits".format(self.cube, beam))
+        return os.path.join(self.sharpener_basedir, "cube_{0}/{1}/HI_image_cube{0}.fits".format(self.cube, beam.zfill(2)))
 
     def get_cont_path(self, beam):
         """
         Function to return the path of the continuum image in the sharpener directory for a given beam
         """
 
-        return os.path.join(self.sharpener_basedir, "cube_{0}/{1:02d}/image_mf.fits".format(self.cube, beam))
+        return os.path.join(self.sharpener_basedir, "cube_{0}/{1}/image_mf.fits".format(self.cube, beam.zfill(2)))

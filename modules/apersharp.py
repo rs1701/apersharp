@@ -4,11 +4,16 @@ import numpy as np
 import logging
 import pwd
 import glob
+import yaml
+import shutil
+import zipfile
+
 
 from lib.abort_function import abort_function
 from apersharp.modules.base import BaseModule
 
 import SHARPener
+from SHARPener.run_sharpener_mp import run_sharpener as sharpener_mp
 
 logger = logging.getLogger(__name__)
 
@@ -201,8 +206,7 @@ class apersharp(BaseModule):
                                 failed_beams.append(beam)
                             else:
                                 # create directory for beam in the directory
-                                cube_beam_dir = os.path.join(
-                                    self.cube_dir, str(beam).zfill(2))
+                                cube_beam_dir = self.get_cube_beam_dir(beam)
                                 if not os.path.exists(cube_beam_dir):
                                     logger.debug(
                                         "Creating directory for beam {0} of cube {1}".format(beam, self.cube))
@@ -314,7 +318,7 @@ class apersharp(BaseModule):
                             logger.debug("Cube {0}: Continuum image {1} already exists".format(
                                 self.cube, link_name))
 
-                    #data_basedir = os.path.join(self.data_basedir, self.taskid)
+                    # data_basedir = os.path.join(self.data_basedir, self.taskid)
                     # happili_path = os.path.join(
                     #     data_basedir, "./[0-3][0-9]/line/cubes/HI_image_cube{}.fits".format(self.cube))
                     # # get the user name
@@ -361,14 +365,186 @@ class apersharp(BaseModule):
         Function to setup the parameters for sharpener
         """
 
+        logger.info("Setting up sharpener")
+
         # if no template configfile was specified, get the default one
-        if self.configfilename == '':
+        if self.configfilename is None:
             # the default sharpener configfile is here:
             default_configfile = os.path.join(os.path.dirname(
                 SHARPener.__file__), "sharpener_default.yml")
             # make sure it is there
             if os.path.exists(default_configfile):
-                logger.info("Getting default sharpener config file from {}".format(
+                logger.info("Using default sharpener config file from {}".format(
                     default_configfile))
             else:
-                self.configfilename = default_configfile
+                error = "Could not find default sharpener config file in {}. Abort".format(
+                    self.configfilename)
+                logger.error(error)
+                raise RuntimeError(error)
+            self.configfilename = default_configfile
+        else:
+            # check that the file exist
+            if os.path.exists(self.configfilename):
+                logger.info("Using specified config file: {}".format(
+                    self.configfilename))
+            else:
+                error = "Could not find the specificed config file: {}. Abort".format(
+                    self.configfilename)
+                logger.error(error)
+                raise RuntimeError(error)
+
+        # go through the list of beams, copy the config file and adjust the settings
+        for beam in self.beam_list:
+            logger.info(
+                "Cube {0}: Setting up sharpener for beam {0}".format(self.cube, beam))
+
+            # get beam directory for given cube
+            cube_beam_dir = self.get_cube_beam_dir(beam)
+
+            # configfile of the beam
+            beam_configfilename = os.path.join(
+                cube_beam_dir, "beam_{0}_{1}".format(beam.zfill(2), os.path.basename(self.configfilename)))
+
+            # copy the file
+            shutil.copy2(self.configfilename, beam_configfilename)
+
+            # open and read the default sharpener setup file
+            with open("{0}".format(beam_configfilename)) as stream:
+                sharpener_settings = yaml.load(stream)
+
+            sharpener_settings['general']['workdir'] = "{0:s}/".format(
+                cube_beam_dir)
+            sharpener_settings['general']['contname'] = "{0:s}".format(
+                self.continuum_image_list[beam])
+            sharpener_settings['general']['cubename'] = self.get_cube_path(
+                beam)
+
+            # make sure that certain steps are disabled
+            sharpener_settings['source_catalog']['enable'] = False
+            sharpener_settings['simulate_continuum']['enable'] = False
+            sharpener_settings['polynomial_subtraction']['enable'] = False
+            sharpener_settings['hanning']['enable'] = False
+
+            sharpener_settings['source_finder']['enable'] = True
+
+            sharpener_settings['spec_ex']['enable'] = True
+            sharpener_settings['spec_ex']['chrom_aberration'] = False
+
+            sharpener_settings['abs_plot']['enable'] = True
+            sharpener_settings['abs_plot']['fixed_scale'] = False
+
+            with io.open(beam_configfilename, 'w', encoding='utf8') as outfile:
+                yaml.dump(sharpener_settings, outfile,
+                          default_flow_style=False, allow_unicode=True)
+
+            logger.info(
+                "Cube {0}: Setting up sharpener for beam {0} ... Done".format(self.cube, beam))
+
+        logger.info("Setting up sharpener ... Done")
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++
+    def run_sharpener(self):
+        """
+        Function to run sharpener in parallel
+        """
+
+        logger.info("Cube {0}: Running sharpener".format(self.cube))
+
+        beam_directory_list = np.array(
+            self.get_cube_beam_dir(beam) for beam in self.beam_list)
+
+        # index array for pool based on the number of files
+        beam_count = np.arange(np.size(beam_directory_list))
+
+        # create pool object with number of processes
+        pool = mp.Pool(processes=self.n_cores)
+
+        # create function iterater to provide additional arguments
+        fct_partial = functools.partial(
+            run_sharpener, beam_directory_list, False, True, True, self.do_sdss)
+
+        # create and run map
+        pool.map(fct_partial, beam_count)
+        pool.close()
+        pool.join()
+
+        logger.info("Cube {0}: Running sharpener ... Done".format(
+            self.cube, str(self.beam_list)))
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++
+    def collect_sharpener_results(self):
+        """
+        Function to combine the results
+        """
+
+        logger.info(
+            "Cube {0}: Collecting the results from sharpener".format(self.cube))
+
+        # Create a zip file with all the plots
+        # ++++++++++++++++++++++++++++++++++++
+
+        logger.info("Creating zip files for plots")
+
+        cube_beam_dir_pattern = self.get_cube_beam_dir("??")
+
+        # list of plots
+        plot_list = glob.glob(os.path.join(
+            cube_beam_dir_pattern, "plot/*all_plots*.pdf"))
+
+        if len(plot_list) != 0:
+
+            plot_list.sort()
+
+            with zipfile.ZipFile(os.path.join(self.get_cube_dir(). "all_plots.zip"), 'w') as myzip:
+
+                for plot in plot_list:
+                    myzip.write(plot, os.path.basename(plot))
+
+            logger.info("Creating zip files for plots ... Done")
+        else:
+            logger.warning("No files to zip.")
+
+        logger.info("Creating zip files for source list")
+
+        csv_list = glob.glob(os.path.join(
+            cube_beam_dir_pattern, "abs/mir_src_sharpener.csv"))
+        csv_sdss_list = glob.glob(os.path.join(
+            cube_beam_dir_pattern, "abs/beam??_sdss_src.csv"))
+        csv_sdss_radio_list = glob.glob(os.path.join(
+            cube_beam_dir_pattern, "abs/beam??_radio_sdss_src.csv"))
+        karma_list = glob.glob(os.path.join(
+            cube_beam_dir_pattern, "abs/karma_src_sharpener.ann")
+
+        # do not create if there are no source at all
+        if len(csv_list) != 0:
+
+            with zipfile.ZipFile(os.path.join(self.get_cube_dir(). "all_sources.zip"), 'w') as myzip:
+
+                if len(csv_list) != 0:
+                    csv_list.sort()
+                    for csv in csv_list:
+                        myzip.write(csv, "beam_{0:s}_{1:s}".format(csv.replace(
+                            os.path.dirname(cube_beam_dir_pattern), "").split("/")[0], os.path.basename(csv)))
+
+                if len(csv_sdss_list) != 0:
+                    csv_sdss_list.sort()
+                    for csv in csv_sdss_list:
+                        myzip.write(csv, os.path.basename(csv))
+
+                if len(csv_sdss_radio_list) != 0:
+                    csv_sdss_radio_list.sort()
+                    for csv in csv_sdss_radio_list:
+                        myzip.write(csv, os.path.basename(csv))
+
+                if len(karma_list) != 0:
+                    karma_list.sort()
+                    for karma in karma_list:
+                        myzip.write(karma, "beam_{0:s}_{1:s}".format(karma.replace(
+                            os.path.dirname(cube_beam_dir_pattern), "").split("/")[0], os.path.basename(karma)))
+
+            logger.info("Creating zip files for source list ... Done")
+        else:
+            logger.warning("No files to zip.")
+
+        logger.info(
+            "Cube {0}: Collecting the results from sharpener".format(self.cube))
