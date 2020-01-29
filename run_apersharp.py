@@ -59,7 +59,7 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
     setup_logger('DEBUG', logfile=logfile)
     logger = logging.getLogger(__name__)
 
-    logger.inf("Apersharp processing of taskid {}".format(taskid))
+    logger.info("Apersharp processing of taskid {}".format(taskid))
 
     # check the steps
     if steps is None:
@@ -130,7 +130,7 @@ if __name__ == "__main__":
         description='Run SHARPener on Apercal data')
 
     # main arguments
-    parser.add_argument("taskid", type=str,
+    parser.add_argument("taskid", type=int,
                         help='Taskid of the observation')
 
     parser.add_argument("--sharpener_basedir", type=str, default='',
