@@ -10,7 +10,7 @@ import zipfile
 
 
 from lib.abort_function import abort_function
-from lib.sharpener_pipeline import 
+from lib.sharpener_pipeline import sharpener_pipeline
 from base import BaseModule
 
 import sharpener
