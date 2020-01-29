@@ -66,6 +66,8 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
     if steps is None:
         steps = ["get_data", "setup_sharpener",
                  "run_sharpener", "collect_results"]
+    else:
+        steps = steps.split(",")
 
     logger.info("#### Aperscharp called with:")
     logger.info("taskid: {}".format(taskid))
