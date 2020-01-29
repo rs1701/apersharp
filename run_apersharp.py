@@ -48,9 +48,10 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
 
     # check the output directory
     if sharpener_basedir == '':
-        sharpener_basedir = os.path.join(os.getcwd(), taskid)
+        sharpener_basedir = os.path.join(os.getcwd(), "{}".format(taskid))
     else:
-        sharpener_basedir = os.path.join(sharpener_basedir, taskid)
+        sharpener_basedir = os.path.join(
+            sharpener_basedir, "{}".format(taskid))
     if not os.path.exists(sharpener_basedir):
         os.mkdir(sharpener_basedir)
 
