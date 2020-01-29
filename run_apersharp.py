@@ -166,7 +166,7 @@ if __name__ == "__main__":
     parser.add_argument("--cont_src_resource", type=str, default='image',
                         help='Select the resources to get continuum source for HI absorption source')
 
-    parser.add_argument("--configfilename", type=str, default='',
+    parser.add_argument("--configfilename", type=str, default=None,
                         help='Default config file name to run SHARPener. Taken from SHARPener by default')
 
     parser.add_argument("--n_cores", type=int, default=1,
