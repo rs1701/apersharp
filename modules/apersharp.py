@@ -297,7 +297,7 @@ class apersharp(BaseModule):
                                                 logger.error(error)
                                                 raise RuntimeError(error)
 
-                                            continuum_image_list.append(
+                                            self.continuum_image_list.append(
                                                 continuum_image_name)
                                         else:
                                             logger.info("Image of beam {0} of taskid {1} already on disk".format(
