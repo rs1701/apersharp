@@ -10,7 +10,7 @@ import zipfile
 
 
 from lib.abort_function import abort_function
-from apersharp.modules.base import BaseModule
+from base import BaseModule
 
 import SHARPener
 from SHARPener.run_sharpener_mp import run_sharpener as sharpener_mp
@@ -194,12 +194,14 @@ class apersharp(BaseModule):
                                 self.cube)
                             alta_beam_cube_path = os.path.join(
                                 alta_taskid_beam_dir, "cube/{}".format(cube_name))
+                            # check that path exists on alta
                             if self.check_alta_path(alta_beam_cube_path) == 0:
                                 logger.info("Found cube on ALTA in {}".format(
                                     alta_beam_cube_path))
                             else:
                                 # make empty again when no image was found
                                 cube_name = ''
+                            # if there is no cube, do not process it
                             if cube_name == '':
                                 logger.warning(
                                     "No cube {0} found on ALTA for beam {1} of taskid {2}".format(self.cube, beam, self.taskid))
@@ -229,49 +231,49 @@ class apersharp(BaseModule):
                                     if self.cont_src_resource == "continuum":
                                         # now get the continuum image
                                         # look for the image file ALTA by try and error
-                                    continuum_image_name = ''
-                                    alta_beam_image_path = ''
-                                    for k in range(10):
-                                        continuum_image_name = "image_mf_{0:02d}.fits".format(
-                                            k)
-                                        alta_beam_image_path = os.path.join(
-                                            alta_taskid_beam_dir, continuum_image_name)
-                                        if self.check_alta_path(alta_beam_image_path) == 0:
-                                            break
-                                        else:
-                                            # make empty again when no image was found
-                                            continuum_image_name = ''
-                                            continue
-                                    # if there is no continuum image, this is a critical error
-                                    # This should not happen because the continuum image is necessary
-                                    # for the continuum subtraction
-                                    if continuum_image_name == '':
-                                        error = "No image found on ALTA for beam {0} of taskid {1} but cube {2} exists. This should not happen. Abort".format(
-                                            beam, self.taskid, self.cube)
-                                        logger.error(error)
-                                        raise RuntimeError(error)
-                                    else:
-                                        logger.info(
-                                            "Found continuum image for beam {} on ALTA".format(beam))
-                                        # check whether file already there:
-                                        if not os.path.exists(os.path.join(cube_dir, os.path.basename(alta_beam_image_path))):
-                                            # copy the continuum image to this directory
-                                            return_msg = self.getdata_from_alta(
-                                                alta_beam_image_path, continuum_image_beam_dir)
-                                            if return_msg == 0:
-                                                logger.info("Getting image of beam {0} of taskid {1} ... Done".format(
-                                                    beam, self.taskid))
+                                        continuum_image_name = ''
+                                        alta_beam_image_path = ''
+                                        for k in range(10):
+                                            continuum_image_name = "image_mf_{0:02d}.fits".format(
+                                                k)
+                                            alta_beam_image_path = os.path.join(
+                                                alta_taskid_beam_dir, continuum_image_name)
+                                            if self.check_alta_path(alta_beam_image_path) == 0:
+                                                break
                                             else:
-                                                error = "Getting image of beam {0} of taskid {1} ... Failed".format(
-                                                    beam, self.taskid)
-                                                logger.error(error)
-                                                raise RuntimeError(error)
-
-                                            continuum_image_list.append(
-                                                continuum_image_name)
+                                                # make empty again when no image was found
+                                                continuum_image_name = ''
+                                                continue
+                                        # if there is no continuum image, this is a critical error
+                                        # This should not happen because the continuum image is necessary
+                                        # for the continuum subtraction
+                                        if continuum_image_name == '':
+                                            error = "No image found on ALTA for beam {0} of taskid {1} but cube {2} exists. This should not happen. Abort".format(
+                                                beam, self.taskid, self.cube)
+                                            logger.error(error)
+                                            raise RuntimeError(error)
                                         else:
-                                            logger.info("Image of beam {0} of taskid {1} already on disk".format(
-                                                beam, self.mosaic_taskid))
+                                            logger.info(
+                                                "Found continuum image for beam {} on ALTA".format(beam))
+                                            # check whether file already there:
+                                            if not os.path.exists(os.path.join(cube_dir, os.path.basename(alta_beam_image_path))):
+                                                # copy the continuum image to this directory
+                                                return_msg = self.getdata_from_alta(
+                                                    alta_beam_image_path, continuum_image_beam_dir)
+                                                if return_msg == 0:
+                                                    logger.info("Getting image of beam {0} of taskid {1} ... Done".format(
+                                                        beam, self.taskid))
+                                                else:
+                                                    error = "Getting image of beam {0} of taskid {1} ... Failed".format(
+                                                        beam, self.taskid)
+                                                    logger.error(error)
+                                                    raise RuntimeError(error)
+
+                                                continuum_image_list.append(
+                                                    continuum_image_name)
+                                            else:
+                                                logger.info("Image of beam {0} of taskid {1} already on disk".format(
+                                                    beam, self.mosaic_taskid))
                         else:
                             logger.warning("Did not find beam {0} of taskid {1}".format(
                                 beam, self.taskid))
@@ -499,7 +501,7 @@ class apersharp(BaseModule):
 
             plot_list.sort()
 
-            with zipfile.ZipFile(os.path.join(self.get_cube_dir(). "all_plots.zip"), 'w') as myzip:
+            with zipfile.ZipFile(os.path.join(self.get_cube_dir(), "all_plots.zip"), 'w') as myzip:
 
                 for plot in plot_list:
                     myzip.write(plot, os.path.basename(plot))
@@ -517,12 +519,12 @@ class apersharp(BaseModule):
         csv_sdss_radio_list = glob.glob(os.path.join(
             cube_beam_dir_pattern, "abs/beam??_radio_sdss_src.csv"))
         karma_list = glob.glob(os.path.join(
-            cube_beam_dir_pattern, "abs/karma_src_sharpener.ann")
+            cube_beam_dir_pattern, "abs/karma_src_sharpener.ann"))
 
         # do not create if there are no source at all
         if len(csv_list) != 0:
 
-            with zipfile.ZipFile(os.path.join(self.get_cube_dir(). "all_sources.zip"), 'w') as myzip:
+            with zipfile.ZipFile(os.path.join(self.get_cube_dir(), "all_sources.zip"), 'w') as myzip:
 
                 if len(csv_list) != 0:
                     csv_list.sort()
