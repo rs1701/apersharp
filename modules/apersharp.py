@@ -7,6 +7,7 @@ import glob
 import yaml
 import shutil
 import zipfile
+import io
 
 
 from lib.abort_function import abort_function
