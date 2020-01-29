@@ -285,7 +285,7 @@ class apersharp(BaseModule):
                                         if not os.path.exists(os.path.join(self.get_cube_dir(), os.path.basename(alta_beam_image_path))):
                                             # copy the continuum image to this directory
                                             return_msg = self.getdata_from_alta(
-                                                alta_beam_image_path, continuum_image_beam_dir)
+                                                alta_beam_image_path, cube_beam_dir)
                                             if return_msg == 0:
                                                 logger.info("Getting image of beam {0} of taskid {1} ... Done".format(
                                                     beam, self.taskid))
