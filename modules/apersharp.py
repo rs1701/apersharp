@@ -282,7 +282,7 @@ class apersharp(BaseModule):
                                         logger.info(
                                             "Found continuum image for beam {} on ALTA".format(beam))
                                         # check whether file already there:
-                                        if not os.path.exists(os.path.join(cube_dir, os.path.basename(alta_beam_image_path))):
+                                        if not os.path.exists(os.path.join(self.get_cube_dir(), os.path.basename(alta_beam_image_path))):
                                             # copy the continuum image to this directory
                                             return_msg = self.getdata_from_alta(
                                                 alta_beam_image_path, continuum_image_beam_dir)
