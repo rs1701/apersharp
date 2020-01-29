@@ -65,7 +65,7 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
     # check the steps
     if steps is None:
         steps = ["get_data", "setup_sharpener",
-                 "run_sharpener", "collect_results"]
+                 "run_sharpener", "collect_results", "clean_up"]
     else:
         steps = steps.split(",")
 
