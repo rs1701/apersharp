@@ -178,6 +178,17 @@ class apersharp(BaseModule):
             if os.path.exists(cube_path):
                 logger.info(
                     "Cube {0}: Found cube for beam {1}".format(self.cube, beam))
+
+                # check also the continuum image
+                continuum_image_path = self.get_cont_path(beam)
+                if os.path.exists(continuum_image_path):
+                    logger.info("Cube {0}: Found continuum image for beam {1}".format(self.cube, beam))
+                    self.continuum_image_list.append(continuum_image_path)
+                else:
+                    error = "Did not find continuum image for beam {}".format(beam)
+                    logger.error(error)
+                    raise RuntimeError(error)
+
             else:
                 logger.info(
                     "Cube {0}: Getting cube for beam {1}".format(self.cube, beam))
@@ -296,6 +307,11 @@ class apersharp(BaseModule):
                                                     beam, self.taskid)
                                                 logger.error(error)
                                                 raise RuntimeError(error)
+
+                                            # rename the file
+                                            original_continuum_image_name = continuum_image_name
+                                            continuum_image_name = "image_mf.fits"
+                                            os.rename(original_continuum_image_name, continuum_image_name)
 
                                             self.continuum_image_list.append(
                                                 continuum_image_name)
