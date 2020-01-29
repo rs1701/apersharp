@@ -163,11 +163,10 @@ class apersharp(BaseModule):
         """
 
         beam_dir = np.arange(self.NBEAMS)
-        self.continuum_image_list = []
-
+        
         # storing failed beams
         failed_beams = []
-        self.continuum_image_list = []
+        # self.continuum_image_list = []
 
 
         # Going through the beams to get the data:
@@ -183,7 +182,7 @@ class apersharp(BaseModule):
                 continuum_image_path = self.get_cont_path(beam)
                 if os.path.exists(continuum_image_path):
                     logger.info("Cube {0}: Found continuum image for beam {1}".format(self.cube, beam))
-                    self.continuum_image_list.append(continuum_image_path)
+                    # self.continuum_image_list.append(continuum_image_path)
                 else:
                     error = "Did not find continuum image for beam {}".format(beam)
                     logger.error(error)
@@ -309,13 +308,13 @@ class apersharp(BaseModule):
                                                 raise RuntimeError(error)
 
                                             # rename the file
-                                            original_continuum_image_name = os.path.join(cube_dir, continuum_image_name)
-                                            continuum_image_name = os.path.join(cube_dir, "image_mf.fits")
+                                            original_continuum_image_name = os.path.join(cube_beam_dir, continuum_image_name)
+                                            continuum_image_name = os.path.join(cube_beam_dir, "image_mf.fits")
                                             logger.info("Renaming {0} to {1}".format(original_continuum_image_name, continuum_image_name))
                                             os.rename(original_continuum_image_name, continuum_image_name)
 
-                                            self.continuum_image_list.append(
-                                                continuum_image_name)
+                                            # self.continuum_image_list.append(
+                                            #     continuum_image_name)
                                         else:
                                             logger.info("Image of beam {0} of taskid {1} already on disk".format(
                                                 beam, self.mosaic_taskid))
@@ -464,7 +463,7 @@ class apersharp(BaseModule):
             sharpener_settings['general']['workdir'] = "{0:s}/".format(
                 cube_beam_dir)
             sharpener_settings['general']['contname'] = "{0:s}".format(
-                self.continuum_image_list[beam])
+                self.get_cont_path(beam))
             sharpener_settings['general']['cubename'] = self.get_cube_path(
                 beam)
 
