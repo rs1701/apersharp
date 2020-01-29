@@ -463,10 +463,9 @@ class apersharp(BaseModule):
 
             sharpener_settings['general']['workdir'] = "{0:s}/".format(
                 cube_beam_dir)
-            sharpener_settings['general']['contname'] = "{0:s}".format(
-                self.get_cont_path(beam))
-            sharpener_settings['general']['cubename'] = self.get_cube_path(
-                beam)
+            sharpener_settings['general']['contname'] = os.path.basename(self.get_cont_path(beam))
+            sharpener_settings['general']['cubename'] = os.path.basename(self.get_cube_path(
+                beam))
 
             # make sure that certain steps are disabled
             sharpener_settings['source_catalog']['enable'] = False
