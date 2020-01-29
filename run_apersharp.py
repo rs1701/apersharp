@@ -19,20 +19,28 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
     """
     Main function run apersharp.
 
+    Description:
+    ============
+    This function manages retrieving Apertif imaging survey cubes and continuum images and runs
+    SHARPener to search for HI absorption.
+
+    If no steps are provided, then all are executed, i.e.,
+    steps = ["get_data", "setup_sharpener", "run_sharpener", "collect_results"]
+
     Args:
     =====
-        taskid (str): Name of the taskid to process
-        sharpener_basedir (str): Directory for the directory where the data should be stored for processing
-        data_basedir (str): (Remote-)directory where the taskid is located
-        data_source (str): Name of remote server to get the data from
-        steps (str): List of steps to run through.
-        user (str): The username for getting data from Happili
-        output_form (str): Choose between "pdf" and "html" for the output plots
-        cubes (str): Select the cube to be processed. If "all", all cubes will be processed.
-        cont_src_resrouce (str): Select what should be used for continuum source counterparts.
-        configfilename (str): Default config file name to run SHARPener. Taken from SHARPener by default
-        do_sdss (bool): Enable/Disable SDSS cross-matching of radio continuum sources
-        n_cores (int): Number of cores for running sharpener in parallel
+    taskid (str): Name of the taskid to process
+    sharpener_basedir (str): Directory for the directory where the data should be stored for processing
+    data_basedir (str): (Remote-)directory where the taskid is located
+    data_source (str): Name of remote server to get the data from
+    steps (str): List of steps to run through.
+    user (str): The username for getting data from Happili
+    output_form (str): Choose between "pdf" and "html" for the output plots
+    cubes (str): Select the cube to be processed. If "all", all cubes will be processed.
+    cont_src_resrouce (str): Select what should be used for continuum source counterparts.
+    configfilename (str): Default config file name to run SHARPener. Taken from SHARPener by default
+    do_sdss (bool): Enable/Disable SDSS cross-matching of radio continuum sources
+    n_cores (int): Number of cores for running sharpener in parallel
     """
 
     # get the start time of the function call
@@ -55,7 +63,8 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
 
     # check the steps
     if steps is None:
-        steps = ["get_data", "setup_sharpener", "run_sharpener"]
+        steps = ["get_data", "setup_sharpener",
+                 "run_sharpener", "collect_results"]
 
     logger.info("#### Aperscharp called with:")
     logger.info("taskid: {}".format(taskid))

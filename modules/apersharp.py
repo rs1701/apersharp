@@ -68,6 +68,16 @@ class apersharp(BaseModule):
         else:
             logger.info("Skipping running sharpener")
 
+        # collect results from sharpener
+        if "collect_results" in self.steps:
+            logger.info("Collecting results from sharpener")
+
+            abort_function("Nothing here yet")
+
+            logger.info("Collecting results from sharpener ... Done")
+        else:
+            logger.info("Skipping collecting results from sharpener")
+
     def set_directories(self):
         """
         Function to create the directory structure
