@@ -99,7 +99,7 @@ class apersharp(BaseModule):
         # Create beam directories if data is not coming from happili
         if self.data_source != "happili":
             for beam in self.beam_list:
-                beam_dir = os.path.join(self.cube_dir, "{:02d}".format(beam))
+                beam_dir = os.path.join(self.cube_dir, "{}".format(beam))
                 if not os.path.exists(beam_dir):
                     try:
                         os.mkdir(beam_dir)
