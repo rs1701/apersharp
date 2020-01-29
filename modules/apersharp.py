@@ -12,8 +12,8 @@ import zipfile
 from lib.abort_function import abort_function
 from base import BaseModule
 
-import SHARPener
-from SHARPener.run_sharpener_mp import run_sharpener as sharpener_mp
+import sharpener
+from sharpener.run_sharpener_mp import run_sharpener as sharpener_mp
 
 logger = logging.getLogger(__name__)
 
@@ -383,7 +383,7 @@ class apersharp(BaseModule):
         if self.configfilename is None:
             # the default sharpener configfile is here:
             default_configfile = os.path.join(os.path.dirname(
-                SHARPener.__file__), "sharpener_default.yml")
+                sharpener.__file__), "sharpener_default.yml")
             # make sure it is there
             if os.path.exists(default_configfile):
                 logger.info("Using default sharpener config file from {}".format(
