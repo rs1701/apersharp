@@ -311,6 +311,7 @@ class apersharp(BaseModule):
                                             # rename the file
                                             original_continuum_image_name = continuum_image_name
                                             continuum_image_name = "image_mf.fits"
+                                            logger.info("Renaming {0} to {1}".format(original_continuum_image_name, continuum_image_name))
                                             os.rename(original_continuum_image_name, continuum_image_name)
 
                                             self.continuum_image_list.append(
