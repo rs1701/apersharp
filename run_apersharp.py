@@ -37,7 +37,7 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
     user (str): The username for getting data from Happili
     output_form (str): Choose between "pdf" and "html" for the output plots
     cubes (str): Select the cube to be processed. If "all", all cubes will be processed.
-    cont_src_resrouce (str): Select what should be used for continuum source counterparts.
+    cont_src_resource (str): Select what should be used for continuum source counterparts.
     configfilename (str): Default config file name to run SHARPener. Taken from SHARPener by default
     do_sdss (bool): Enable/Disable SDSS cross-matching of radio continuum sources
     n_cores (int): Number of cores for running sharpener in parallel
@@ -75,6 +75,8 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
     logger.info("steps: {}".format(str(steps)))
     logger.info("output format: {}".format(output_form))
     logger.info("cubes: {}".format(cubes))
+    #logger.info(" ")
+    logger.info("do_sdss: {}".format(do_sdss))
     logger.info("####")
 
     # get a list of cubes
@@ -94,6 +96,7 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
         p.steps = steps
         p.do_sdss = do_sdss
         p.n_cores = n_cores
+        p.cont_src_resource = cont_src_resource
         if beams is None:
             p.beam_list = np.array("{}".format(str(beam).zfill(2))
                                    for beam in np.arange(p.NBEAMS))
@@ -160,7 +163,7 @@ if __name__ == "__main__":
     parser.add_argument("--cubes", type=str, default='0',
                         help='Select the cube to be processed. If "all", all cubes will be processed.')
 
-    parser.add_argument("--cont_src_resource", type=str, default='continuum',
+    parser.add_argument("--cont_src_resource", type=str, default='image',
                         help='Select the resources to get continuum source for HI absorption source')
 
     parser.add_argument("--configfilename", type=str, default='',

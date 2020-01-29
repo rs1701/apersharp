@@ -251,52 +251,54 @@ class apersharp(BaseModule):
                                 else:
                                     logger.info("Cube {0} of beam {1} of taskid {2} already on disk".format(
                                         self.cube, beam, self.taskid))
-                                    if self.cont_src_resource == "continuum":
-                                        # now get the continuum image
-                                        # look for the image file ALTA by try and error
-                                        continuum_image_name = ''
-                                        alta_beam_image_path = ''
-                                        for k in range(10):
-                                            continuum_image_name = "image_mf_{0:02d}.fits".format(
-                                                k)
-                                            alta_beam_image_path = os.path.join(
-                                                alta_taskid_beam_dir, continuum_image_name)
-                                            if self.check_alta_path(alta_beam_image_path) == 0:
-                                                break
-                                            else:
-                                                # make empty again when no image was found
-                                                continuum_image_name = ''
-                                                continue
-                                        # if there is no continuum image, this is a critical error
-                                        # This should not happen because the continuum image is necessary
-                                        # for the continuum subtraction
-                                        if continuum_image_name == '':
-                                            error = "No image found on ALTA for beam {0} of taskid {1} but cube {2} exists. This should not happen. Abort".format(
-                                                beam, self.taskid, self.cube)
-                                            logger.error(error)
-                                            raise RuntimeError(error)
+                                
+                                # getting continuum fits image
+                                if self.cont_src_resource == "image":
+                                    # now get the continuum image
+                                    # look for the image file ALTA by try and error
+                                    continuum_image_name = ''
+                                    alta_beam_image_path = ''
+                                    for k in range(10):
+                                        continuum_image_name = "image_mf_{0:02d}.fits".format(
+                                            k)
+                                        alta_beam_image_path = os.path.join(
+                                            alta_taskid_beam_dir, continuum_image_name)
+                                        if self.check_alta_path(alta_beam_image_path) == 0:
+                                            break
                                         else:
-                                            logger.info(
-                                                "Found continuum image for beam {} on ALTA".format(beam))
-                                            # check whether file already there:
-                                            if not os.path.exists(os.path.join(cube_dir, os.path.basename(alta_beam_image_path))):
-                                                # copy the continuum image to this directory
-                                                return_msg = self.getdata_from_alta(
-                                                    alta_beam_image_path, continuum_image_beam_dir)
-                                                if return_msg == 0:
-                                                    logger.info("Getting image of beam {0} of taskid {1} ... Done".format(
-                                                        beam, self.taskid))
-                                                else:
-                                                    error = "Getting image of beam {0} of taskid {1} ... Failed".format(
-                                                        beam, self.taskid)
-                                                    logger.error(error)
-                                                    raise RuntimeError(error)
-
-                                                continuum_image_list.append(
-                                                    continuum_image_name)
+                                            # make empty again when no image was found
+                                            continuum_image_name = ''
+                                            continue
+                                    # if there is no continuum image, this is a critical error
+                                    # This should not happen because the continuum image is necessary
+                                    # for the continuum subtraction
+                                    if continuum_image_name == '':
+                                        error = "No image found on ALTA for beam {0} of taskid {1} but cube {2} exists. This should not happen. Abort".format(
+                                            beam, self.taskid, self.cube)
+                                        logger.error(error)
+                                        raise RuntimeError(error)
+                                    else:
+                                        logger.info(
+                                            "Found continuum image for beam {} on ALTA".format(beam))
+                                        # check whether file already there:
+                                        if not os.path.exists(os.path.join(cube_dir, os.path.basename(alta_beam_image_path))):
+                                            # copy the continuum image to this directory
+                                            return_msg = self.getdata_from_alta(
+                                                alta_beam_image_path, continuum_image_beam_dir)
+                                            if return_msg == 0:
+                                                logger.info("Getting image of beam {0} of taskid {1} ... Done".format(
+                                                    beam, self.taskid))
                                             else:
-                                                logger.info("Image of beam {0} of taskid {1} already on disk".format(
-                                                    beam, self.mosaic_taskid))
+                                                error = "Getting image of beam {0} of taskid {1} ... Failed".format(
+                                                    beam, self.taskid)
+                                                logger.error(error)
+                                                raise RuntimeError(error)
+
+                                            continuum_image_list.append(
+                                                continuum_image_name)
+                                        else:
+                                            logger.info("Image of beam {0} of taskid {1} already on disk".format(
+                                                beam, self.mosaic_taskid))
                         else:
                             logger.warning("Did not find beam {0} of taskid {1}".format(
                                 beam, self.taskid))

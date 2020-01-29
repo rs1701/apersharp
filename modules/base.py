@@ -25,6 +25,7 @@ class BaseModule:
     cube_dir = None
     beam_list = None
     continuum_image_list = None
+    cont_src_resource = None
     steps = None
     n_cores = None
     do_sdss = False
