@@ -165,11 +165,13 @@ class apersharp(BaseModule):
         beam_dir = np.arange(self.NBEAMS)
         self.continuum_image_list = []
 
-        # Going through the beams to get the data:
-        for beam in self.beam_list:
+        # storing failed beams
+        failed_beams = []
+        self.continuum_image_list = []
 
-            # storing failed beams
-            failed_beams = []
+
+        # Going through the beams to get the data:
+        for beam in self.beam_list:            
 
             # check first if they do not already exists
             cube_path = self.get_cube_path(beam)
