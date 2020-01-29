@@ -53,7 +53,7 @@ class apersharp(BaseModule):
         if "setup_sharpener" in self.steps:
             logger.info("Setting up sharpner")
 
-            abort_function("Nothing here yet")
+            self.setup_sharpener()
 
             logger.info("Setting up sharpner ... Done")
         else:
@@ -63,7 +63,7 @@ class apersharp(BaseModule):
         if "run_sharpener" in self.steps:
             logger.info("Running sharpener")
 
-            abort_function("Nothing here yet")
+            self.run_sharpener()
 
             logger.info("Running sharpener ... Done")
         else:
@@ -73,11 +73,23 @@ class apersharp(BaseModule):
         if "collect_results" in self.steps:
             logger.info("Collecting results from sharpener")
 
-            abort_function("Nothing here yet")
+            self.collect_sharpener_results()
 
             logger.info("Collecting results from sharpener ... Done")
         else:
             logger.info("Skipping collecting results from sharpener")
+
+        # clean up by removing the images and cubes
+        if "clean_up" in self.steps:
+            logger.info("Removing cubes and continuum images")
+
+            self.clean_up()
+
+            logger.info("Removing cubes and continuum images ... Done")
+        else:
+            logger.warning("Did not remove cubes and continuum images. WARNING. Be aware of the disk space used by the fits files")
+
+
 
     def set_directories(self):
         """
@@ -565,3 +577,26 @@ class apersharp(BaseModule):
 
         logger.info(
             "Cube {0}: Collecting the results from sharpener".format(self.cube))
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++
+    def clean_up(self):
+        """
+        Function to remove cubes and continuum fits files
+        """
+
+        logger.info("Cube {}: Removing cubes and continuum fits files".format(self.cube))
+
+        for beam in self.beam_list:
+
+            # get the path to the cube
+            cube_file = self.get_cube_path(beam)
+            # remove cube
+            os.remove(cube_file)
+
+            # get the path to the continuum image
+            continuum_file = self.get_cont_path(beam)
+            # removing continum image
+            os.remove(continuum_file)
+
+        logger.info(
+            "Cube {}: Removing cubes and continuum fits files ... Done".format(self.cube))
