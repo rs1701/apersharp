@@ -168,6 +168,9 @@ class apersharp(BaseModule):
         # Going through the beams to get the data:
         for beam in self.beam_list:
 
+            # storing failed beams
+            failed_beams = []
+
             # check first if they do not already exists
             cube_path = self.get_cube_path(beam)
             if os.path.exists(cube_path):
@@ -195,8 +198,6 @@ class apersharp(BaseModule):
                                 "Functionality to copy from a local data directory is not yet available")
                 # look for data in ALTA
                 elif self.data_source == 'ALTA':
-                    # storing failed beams
-                    failed_beams = []
                     # go through the list of beams
                     # but make a copy to be able to remove beams if they are not available
                     for beam in self.beam_list:
@@ -305,6 +306,8 @@ class apersharp(BaseModule):
                             # remove the beam
                             failed_beams.append(beam)
                 elif self.data_source == "happili":
+                    self.abort_function("Getting data from happili not supported at the moment")
+
                     # works only within ASTRON network
                     logger.warning(
                         "Cube {}: Assuming that data was transferred from happili keeping pipeline directory structure.".format(self.cube))
