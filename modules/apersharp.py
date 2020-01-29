@@ -139,7 +139,7 @@ class apersharp(BaseModule):
             irods_status_file, irods_status_lf_file, alta_file_name, output_path)
         logger.debug(alta_cmd)
         return_msg = subprocess.check_call(
-            alta_cmd, shell=True, stdout=self.FNULL, stderr=self.FNULL)
+            alta_cmd, shell=True, stdout=FNULL, stderr=FNULL)
 
         return return_msg
 
