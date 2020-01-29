@@ -146,7 +146,7 @@ class apersharp(BaseModule):
     # ++++++++++++++++++++++++++++++++++++++++++++++++++
     def get_data(self):
         """
-        Function to get the data depending on the source
+        Function to get the HI cubes and continuum images.
 
         """
 
@@ -201,10 +201,10 @@ class apersharp(BaseModule):
                             # look for the cube file using try and error
                             cube_name = ''
                             alta_beam_cube_path = ''
-                            cube_name = "HI_beam_image_{}.fits".format(
+                            cube_name = "HI_image_cube{}.fits".format(
                                 self.cube)
                             alta_beam_cube_path = os.path.join(
-                                alta_taskid_beam_dir, "cube/{}".format(cube_name))
+                                alta_taskid_beam_dir, "{}".format(cube_name))
                             # check that path exists on alta
                             if self.check_alta_path(alta_beam_cube_path) == 0:
                                 logger.info("Found cube on ALTA in {}".format(
