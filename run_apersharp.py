@@ -145,7 +145,7 @@ if __name__ == "__main__":
     parser.add_argument("--data_source", type=str, default='ALTA',
                         help='Name of remote server to get the data from')
 
-    parser.add_argument("--steps", type=list, default=None,
+    parser.add_argument("--steps", type=str, default=None,
                         help='List of steps to run through.')
 
     parser.add_argument("--user", type=str, default=None,
