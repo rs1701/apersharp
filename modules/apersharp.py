@@ -305,9 +305,9 @@ class apersharp(BaseModule):
 
                         # for the cubes
                         cube_path = os.path.join(
-                            self.data_basedir, "data/{0:02d}/cont/cubes/HI_image_cube{1}.fits".format(beam, self.cube))
+                            self.data_basedir, "data/{0}/cont/cubes/HI_image_cube{1}.fits".format(beam, self.cube))
                         link_name = os.path.join(
-                            self.sharpener_basedir, "cube{0:02d}/HI_image_cube{1}.fits".format(beam, self.cube))
+                            self.sharpener_basedir, "cube{0}/HI_image_cube{1}.fits".format(beam, self.cube))
                         # check if link exists
                         if not os.path.exists(link_name):
                             logger.debug("Cube {0}: Creating link {1} to cube {2}".format(
@@ -319,11 +319,11 @@ class apersharp(BaseModule):
 
                         # for the continuum images
                         link_name = os.path.join(
-                            self.sharpener_basedir, "{0:02d}/image_mf.fits".format(beam))
+                            self.sharpener_basedir, "{}/image_mf.fits".format(beam))
                         # check if link exists
                         if not os.path.exists(link_name):
                             cont_path = os.path.join(
-                                self.data_basedir, "{0:02d}/cont/cubes/HI_image_cube{1}.fits".format(beam, self.cube))
+                                self.data_basedir, "{0}/cont/cubes/HI_image_cube{1}.fits".format(beam, self.cube))
                             logger.debug("Cube {0}: Creating link {1} to cube {2}".format(
                                 self.cube, link_name, cube_path))
                             os.symlink(cube_path, link_name)
