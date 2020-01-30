@@ -546,7 +546,7 @@ class apersharp(BaseModule):
 
         # list of plots
         plot_list = glob.glob(os.path.join(
-            cube_beam_dir_pattern, "plot/*all_plots*.pdf"))
+            cube_beam_dir_pattern, "sharpOut/plot/*all_plots*.pdf"))
 
         if len(plot_list) != 0:
 
@@ -564,13 +564,13 @@ class apersharp(BaseModule):
         logger.info("Creating zip files for source list")
 
         csv_list = glob.glob(os.path.join(
-            cube_beam_dir_pattern, "abs/mir_src_sharpener.csv"))
+            cube_beam_dir_pattern, "sharpOut/abs/mir_src_sharpener.csv"))
         csv_sdss_list = glob.glob(os.path.join(
-            cube_beam_dir_pattern, "abs/beam??_sdss_src.csv"))
+            cube_beam_dir_pattern, "sharpOut/abs/beam??_sdss_src.csv"))
         csv_sdss_radio_list = glob.glob(os.path.join(
-            cube_beam_dir_pattern, "abs/beam??_radio_sdss_src.csv"))
+            cube_beam_dir_pattern, "sharpOut/abs/beam??_radio_sdss_src.csv"))
         karma_list = glob.glob(os.path.join(
-            cube_beam_dir_pattern, "abs/karma_src_sharpener.ann"))
+            cube_beam_dir_pattern, "sharpOut/abs/karma_src_sharpener.ann"))
 
         # do not create if there are no source at all
         if len(csv_list) != 0:
