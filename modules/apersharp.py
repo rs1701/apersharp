@@ -549,7 +549,7 @@ class apersharp(BaseModule):
 
             plot_list.sort()
 
-            with zipfile.ZipFile(os.path.join(self.get_cube_dir(), "all_plots.zip"), 'w') as myzip:
+            with zipfile.ZipFile(os.path.join(self.get_cube_dir(), "cube_{}_all_plots.zip".format(self.cube)), 'w') as myzip:
 
                 for plot in plot_list:
                     myzip.write(plot, os.path.basename(plot))
@@ -572,7 +572,7 @@ class apersharp(BaseModule):
         # do not create if there are no source at all
         if len(csv_list) != 0:
 
-            with zipfile.ZipFile(os.path.join(self.get_cube_dir(), "all_sources.zip"), 'w') as myzip:
+            with zipfile.ZipFile(os.path.join(self.get_cube_dir(), "cube_{}_all_sources.zip".format(self.cube)), 'w') as myzip:
 
                 if len(csv_list) != 0:
                     csv_list.sort()
