@@ -463,8 +463,10 @@ class apersharp(BaseModule):
             with open("{0}".format(beam_configfilename)) as stream:
                 sharpener_settings = yaml.load(stream)
 
-            sharpener_settings['general']['workdir'] = "{0:s}/".format(
-                cube_beam_dir)
+            # need to cut the work directory because of Miriad string limits
+            sharpener_settings['general']['workdir'] = "./"
+            # sharpener_settings['general']['workdir'] = "{0:s}/".format(
+            #     beam)
             sharpener_settings['general']['contname'] = os.path.basename(self.get_cont_path(beam))
             sharpener_settings['general']['cubename'] = os.path.basename(self.get_cube_path(
                 beam))
