@@ -454,7 +454,7 @@ class apersharp(BaseModule):
 
             # configfile of the beam
             beam_configfilename = os.path.join(
-                cube_beam_dir, "beam_{0}_{1}".format(beam.zfill(2), os.path.basename(self.configfilename)))
+                cube_beam_dir, "beam_{0}_{1}".format(beam.zfill(2), os.path.basename(self.configfilename).replace("default", "settings")))
 
             # copy the file
             shutil.copy2(self.configfilename, beam_configfilename)
@@ -492,7 +492,7 @@ class apersharp(BaseModule):
             # for the detailed plots, 3 rows
             sharpener_settings['abs_plot']['channels_per_plot'] = 406
 
-            with io.open(beam_configfilename.replace("default", "settings"), 'w', encoding='utf8') as outfile:
+            with io.open(beam_configfilename, 'w', encoding='utf8') as outfile:
                 yaml.dump(sharpener_settings, outfile,
                           default_flow_style=False, allow_unicode=True)
 
