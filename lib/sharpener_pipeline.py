@@ -10,6 +10,7 @@ import glob
 from PyPDF2 import PdfFileMerger
 import zipfile
 import logging
+from setup_logger import setup_logger
 
 
 def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extraction, do_plots, do_sdss, beam_count):
