@@ -18,7 +18,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def sharpener_pipeline(beam_directory_list, do_continuum_extraction, do_spectra_extraction, do_plots, do_sdss, beam_count):
+def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extraction, do_plots, do_sdss, beam_count):
     import sharpener as sharpy
     from sharpy.sharp_modules import cont_src as cont_src
     from sharpy.sharp_modules import spec_ex as spec_ex
@@ -58,7 +58,7 @@ def sharpener_pipeline(beam_directory_list, do_continuum_extraction, do_spectra_
 
         # Find continuum sources
         # ++++++++++++++++++++++
-        if do_continuum_extraction:
+        if do_source_finding:
 
             logger.info("(Pid {0:d}) ## Find continuum sources".format(proc))
 
@@ -68,7 +68,7 @@ def sharpener_pipeline(beam_directory_list, do_continuum_extraction, do_spectra_
             logger.info(
                 "(Pid {0:d}) ## Find continuum sources ... Done".format(proc))
 
-        # Find continuum sources
+        # Find sdss sources
         # ++++++++++++++++++++++
         if do_sdss:
 

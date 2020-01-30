@@ -515,7 +515,7 @@ class apersharp(BaseModule):
 
         # create function iterater to provide additional arguments
         fct_partial = functools.partial(
-            run_sharpener, beam_directory_list, False, True, True, self.do_sdss)
+            sharpener_pipeline, beam_directory_list, True, True, True, self.do_sdss)
 
         # create and run map
         pool.map(fct_partial, beam_count)
