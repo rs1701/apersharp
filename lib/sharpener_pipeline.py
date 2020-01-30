@@ -109,6 +109,10 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
                 beam_directory_list[beam_count], "sharpOut/spec/")
             spar.cfg_par['general']['plotdir'] = os.path.join(
                 beam_directory_list[beam_count], "sharpOut/plot/")
+            spar.cfg_par['general']['contname'] = os.path.join(
+                beam_directory_list[beam_count], os.path.basename(spar.cfg_par['general']['contname']))
+            spar.cfg_par['general']['cubename'] = os.path.join(
+                beam_directory_list[beam_count], os.path.basename(spar.cfg_par['general']['cubename']))
 
             abs_pl.create_all_abs_plots(spar.cfg_par)
 
