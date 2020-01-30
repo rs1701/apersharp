@@ -11,8 +11,6 @@ from PyPDF2 import PdfFileMerger
 import zipfile
 import logging
 
-logger = logging.getLogger(__name__)
-
 
 def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extraction, do_plots, do_sdss, beam_count):
     import sharpener as sharpy
@@ -30,15 +28,20 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
     proc = os.getpid()
     proc_name = mp.current_process().name
 
+    # get beam
+    beam_name = os.path.basename(beam_directory_list[beam_count])
+
+    logfile = os.path.join(
+        beam_directory_list[beam_count], "apersharp_beam_{}.log".format(beam_name))
+    setup_logger('DEBUG', logfile=logfile)
+    logger = logging.getLogger(__name__)
+
     # get the current working directory
     cwd = os.getcwd()
 
     logger.info("PID {0:d}: Changing working directory to {1}".format(
         proc, beam_directory_list[beam_count]))
     os.chdir(beam_directory_list[beam_count])
-
-    # get beam
-    beam_name = os.path.basename(beam_directory_list[beam_count])
 
     logger.info(
         "(Pid {0:d}) ## Running sharpener for {1:s}".format(proc, beam_name))
