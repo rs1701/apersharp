@@ -136,11 +136,11 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
 
                 # continuum plot only with radio sources
                 cont_plot_name = "{0:s}{1:s}_continuum.pdf".format(
-                    spar.cfg_par['general']['plotdir'], spar.cfg_par['general']['workdir'].split("/")[-2])
+                    spar.cfg_par['general']['plotdir'], cfg_par['general']['label'])
 
                 # continuum plot with radio and sdss sources
                 cont_sdss_plot_name = "{0:s}{1:s}_continuum_and_sdss.pdf".format(
-                    spar.cfg_par['general']['plotdir'], spar.cfg_par['general']['workdir'].split("/")[-2])
+                    spar.cfg_par['general']['plotdir'], cfg_par['general']['label'])
 
                 if os.path.exists(cont_sdss_plot_name):
 
@@ -156,7 +156,7 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
                     pdf_merger.append(files)
 
                 plot_name = "{0:s}{1:s}_all_plots_detailed.pdf".format(
-                    spar.cfg_par['general']['plotdir'], spar.cfg_par['general']['workdir'].split("/")[-2])
+                    spar.cfg_par['general']['plotdir'], cfg_par['general']['label'])
 
                 pdf_merger.write(plot_name)
             else:
@@ -174,11 +174,11 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
 
                 # continuum plot only with radio sources
                 cont_plot_name = "{0:s}{1:s}_continuum.pdf".format(
-                    spar.cfg_par['general']['plotdir'], spar.cfg_par['general']['workdir'].split("/")[-2])
+                    spar.cfg_par['general']['plotdir'], spar.cfg_par['general']['label'])
 
                 # continuum plot with radio and sdss sources
                 cont_sdss_plot_name = "{0:s}{1:s}_continuum_and_sdss.pdf".format(
-                    spar.cfg_par['general']['plotdir'], spar.cfg_par['general']['workdir'].split("/")[-2])
+                    spar.cfg_par['general']['plotdir'], spar.cfg_par['general']['label'])
 
                 if os.path.exists(cont_sdss_plot_name):
 
@@ -194,7 +194,7 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
                     pdf_merger.append(files)
 
                 plot_name = "{0:s}{1:s}_all_plots_compact.pdf".format(
-                    spar.cfg_par['general']['plotdir'], spar.cfg_par['general']['workdir'].split("/")[-2])
+                    spar.cfg_par['general']['plotdir'], spar.cfg_par['general']['label'])
 
                 pdf_merger.write(plot_name)
             else:
