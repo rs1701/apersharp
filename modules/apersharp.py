@@ -489,6 +489,8 @@ class apersharp(BaseModule):
             sharpener_settings['abs_plot']['enable'] = True
             sharpener_settings['abs_plot']['fixed_scale'] = False
             sharpener_settings['abs_plot']['plot_contImage'] = True
+            # for the detailed plots, 3 rows
+            sharpener_settings['abs_plot']['channels_per_plot'] = 406
 
             with io.open(beam_configfilename.replace("default", "settings"), 'w', encoding='utf8') as outfile:
                 yaml.dump(sharpener_settings, outfile,
