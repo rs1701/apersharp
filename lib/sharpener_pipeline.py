@@ -34,7 +34,7 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
     cwd = os.getcwd()
 
     logger.info("PID {0:d}: Changing working directory to {1}".format(
-        proc_name, beam_directory_list[beam_count]))
+        proc, beam_directory_list[beam_count]))
     os.chdir(beam_directory_list[beam_count])
 
     # get beam
@@ -197,5 +197,5 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
                 proc, beam_name, time.time() - time_start_run))
 
     logger.info("PID {0:d}: Changing working directory back to {1}".format(
-        proc_name, cwd))
+        proc, cwd))
     os.chdir(cwd)
