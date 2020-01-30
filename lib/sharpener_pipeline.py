@@ -20,10 +20,10 @@ logger = logging.getLogger(__name__)
 
 def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extraction, do_plots, do_sdss, beam_count):
     import sharpener as sharpy
-    from sharpy.sharp_modules import cont_src as cont_src
-    from sharpy.sharp_modules import spec_ex as spec_ex
-    from sharpy.sharp_modules import absorption_plot as abs_pl
-    from sharpy.sharp_modules import sdss_match
+    from sharp_modules import cont_src as cont_src
+    from sharp_modules import spec_ex as spec_ex
+    from sharp_modules import absorption_plot as abs_pl
+    from sharp_modules import sdss_match
     imp.reload(sharpy)
 
     """Function to run sharpener
