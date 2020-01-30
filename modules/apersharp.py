@@ -9,6 +9,7 @@ import shutil
 import zipfile
 import io
 import multiprocessing as mp
+import functools
 
 
 from lib.abort_function import abort_function
