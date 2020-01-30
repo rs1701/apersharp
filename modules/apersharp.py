@@ -464,7 +464,7 @@ class apersharp(BaseModule):
                 sharpener_settings = yaml.load(stream)
 
             # need to cut the work directory because of Miriad string limits
-            sharpener_settings['general']['workdir'] = "./"
+            sharpener_settings['general']['workdir'] = ""
             # sharpener_settings['general']['workdir'] = "{0:s}/".format(
             #     beam)
             sharpener_settings['general']['contname'] = os.path.basename(self.get_cont_path(beam))
