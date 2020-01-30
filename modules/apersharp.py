@@ -487,7 +487,7 @@ class apersharp(BaseModule):
             sharpener_settings['abs_plot']['enable'] = True
             sharpener_settings['abs_plot']['fixed_scale'] = False
 
-            with io.open(beam_configfilename, 'w', encoding='utf8') as outfile:
+            with io.open(beam_configfilename.replace("default", "settings"), 'w', encoding='utf8') as outfile:
                 yaml.dump(sharpener_settings, outfile,
                           default_flow_style=False, allow_unicode=True)
 

@@ -43,8 +43,8 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
     # Load parameter file
     # +++++++++++++++++++
 
-    parameter_file = "{0:s}/{1:s}_sharpener_default.yml".format(
-        beam_directory_list[beam_count], beam_name)
+    parameter_file = "{0:s}/sharpener_settings.yml".format(
+        beam_directory_list[beam_count])
 
     if not os.path.exists(parameter_file):
         logger.info("(Pid {0:d}) ERROR: File {1:s} not found. Abort".format(
