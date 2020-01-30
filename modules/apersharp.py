@@ -504,8 +504,8 @@ class apersharp(BaseModule):
 
         logger.info("Cube {0}: Running sharpener".format(self.cube))
 
-        beam_directory_list = np.array(
-            self.get_cube_beam_dir(beam) for beam in self.beam_list)
+        beam_directory_list = np.array([
+            self.get_cube_beam_dir(beam) for beam in self.beam_list])
 
         # index array for pool based on the number of files
         beam_count = np.arange(np.size(beam_directory_list))
