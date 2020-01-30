@@ -104,6 +104,8 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
         if do_plots:
 
             logger.info("(Pid {0:d}) ## Plotting spectra".format(proc))
+            spar.cfg_par['general']['specdir'] = os.path.join(
+                beam_directory_list[beam_count], "sharpOut/spec/")
 
             abs_pl.create_all_abs_plots(spar.cfg_par)
 
