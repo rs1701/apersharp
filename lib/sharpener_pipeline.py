@@ -121,7 +121,7 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
 
         # Merge plots:
         # ++++++++++++
-        if spar.cfg_par['general']['plot_format'] == "pdf":
+        if spar.cfg_par['abs_format']['plot_format'] == "pdf":
 
             logger.info("(Pid {0:d}) ## Merging plots".format(proc))
 
