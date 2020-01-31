@@ -100,6 +100,9 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
         if beams is None:
             p.beam_list = np.array("{}".format(str(beam).zfill(2))
                                    for beam in np.arange(p.NBEAMS))
+        elif beams == 'all':
+            p.beam_list = np.array("{}".format(str(beam).zfill(2))
+                                   for beam in np.arange(p.NBEAMS))
         else:
             p.beam_list = beams.split(",")
         p.configfilename = configfilename

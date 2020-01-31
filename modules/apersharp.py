@@ -398,7 +398,7 @@ class apersharp(BaseModule):
 
         # check the failed beams
         if len(failed_beams) == len(self.beam_list):
-            self.abort_module(
+            abort_function(
                 "Did not find cube {0} for all beams.".format(self.cube))
         elif len(failed_beams) != 0:
             logger.warning("Could not find cube {0} for beams {1}. Removing those beams".format(self.cube,
