@@ -403,7 +403,8 @@ class apersharp(BaseModule):
         elif len(failed_beams) != 0:
             logger.warning("Could not find cube {0} for beams {1}. Removing those beams".format(self.cube,
                                                                                                 str(failed_beams)))
-            new_beam_list = self.beam_list.tolist()
+            new_beam_list = self.beam_list
+            new_beam_list = new_beam_list.tolist()
             for beam in failed_beams:
                 new_beam_list.remove(beam)
             self.beam_list = np.array(new_beam_list)
