@@ -72,10 +72,10 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
 
     if beams is None:
         beam_list = np.array(["{}".format(str(beam).zfill(2))
-                              for beam in np.arange(p.NBEAMS)])
+                              for beam in np.arange(40)])
     elif beams == 'all':
         beam_list = np.array(["{}".format(str(beam).zfill(2))
-                              for beam in np.arange(p.NBEAMS)])
+                              for beam in np.arange(40)])
     else:
         beam_list = beams.split(",")
 
