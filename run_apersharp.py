@@ -77,7 +77,7 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
         beam_list = np.array(["{}".format(str(beam).zfill(2))
                               for beam in np.arange(40)])
     else:
-        beam_list = beams.split(",")
+        beam_list = np.array(beams.split(","))
 
     logger.info("#### Aperscharp called with:")
     logger.info("taskid: {}".format(taskid))
