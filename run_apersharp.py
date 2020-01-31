@@ -70,14 +70,25 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
     else:
         steps = steps.split(",")
 
+    if beams is None:
+        beam_list = np.array(["{}".format(str(beam).zfill(2))
+                              for beam in np.arange(p.NBEAMS)])
+    elif beams == 'all':
+        beam_list = np.array(["{}".format(str(beam).zfill(2))
+                              for beam in np.arange(p.NBEAMS)])
+    else:
+        beam_list = beams.split(",")
+
     logger.info("#### Aperscharp called with:")
     logger.info("taskid: {}".format(taskid))
     logger.info("basedir: {}".format(sharpener_basedir))
     logger.info("steps: {}".format(str(steps)))
     logger.info("output format: {}".format(output_form))
     logger.info("cubes: {}".format(cubes))
+    logger.info("beams: {}".format(str(beam_list)))
     #logger.info(" ")
     logger.info("do_sdss: {}".format(do_sdss))
+    logger.info("n_cores: {}".format(n_cores))
     logger.info("####")
 
     # get a list of cubes
@@ -98,17 +109,8 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
         p.do_sdss = do_sdss
         p.n_cores = n_cores
         p.cont_src_resource = cont_src_resource
-        if beams is None:
-            p.beam_list = np.array(["{}".format(str(beam).zfill(2))
-                                    for beam in np.arange(p.NBEAMS)])
-        elif beams == 'all':
-            p.beam_list = np.array(["{}".format(str(beam).zfill(2))
-                                    for beam in np.arange(p.NBEAMS)])
-        else:
-            p.beam_list = beams.split(",")
+        p.beam_list = beam_list
         p.configfilename = configfilename
-
-    logger.info("beams: {}".format(str(p.beam_list)))
 
     # now go through the list of cubes
     for cube in cube_list:
