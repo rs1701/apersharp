@@ -478,6 +478,7 @@ class apersharp(BaseModule):
             sharpener_settings['hanning']['enable'] = False
 
             sharpener_settings['source_finder']['enable'] = True
+            sharpener_settings['source_finder']['clip'] = 1e-2
 
             sharpener_settings['source_catalog']['enable'] = False
 
