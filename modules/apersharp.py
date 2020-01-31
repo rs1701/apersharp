@@ -560,7 +560,7 @@ class apersharp(BaseModule):
 
                 for plot in plot_list:
                     myzip.write(plot, "beam_{0:s}_{1:s}".format(plot.replace(
-                        os.path.dirname(cube_beam_dir_pattern), "").split("/")[0], os.path.basename(plot)))
+                        os.path.dirname(cube_beam_dir_pattern), "").split("/")[1], os.path.basename(plot)))
                     # myzip.write(plot, os.path.basename(plot))
 
             logger.info("Creating zip files for plots ... Done")
@@ -587,27 +587,27 @@ class apersharp(BaseModule):
                     csv_list.sort()
                     for csv in csv_list:
                         myzip.write(csv, "beam_{0:s}_{1:s}".format(csv.replace(
-                            os.path.dirname(cube_beam_dir_pattern), "").split("/")[0], os.path.basename(csv)))
+                            os.path.dirname(cube_beam_dir_pattern), "").split("/")[1], os.path.basename(csv)))
 
                 if len(csv_sdss_list) != 0:
                     csv_sdss_list.sort()
                     for csv in csv_sdss_list:
                         myzip.write(csv, "beam_{0:s}_{1:s}".format(csv.replace(
-                            os.path.dirname(cube_beam_dir_pattern), "").split("/")[0], os.path.basename(csv)))
+                            os.path.dirname(cube_beam_dir_pattern), "").split("/")[1], os.path.basename(csv)))
                         # myzip.write(csv, os.path.basename(csv))
 
                 if len(csv_sdss_radio_list) != 0:
                     csv_sdss_radio_list.sort()
                     for csv in csv_sdss_radio_list:
                         myzip.write(csv, "beam_{0:s}_{1:s}".format(csv.replace(
-                            os.path.dirname(cube_beam_dir_pattern), "").split("/")[0], os.path.basename(csv)))
+                            os.path.dirname(cube_beam_dir_pattern), "").split("/")[1], os.path.basename(csv)))
                         # myzip.write(csv, os.path.basename(csv))
 
                 if len(karma_list) != 0:
                     karma_list.sort()
                     for karma in karma_list:
                         myzip.write(karma, "beam_{0:s}_{1:s}".format(karma.replace(
-                            os.path.dirname(cube_beam_dir_pattern), "").split("/")[0], os.path.basename(karma)))
+                            os.path.dirname(cube_beam_dir_pattern), "").split("/")[1], os.path.basename(karma)))
 
             logger.info("Creating zip files for source list ... Done")
         else:
