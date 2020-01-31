@@ -244,7 +244,8 @@ class apersharp(BaseModule):
                             if cube_name == '':
                                 logger.warning(
                                     "No cube {0} found on ALTA for beam {1} of taskid {2}".format(self.cube, beam, self.taskid))
-                                failed_beams.append(beam)
+                                if beam not in failed_beams:
+                                    failed_beams.append(beam)
                             else:
                                 # create directory for beam in the directory
                                 cube_beam_dir = self.get_cube_beam_dir(beam)
@@ -263,7 +264,8 @@ class apersharp(BaseModule):
                                     else:
                                         logger.warning("Getting image of beam {0} of taskid {1} ... Failed".format(
                                             beam, self.taskid))
-                                        failed_beams.append(beam)
+                                        if beam not in failed_beams:
+                                            failed_beams.append(beam)
                                 else:
                                     logger.info("Cube {0} of beam {1} of taskid {2} already on disk".format(
                                         self.cube, beam, self.taskid))
@@ -325,7 +327,8 @@ class apersharp(BaseModule):
                             logger.warning("Did not find beam {0} of taskid {1}".format(
                                 beam, self.taskid))
                             # remove the beam
-                            failed_beams.append(beam)
+                            if beam not in failed_beams:
+                                failed_beams.append(beam)
                 elif self.data_source == "happili":
                     self.abort_function("Getting data from happili not supported at the moment")
 
@@ -403,8 +406,10 @@ class apersharp(BaseModule):
         elif len(failed_beams) != 0:
             logger.warning("Could not find cube {0} for beams {1}. Removing those beams".format(self.cube,
                                                                                                 str(failed_beams)))
+            new_beam_list = self.beam_list.tolist()
             for beam in failed_beams:
-                self.beam_list.remove(beam)
+                new_beam_list.remove(beam)
+            self.beam_list = new_beam_list
             logger.warning("Will only process cube {0} for {1} beams ({2})".format(
                 self.cube, len(self.beam_list), str(self.beam_list)))
         else:
