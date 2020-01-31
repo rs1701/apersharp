@@ -34,7 +34,7 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
 
     logfile = os.path.join(
         beam_directory_list[beam_count], "apersharp_beam_{}.log".format(beam_name))
-    setup_logger('DEBUG', logfile=logfile)
+    setup_logger('INFO', logfile=logfile)
     logger = logging.getLogger(__name__)
 
     # get the current working directory
