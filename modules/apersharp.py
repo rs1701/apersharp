@@ -568,11 +568,11 @@ class apersharp(BaseModule):
         logger.info("Creating zip files for source list")
 
         csv_list = glob.glob(os.path.join(
-            cube_beam_dir_pattern, "sharpOut/abs/mir_src_sharpener.csv"))
+            cube_beam_dir_pattern, "sharpOut/abs/mir_src_sharp.csv"))
         csv_sdss_list = glob.glob(os.path.join(
-            cube_beam_dir_pattern, "sharpOut/abs/beam??_sdss_src.csv"))
+            cube_beam_dir_pattern, "sharpOut/abs/sdss_src.csv"))
         csv_sdss_radio_list = glob.glob(os.path.join(
-            cube_beam_dir_pattern, "sharpOut/abs/beam??_radio_sdss_src.csv"))
+            cube_beam_dir_pattern, "sharpOut/abs/radio_sdss_src_match.csv"))
         karma_list = glob.glob(os.path.join(
             cube_beam_dir_pattern, "sharpOut/abs/karma_src_sharpener.ann"))
 
@@ -590,12 +590,16 @@ class apersharp(BaseModule):
                 if len(csv_sdss_list) != 0:
                     csv_sdss_list.sort()
                     for csv in csv_sdss_list:
-                        myzip.write(csv, os.path.basename(csv))
+                        myzip.write(csv, "beam_{0:s}_{1:s}".format(csv.replace(
+                            os.path.dirname(cube_beam_dir_pattern), "").split("/")[0], os.path.basename(csv)))
+                        # myzip.write(csv, os.path.basename(csv))
 
                 if len(csv_sdss_radio_list) != 0:
                     csv_sdss_radio_list.sort()
                     for csv in csv_sdss_radio_list:
-                        myzip.write(csv, os.path.basename(csv))
+                        myzip.write(csv, "beam_{0:s}_{1:s}".format(csv.replace(
+                            os.path.dirname(cube_beam_dir_pattern), "").split("/")[0], os.path.basename(csv)))
+                        # myzip.write(csv, os.path.basename(csv))
 
                 if len(karma_list) != 0:
                     karma_list.sort()
