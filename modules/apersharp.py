@@ -447,7 +447,7 @@ class apersharp(BaseModule):
         # go through the list of beams, copy the config file and adjust the settings
         for beam in self.beam_list:
             logger.info(
-                "Cube {0}: Setting up sharpener for beam {0}".format(self.cube, beam))
+                "Cube {0}: Setting up sharpener for beam {1}".format(self.cube, beam))
 
             # get beam directory for given cube
             cube_beam_dir = self.get_cube_beam_dir(beam)
@@ -500,7 +500,7 @@ class apersharp(BaseModule):
                           default_flow_style=False, allow_unicode=True)
 
             logger.info(
-                "Cube {0}: Setting up sharpener for beam {0} ... Done".format(self.cube, beam))
+                "Cube {0}: Setting up sharpener for beam {1} ... Done".format(self.cube, beam))
 
         logger.info("Setting up sharpener ... Done")
 
