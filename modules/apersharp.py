@@ -559,7 +559,9 @@ class apersharp(BaseModule):
             with zipfile.ZipFile(os.path.join(self.get_cube_dir(), "cube_{}_all_plots.zip".format(self.cube)), 'w') as myzip:
 
                 for plot in plot_list:
-                    myzip.write(plot, os.path.basename(plot))
+                    myzip.write(plot, "beam_{0:s}_{1:s}".format(plot.replace(
+                        os.path.dirname(cube_beam_dir_pattern), "").split("/")[0], os.path.basename(plot)))
+                    # myzip.write(plot, os.path.basename(plot))
 
             logger.info("Creating zip files for plots ... Done")
         else:
@@ -623,7 +625,7 @@ class apersharp(BaseModule):
         logger.info("Cube {}: Removing cubes and continuum fits files".format(self.cube))
 
         for beam in self.beam_list:
-            
+
             # get the path to the cube
             cube_file = self.get_cube_path(beam)
             # remove cube
