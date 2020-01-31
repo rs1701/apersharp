@@ -483,6 +483,7 @@ class apersharp(BaseModule):
 
             sharpener_settings['sdss_match']['enable'] = self.do_sdss
             sharpener_settings['sdss_match']['zunitCube'] = "Hz"
+            sharpener_settings['sdss_match']['plot_format'] = "pdf"
 
             sharpener_settings['spec_ex']['enable'] = True
             sharpener_settings['spec_ex']['chrom_aberration'] = False
