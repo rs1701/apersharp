@@ -79,13 +79,13 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
         # ++++++++++++++++++++++
         if do_sdss:
 
-            logger.info("(Pid {0:d}) ## Find continuum sources".format(proc))
+            logger.info("(Pid {0:d}) ## Find SDSS sources".format(proc))
 
             # get sources in continuum image
             sdss_match.get_sdss_sources(spar.cfg_par)
 
             logger.info(
-                "(Pid {0:d}) ## Find continuum sources ... Done".format(proc))
+                "(Pid {0:d}) ## Find SDSS sources ... Done".format(proc))
 
         # Extract spectra
         # +++++++++++++++
