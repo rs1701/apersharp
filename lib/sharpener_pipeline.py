@@ -87,6 +87,8 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
             logger.info(
                 "(Pid {0:d}) ## Find continuum sources ... Done".format(proc))
 
+            raise RuntimeError("Stop here")
+
         # Extract spectra
         # +++++++++++++++
         if do_spectra_extraction:
