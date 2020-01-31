@@ -9,6 +9,7 @@ import sys
 import logging
 import argparse
 from time import time
+import numpy as np
 
 from lib.setup_logger import setup_logger
 from lib.abort_function import abort_function
@@ -98,14 +99,16 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
         p.n_cores = n_cores
         p.cont_src_resource = cont_src_resource
         if beams is None:
-            p.beam_list = np.array("{}".format(str(beam).zfill(2))
-                                   for beam in np.arange(p.NBEAMS))
+            p.beam_list = np.array(["{}".format(str(beam).zfill(2))
+                                    for beam in np.arange(p.NBEAMS)])
         elif beams == 'all':
-            p.beam_list = np.array("{}".format(str(beam).zfill(2))
-                                   for beam in np.arange(p.NBEAMS))
+            p.beam_list = np.array(["{}".format(str(beam).zfill(2))
+                                    for beam in np.arange(p.NBEAMS)])
         else:
             p.beam_list = beams.split(",")
         p.configfilename = configfilename
+
+    logger.info("beams: {}".format(str(p.beam_list)))
 
     # now go through the list of cubes
     for cube in cube_list:
