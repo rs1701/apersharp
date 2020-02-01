@@ -647,7 +647,7 @@ class apersharp(BaseModule):
             continuum_file_mir = continuum_file.replace(os.path.basename(continuum_file),"sharpOut/{0}".format(os.path.basename(continuum_file).replace(".fits", ".mir")))
             logger.debug("Removing {}".format(continuum_file_mir))
             if os.path.isdir(continuum_file_mir):
-                os.rmdir(continuum_file_mir)
+                shutil.rmtree(continuum_file_mir, ignore_errors=True)
 
         logger.info(
             "Cube {}: Removing cubes and continuum fits files ... Done".format(self.cube))
