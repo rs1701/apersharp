@@ -40,6 +40,13 @@ class apersharp(BaseModule):
         Function to call all other function necessary to set things up
         """
 
+        # create logfile
+        logfile = os.path.join(self.sharpener_basedir, "{}_apersharp.log".format(self.taskid))
+        setup_logger('DEBUG', logfile=logfile)
+        logger = logging.getLogger(__name__)
+
+        logger.info("#### Apersharp processing taskid {}".format(self.taskid))
+
         if "get_data" in self.steps:
             logger.info("Creating directories and getting data")
             # create the directory structure
@@ -91,8 +98,8 @@ class apersharp(BaseModule):
             logger.info("Removing cubes and continuum images ... Done")
         else:
             logger.warning("Did not remove cubes and continuum images. WARNING. Be aware of the disk space used by the fits files")
-
-
+        
+        logger.info("#### Apersharp processing taskid {} ... Done".format(self.taskid))
 
     def set_directories(self):
         """
