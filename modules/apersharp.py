@@ -632,16 +632,21 @@ class apersharp(BaseModule):
             # get the path to the cube
             cube_file = self.get_cube_path(beam)
             # remove cube
-            os.remove(cube_file)
+            logger.debug("Removing {}".format(cube_file))
+            if os.path.exists(cube_file):
+                os.remove(cube_file)
 
             # get the path to the continuum image
             continuum_file = self.get_cont_path(beam)
             # removing continum image
-            os.remove(continuum_file)
+            logger.debug("Removing {}".format(continuum_file))
+            if os.path.exists(continuum_file):
+                os.remove(continuum_file)
 
             # remove the miriad image
             continuum_file_mir = continuum_file.replace(os.path.basename(continuum_file),"sharpOut/{0}".format(continuum_file.replace(".fits", ".mir")))
-            if os.path.exists(continuum_file_mir):
+            logger.debug("Removing {}".format(continuum_file_mir))
+            if os.path.isdir(continuum_file_mir):
                 os.rmdir(continuum_file_mir)
 
         logger.info(
