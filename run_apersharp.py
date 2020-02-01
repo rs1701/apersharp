@@ -30,7 +30,7 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
 
     Args:
     =====
-    taskid (str): Name of the taskid to process
+    taskid (str): Name of the taskid to process. Multiple taskids are separated using a comma
     sharpener_basedir (str): Directory for the directory where the data should be stored for processing
     data_basedir (str): (Remote-)directory where the taskid is located
     data_source (str): Name of remote server to get the data from
@@ -44,96 +44,120 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
     n_cores (int): Number of cores for running sharpener in parallel
     """
 
-    # get the start time of the function call
-    start_time = time()
+    # get a list of taskids
+    taskid_list = taskid.split(",")
 
-    # check the output directory
+    # Check base directory and create it if necessary
     if sharpener_basedir == '':
-        sharpener_basedir = os.path.join(os.getcwd(), "{}".format(taskid))
-    else:
-        sharpener_basedir = os.path.join(
-            sharpener_basedir, "{}".format(taskid))
+        sharpener_basedir = os.getcwd()
     if not os.path.exists(sharpener_basedir):
         os.mkdir(sharpener_basedir)
 
-    # Create logfile
     logfile = os.path.join(sharpener_basedir, "apersharp_main.log")
     setup_logger('DEBUG', logfile=logfile)
     logger = logging.getLogger(__name__)
 
-    logger.info("Apersharp processing of taskid {}".format(taskid))
+    logger.info("#### Apersharp processing started ####")
+    logger.info("Processing taskids: {}".format(str(taskid_list)))
+    logger.info("########")
 
-    # check the steps
-    if steps is None:
-        steps = ["get_data", "setup_sharpener",
-                 "run_sharpener", "collect_results", "clean_up"]
-    else:
-        steps = steps.split(",")
+    for taskid in taskid_list:
 
-    if beams is None:
-        beam_list = np.array(["{}".format(str(beam).zfill(2))
-                              for beam in np.arange(40)])
-    elif beams == 'all':
-        beam_list = np.array(["{}".format(str(beam).zfill(2))
-                              for beam in np.arange(40)])
-    else:
-        beam_list = np.array(beams.split(","))
+        # get the start time of the function call
+        start_time_taskid = time()
 
-    logger.info("#### Aperscharp called with:")
-    logger.info("taskid: {}".format(taskid))
-    logger.info("basedir: {}".format(sharpener_basedir))
-    logger.info("steps: {}".format(str(steps)))
-    logger.info("output format: {}".format(output_form))
-    logger.info("cubes: {}".format(cubes))
-    logger.info("beams: {}".format(str(beam_list)))
-    #logger.info(" ")
-    logger.info("do_sdss: {}".format(do_sdss))
-    logger.info("n_cores: {}".format(n_cores))
-    logger.info("####")
+        logger.info("## Apersharp processing of taskid {}".format(taskid))
 
-    # get a list of cubes
-    cube_list = cubes.split(",")
+        # check the output directory
+        # if sharpener_basedir == '':
+        #     sharpener_basedir = os.path.join(os.getcwd(), "{}".format(taskid))
+        # else:
+        sharpener_basedir_taskid = os.path.join(
+            sharpener_basedir, "{}".format(taskid))
+        if not os.path.exists(sharpener_basedir_taskid):
+            os.mkdir(sharpener_basedir_taskid)
 
-    def set_params(p):
-        """
-        Helper to set the base parameters for the module
-        """
+        # Create logfile
+        # logfile = os.path.join(sharpener_basedir_taskid,
+        #                        "{}_apersharp.log".format(taskid))
+        # setup_logger('DEBUG', logfile=logfile)
+        # logger = logging.getLogger(__name__)
 
-        p.taskid = taskid
-        p.sharpener_basedir = sharpener_basedir
-        p.data_basedir = data_basedir
-        p.data_source = data_source
-        p.output_form = output_form
-        p.cube = cube
-        p.steps = steps
-        p.do_sdss = do_sdss
-        p.n_cores = n_cores
-        p.cont_src_resource = cont_src_resource
-        p.beam_list = beam_list
-        p.configfilename = configfilename
-
-    # now go through the list of cubes
-    for cube in cube_list:
-
-        # start time for processing this cube
-        start_time_cube = time()
-
-        logger.info(
-            "Processing cube {0} of taskid {1} with SHARPener".format(cube, taskid))
-
-        p = apersharp()
-        set_params(p)
-        try:
-            p.go()
-        except Exception as e:
-            logger.warning(
-                "Processing cube {0} of taskid {1} with SHARPener ... Failed ({2:.0f}s)".format(cube, taskid, time() - start_time))
-            logger.exception(e)
+        # check the steps
+        if steps is None:
+            steps = ["get_data", "setup_sharpener",
+                     "run_sharpener", "collect_results", "clean_up"]
         else:
-            logger.info(
-                "Processing cube {0} of taskid {1} with SHARPener ... Done ({2:.0f})".format(cube, taskid, time() - start_time))
+            steps = steps.split(",")
 
-    logger.info("Apershap finished processing of taskid {0} after {1:.0f}s".format(
+        if beams is None:
+            beam_list = np.array(["{}".format(str(beam).zfill(2))
+                                  for beam in np.arange(40)])
+        elif beams == 'all':
+            beam_list = np.array(["{}".format(str(beam).zfill(2))
+                                  for beam in np.arange(40)])
+        else:
+            beam_list = np.array(beams.split(","))
+
+        logger.info("##")
+        logger.info("# Apersharp called with:")
+        logger.info("# taskid: {}".format(taskid))
+        logger.info("# basedir: {}".format(sharpener_basedir_taskid))
+        logger.info("# steps: {}".format(str(steps)))
+        logger.info("# output format: {}".format(output_form))
+        logger.info("# cubes: {}".format(cubes))
+        logger.info("# beams: {}".format(str(beam_list)))
+        #logger.info(" ")
+        logger.info("# do_sdss: {}".format(do_sdss))
+        logger.info("# n_cores: {}".format(n_cores))
+        logger.info("##")
+
+        # get a list of cubes
+        cube_list = cubes.split(",")
+
+        def set_params(p):
+            """
+            Helper to set the base parameters for the module
+            """
+
+            p.taskid = taskid
+            p.sharpener_basedir = sharpener_basedir_taskid
+            p.data_basedir = data_basedir
+            p.data_source = data_source
+            p.output_form = output_form
+            p.cube = cube
+            p.steps = steps
+            p.do_sdss = do_sdss
+            p.n_cores = n_cores
+            p.cont_src_resource = cont_src_resource
+            p.beam_list = beam_list
+            p.configfilename = configfilename
+
+        # now go through the list of cubes
+        for cube in cube_list:
+
+            # start time for processing this cube
+            start_time_cube = time()
+
+            logger.info(
+                "Processing cube {0} of taskid {1} with SHARPener".format(cube, taskid))
+
+            p = apersharp()
+            set_params(p)
+            try:
+                p.go()
+            except Exception as e:
+                logger.warning(
+                    "Processing cube {0} of taskid {1} with SHARPener ... Failed ({2:.0f}s)".format(cube, taskid, time() - start_time))
+                logger.exception(e)
+            else:
+                logger.info(
+                    "Processing cube {0} of taskid {1} with SHARPener ... Done ({2:.0f})".format(cube, taskid, time() - start_time))
+
+        logger.info("## Apershap finished processing of taskid {0} after {1:.0f}s".format(
+            taskid, time() - start_time_taskid))
+
+    logger.info("#### Apersharp processing finished after {0:.0f}s ####".format(
         taskid, time() - start_time))
 
 
@@ -145,7 +169,7 @@ if __name__ == "__main__":
 
     # main arguments
     parser.add_argument("taskid", type=int,
-                        help='Taskid of the observation')
+                        help='Taskid of the observation. Multiple taskids can be separated using commas.')
 
     parser.add_argument("--sharpener_basedir", type=str, default='',
                         help='Directory for the directory where the data should be stored for processing')
