@@ -644,7 +644,7 @@ class apersharp(BaseModule):
                 os.remove(continuum_file)
 
             # remove the miriad image
-            continuum_file_mir = continuum_file.replace(os.path.basename(continuum_file),"sharpOut/{0}".format(continuum_file.replace(".fits", ".mir")))
+            continuum_file_mir = continuum_file.replace(os.path.basename(continuum_file),"sharpOut/{0}".format(os.path.basename(continuum_file).replace(".fits", ".mir")))
             logger.debug("Removing {}".format(continuum_file_mir))
             if os.path.isdir(continuum_file_mir):
                 os.rmdir(continuum_file_mir)
