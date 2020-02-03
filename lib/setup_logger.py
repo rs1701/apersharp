@@ -6,7 +6,15 @@ import subprocess
 
 def setup_logger(level="DEBUG", logfile=None):
     """
-    Function to create a logging object for apersharp
+    Function to create a logging object for apersharp.
+
+    Based on the same function in Apercal (apercal.libs.setup_logger)
+
+    Args:
+    -----
+        level (str): Logging level. Default "DEBUG"
+        logfile (str): Name of logfile. Default Apersched.log
+
     """
 
     logger = logging.getLogger()
