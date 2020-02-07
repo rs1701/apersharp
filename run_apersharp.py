@@ -87,10 +87,10 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
 
         # check the steps
         if steps is None:
-            steps = ["get_data", "setup_sharpener",
-                     "run_sharpener", "collect_results", "clean_up"]
+            steps_list = ["get_data", "setup_sharpener",
+                          "run_sharpener", "collect_results", "clean_up"]
         else:
-            steps = steps.split(",")
+            steps_list = steps.split(",")
 
         if beams is None:
             beam_list = np.array(["{}".format(str(beam).zfill(2))
@@ -128,7 +128,7 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
             p.data_source = data_source
             p.output_form = output_form
             p.cube = cube
-            p.steps = steps
+            p.steps = steps_list
             p.do_sdss = do_sdss
             p.n_cores = n_cores
             p.cont_src_resource = cont_src_resource
