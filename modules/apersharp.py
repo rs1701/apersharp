@@ -35,7 +35,7 @@ class apersharp(BaseModule):
     logger = None
 
     def __init__(self, file_=None, **kwargs):
-        # pass
+        pass
 
     def go(self):
         """
