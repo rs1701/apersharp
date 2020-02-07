@@ -136,7 +136,7 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
             p.configfilename = configfilename
 
         logfile_taskid = os.path.join(sharpener_basedir_taskid,
-                                      "{}_apersharp.log".format(self.taskid))
+                                      "{}_apersharp.log".format(taskid))
         setup_logger('DEBUG', logfile=logfile_taskid)
         logger = logging.getLogger(__name__)
 
