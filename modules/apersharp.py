@@ -11,6 +11,7 @@ import io
 import multiprocessing as mp
 import functools
 
+
 from lib.setup_logger import setup_logger
 from lib.abort_function import abort_function
 from lib.sharpener_pipeline import sharpener_pipeline
@@ -425,15 +426,14 @@ class apersharp(BaseModule):
         """
         Function to setup the parameters for sharpener
         """
-        import sharpener
+        #import sharpener
 
         logger.info("Setting up sharpener")
 
         # if no template configfile was specified, get the default one
         if self.configfilename is None:
             # the default sharpener configfile is here:
-            default_configfile = os.path.join(os.path.dirname(
-                sharpener.__file__), "sharpener_default.yml")
+            default_configfile = os.path.join(os.path.dirname(__file__), "sharpener_config/sharpener_default.yml")
             # make sure it is there
             if os.path.exists(default_configfile):
                 logger.info("Using default sharpener config file from {}".format(
