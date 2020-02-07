@@ -45,7 +45,7 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
     os.chdir(beam_directory_list[beam_count])
 
     logger.info(
-        "(Pid {0:d}) ## Running sharpener for beam {1:s}".format(proc, beam_name))
+        "(Pid {0:d}) #### Running sharpener for beam {1:s}".format(proc, beam_name))
 
     # Load parameter file
     # +++++++++++++++++++
@@ -203,10 +203,10 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
 
             logger.info("(Pid {0:d}) ## Merging plots ... Done".format(proc))
 
-            logger.info("(Pid {0:d}) ## Finished SHRAPener for beam {1:s} ({2:.2f}s)".format(
+            logger.info("(Pid {0:d}) #### Finished SHRAPener for beam {1:s} ({2:.2f}s)".format(
                 proc, beam_name, time.time() - time_start_run))
         else:
-            logger.info("(Pid {0:d}) ## ERROR: Could not find all files. Finished SHRAPener for {1:s} ({2:.2f}s)".format(
+            logger.info("(Pid {0:d}) #### ERROR: Could not find all files. Finished SHRAPener for {1:s} ({2:.2f}s)".format(
                 proc, beam_name, time.time() - time_start_run))
 
     logger.info("PID {0:d}: Changing working directory back to {1}".format(
