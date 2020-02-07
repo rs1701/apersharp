@@ -44,7 +44,7 @@ class apersharp(BaseModule):
         # logfile = os.path.join(self.sharpener_basedir,
         #                        "{}_apersharp.log".format(self.taskid))
         # setup_logger('DEBUG', logfile=logfile)
-        # logger. = logging.getLogger(__name__)
+        # logger = logging.getLogger(__name__)
 
         logger.info("#### Apersharp processing taskid {}".format(self.taskid))
 
@@ -535,7 +535,7 @@ class apersharp(BaseModule):
             for beam_index in beam_count:
                 sharpener_pipeline(beam_directory_list, True, True, True, self.do_sdss, beam_index)
                 setup_logger('DEBUG', logfile=logfile, new_logfile=False)
-                logger. = logging.getLogger(__name__)
+                logger = logging.getLogger(__name__)
         else:
             logger.info("Cube{0}: Processing on {1} core".format(self.cube, self.n_cores))
             # create pool object with number of processes
@@ -551,7 +551,7 @@ class apersharp(BaseModule):
             pool.join()
 
             setup_logger('DEBUG', logfile=logfile, new_logfile=False)
-            logger. = logging.getLogger(__name__)
+            logger = logging.getLogger(__name__)
 
         logger.info("Cube {0}: Running sharpener ... Done".format(
             self.cube, str(self.beam_list)))
