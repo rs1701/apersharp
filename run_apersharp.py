@@ -148,11 +148,11 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
                 p.go()
             except Exception as e:
                 logger.warning(
-                    "Processing cube {0} of taskid {1} with SHARPener ... Failed ({2:.0f}s)".format(cube, taskid, time() - start_time))
+                    "Processing cube {0} of taskid {1} with SHARPener ... Failed ({2:.0f}s)".format(cube, taskid, time() - start_time_cube))
                 logger.exception(e)
             else:
                 logger.info(
-                    "Processing cube {0} of taskid {1} with SHARPener ... Done ({2:.0f})".format(cube, taskid, time() - start_time))
+                    "Processing cube {0} of taskid {1} with SHARPener ... Done ({2:.0f})".format(cube, taskid, time() - start_time_cube))
 
         logger.info("## Apershap finished processing of taskid {0} after {1:.0f}s".format(
             taskid, time() - start_time_taskid))
