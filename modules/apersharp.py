@@ -50,56 +50,56 @@ class apersharp(BaseModule):
         logger.info("#### Apersharp processing taskid {}".format(self.taskid))
 
         if "get_data" in self.steps:
-            logger.info("Creating directories and getting data")
+            logger.info("# Creating directories and getting data")
             # create the directory structure
             self.set_directories()
 
             # get the data
             self.get_data()
 
-            logger.info("Creating directories and getting data ... Done")
+            logger.info("# Creating directories and getting data ... Done")
         else:
-            logger.info("Skippting creating directories and getting data")
+            logger.info("# Skippting creating directories and getting data")
 
         # set things up for sharpener
         if "setup_sharpener" in self.steps:
-            logger.info("Setting up sharpner")
+            logger.info("# Setting up sharpner")
 
             self.setup_sharpener()
 
-            logger.info("Setting up sharpner ... Done")
+            logger.info("# Setting up sharpner ... Done")
         else:
-            logger.info("Skipping setting up sharpener")
+            logger.info("# Skipping setting up sharpener")
 
         # run sharpener
         if "run_sharpener" in self.steps:
-            logger.info("Running sharpener")
+            logger.info("# Running sharpener")
 
             self.run_sharpener()
 
-            logger.info("Running sharpener ... Done")
+            logger.info("# Running sharpener ... Done")
         else:
-            logger.info("Skipping running sharpener")
+            logger.info("# Skipping running sharpener")
 
         # collect results from sharpener
         if "collect_results" in self.steps:
-            logger.info("Collecting results from sharpener")
+            logger.info("# Collecting results from sharpener")
 
             self.collect_sharpener_results()
 
-            logger.info("Collecting results from sharpener ... Done")
+            logger.info("# Collecting results from sharpener ... Done")
         else:
-            logger.info("Skipping collecting results from sharpener")
+            logger.info("# Skipping collecting results from sharpener")
 
         # clean up by removing the images and cubes
         if "clean_up" in self.steps:
-            logger.info("Removing cubes and continuum images")
+            logger.info("# Removing cubes and continuum images")
 
             self.clean_up()
 
-            logger.info("Removing cubes and continuum images ... Done")
+            logger.info("# Removing cubes and continuum images ... Done")
         else:
-            logger.warning("Did not remove cubes and continuum images. WARNING. Be aware of the disk space used by the fits files")
+            logger.warning("# Did not remove cubes and continuum images. WARNING. Be aware of the disk space used by the fits files")
         
         logger.info("#### Apersharp processing taskid {} ... Done".format(self.taskid))
 
@@ -433,7 +433,7 @@ class apersharp(BaseModule):
         # if no template configfile was specified, get the default one
         if self.configfilename is None:
             # the default sharpener configfile is here:
-            default_configfile = os.path.join(os.path.dirname(__file__), "../sharpener_config/sharpener_default.yml")
+            default_configfile = os.path.join(os.path.dirname(os.path.dirname(__file__)), "sharpener_config/sharpener_default.yml")
             # make sure it is there
             if os.path.exists(default_configfile):
                 logger.info("Using default sharpener config file from {}".format(
@@ -534,8 +534,8 @@ class apersharp(BaseModule):
             logger.info("Cube{0}: Processing on one core only".format(self.cube))
             for beam_index in beam_count:
                 sharpener_pipeline(beam_directory_list, True, True, True, self.do_sdss, beam_index)
-                setup_logger('DEBUG', logfile=logfile, new_logfile=False)
-                logger = logging.getLogger(__name__)
+                # setup_logger('DEBUG', logfile=logfile, new_logfile=False)
+                # logger = logging.getLogger(__name__)
         else:
             logger.info("Cube{0}: Processing on {1} core".format(self.cube, self.n_cores))
             # create pool object with number of processes
@@ -550,8 +550,8 @@ class apersharp(BaseModule):
             pool.close()
             pool.join()
 
-            setup_logger('DEBUG', logfile=logfile, new_logfile=False)
-            logger = logging.getLogger(__name__)
+            # setup_logger('DEBUG', logfile=logfile, new_logfile=False)
+            # logger = logging.getLogger(__name__)
 
         logger.info("Cube {0}: Running sharpener ... Done".format(
             self.cube, str(self.beam_list)))
