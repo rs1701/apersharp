@@ -433,7 +433,7 @@ class apersharp(BaseModule):
         # if no template configfile was specified, get the default one
         if self.configfilename is None:
             # the default sharpener configfile is here:
-            default_configfile = os.path.join(os.path.dirname(__file__), "sharpener_config/sharpener_default.yml")
+            default_configfile = os.path.join(os.path.dirname(__file__), "../sharpener_config/sharpener_default.yml")
             # make sure it is there
             if os.path.exists(default_configfile):
                 logger.info("Using default sharpener config file from {}".format(
