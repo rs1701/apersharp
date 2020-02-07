@@ -527,17 +527,24 @@ class apersharp(BaseModule):
         # index array for pool based on the number of files
         beam_count = np.arange(np.size(beam_directory_list))
 
-        # create pool object with number of processes
-        pool = mp.Pool(processes=self.n_cores)
+        # if only one core is requested, use loop instead of pool
+        if self.n_cores == 1:
+            logger.info("Cube{0}: Processing on one core only".format(self.cube))
+            for beam_index in beam_count:
+                sharpener_pipeline(beam_directory_list, True, True, True, self.do_sdss, beam_index)
+        else:
+            logger.info("Cube{0}: Processing on {1} core".format(self.cube, self.n_cores))
+            # create pool object with number of processes
+            pool = mp.Pool(processes=self.n_cores)
 
-        # create function iterater to provide additional arguments
-        fct_partial = functools.partial(
-            sharpener_pipeline, beam_directory_list, True, True, True, self.do_sdss)
+            # create function iterater to provide additional arguments
+            fct_partial = functools.partial(
+                sharpener_pipeline, beam_directory_list, True, True, True, self.do_sdss)
 
-        # create and run map
-        pool.map(fct_partial, beam_count)
-        pool.close()
-        pool.join()
+            # create and run map
+            pool.map(fct_partial, beam_count)
+            pool.close()
+            pool.join()
 
         logger.info("Cube {0}: Running sharpener ... Done".format(
             self.cube, str(self.beam_list)))
