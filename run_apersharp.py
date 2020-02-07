@@ -168,7 +168,7 @@ if __name__ == "__main__":
         description='Run SHARPener on Apercal data')
 
     # main arguments
-    parser.add_argument("taskid", type=int,
+    parser.add_argument("taskid", type=str,
                         help='Taskid of the observation. Multiple taskids can be separated using commas.')
 
     parser.add_argument("--sharpener_basedir", type=str, default='',
