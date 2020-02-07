@@ -44,6 +44,8 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
     n_cores (int): Number of cores for running sharpener in parallel
     """
 
+    start_time = time()
+
     # get a list of taskids
     taskid_list = taskid.split(",")
 
