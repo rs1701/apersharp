@@ -30,19 +30,21 @@ class apersharp(BaseModule):
     """
 
     module_name = "Apersharp"
+    # create logfile
+    logfile = None
+    logger = None
 
     def __init__(self, file_=None, **kwargs):
         # pass
-        # create logfile
-        logfile = os.path.join(self.sharpener_basedir,
-                               "{}_apersharp.log".format(self.taskid))
-        setup_logger('DEBUG', logfile=logfile)
-        logger = logging.getLogger(__name__)
 
     def go(self):
         """
         Function to call all other function necessary to set things up
         """
+        self.logfile = os.path.join(self.sharpener_basedir,
+                               "{}_apersharp.log".format(self.taskid))
+        setup_logger('DEBUG', logfile=self.logfile)
+        self.logger = logging.getLogger(__name__)
 
         self.logger.info("#### Apersharp processing taskid {}".format(self.taskid))
 
