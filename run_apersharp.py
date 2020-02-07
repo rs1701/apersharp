@@ -160,7 +160,7 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
             taskid, time() - start_time_taskid))
 
     logger.info("#### Apersharp processing finished after {0:.0f}s ####".format(
-        taskid, time() - start_time))
+        time() - start_time))
 
 
 if __name__ == "__main__":
