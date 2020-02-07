@@ -135,6 +135,11 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
             p.beam_list = beam_list
             p.configfilename = configfilename
 
+        logfile_taskid = os.path.join(sharpener_basedir_taskid,
+                                      "{}_apersharp.log".format(self.taskid))
+        setup_logger('DEBUG', logfile=logfile_taskid)
+        logger = logging.getLogger(__name__)
+
         # now go through the list of cubes
         for cube in cube_list:
 

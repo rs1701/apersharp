@@ -18,7 +18,7 @@ from base import BaseModule
 
 #from sharpener.srun_sharpener_mp import run_sharpener as sharpener_mp
 
-# logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 FNULL = open(os.devnull, 'w')
 
@@ -31,8 +31,8 @@ class apersharp(BaseModule):
 
     module_name = "Apersharp"
     # create logfile
-    logfile = None
-    logger = None
+    # logfile = None
+    # logger = None
 
     def __init__(self, file_=None, **kwargs):
         pass
@@ -41,66 +41,66 @@ class apersharp(BaseModule):
         """
         Function to call all other function necessary to set things up
         """
-        self.logfile = os.path.join(self.sharpener_basedir,
-                               "{}_apersharp.log".format(self.taskid))
-        setup_logger('DEBUG', logfile=self.logfile)
-        self.logger = logging.getLogger(__name__)
+        # logfile = os.path.join(self.sharpener_basedir,
+        #                        "{}_apersharp.log".format(self.taskid))
+        # setup_logger('DEBUG', logfile=logfile)
+        # logger. = logging.getLogger(__name__)
 
-        self.logger.info("#### Apersharp processing taskid {}".format(self.taskid))
+        logger.info("#### Apersharp processing taskid {}".format(self.taskid))
 
         if "get_data" in self.steps:
-            self.logger.info("Creating directories and getting data")
+            logger.info("Creating directories and getting data")
             # create the directory structure
             self.set_directories()
 
             # get the data
             self.get_data()
 
-            self.logger.info("Creating directories and getting data ... Done")
+            logger.info("Creating directories and getting data ... Done")
         else:
-            self.logger.info("Skippting creating directories and getting data")
+            logger.info("Skippting creating directories and getting data")
 
         # set things up for sharpener
         if "setup_sharpener" in self.steps:
-            self.logger.info("Setting up sharpner")
+            logger.info("Setting up sharpner")
 
             self.setup_sharpener()
 
-            self.logger.info("Setting up sharpner ... Done")
+            logger.info("Setting up sharpner ... Done")
         else:
-            self.logger.info("Skipping setting up sharpener")
+            logger.info("Skipping setting up sharpener")
 
         # run sharpener
         if "run_sharpener" in self.steps:
-            self.logger.info("Running sharpener")
+            logger.info("Running sharpener")
 
             self.run_sharpener()
 
-            self.logger.info("Running sharpener ... Done")
+            logger.info("Running sharpener ... Done")
         else:
-            self.logger.info("Skipping running sharpener")
+            logger.info("Skipping running sharpener")
 
         # collect results from sharpener
         if "collect_results" in self.steps:
-            self.logger.info("Collecting results from sharpener")
+            logger.info("Collecting results from sharpener")
 
             self.collect_sharpener_results()
 
-            self.logger.info("Collecting results from sharpener ... Done")
+            logger.info("Collecting results from sharpener ... Done")
         else:
-            self.logger.info("Skipping collecting results from sharpener")
+            logger.info("Skipping collecting results from sharpener")
 
         # clean up by removing the images and cubes
         if "clean_up" in self.steps:
-            self.logger.info("Removing cubes and continuum images")
+            logger.info("Removing cubes and continuum images")
 
             self.clean_up()
 
-            self.logger.info("Removing cubes and continuum images ... Done")
+            logger.info("Removing cubes and continuum images ... Done")
         else:
-            self.logger.warning("Did not remove cubes and continuum images. WARNING. Be aware of the disk space used by the fits files")
+            logger.warning("Did not remove cubes and continuum images. WARNING. Be aware of the disk space used by the fits files")
         
-        self.logger.info("#### Apersharp processing taskid {} ... Done".format(self.taskid))
+        logger.info("#### Apersharp processing taskid {} ... Done".format(self.taskid))
 
     def set_directories(self):
         """
@@ -114,9 +114,9 @@ class apersharp(BaseModule):
             try:
                 os.mkdir(self.cube_dir)
             except Exception as e:
-                self.logger.exception(e)
+                logger.exception(e)
             else:
-                self.logger.info(
+                logger.info(
                     "Cube {}: Created directory for cube".format(self.cube))
 
         # Create beam directories if data is not coming from happili
@@ -127,9 +127,9 @@ class apersharp(BaseModule):
                     try:
                         os.mkdir(beam_dir)
                     except Exception as e:
-                        self.logger.exception(e)
+                        logger.exception(e)
                     else:
-                        self.logger.info(
+                        logger.info(
                             "Cube {0}: Created directory for beam {1}".format(self.cube, beam))
 
     # +++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -138,7 +138,7 @@ class apersharp(BaseModule):
         Function to quickly check the path exists on ALTA
         """
         alta_cmd = "ils {}".format(alta_path)
-        self.logger.debug(alta_cmd)
+        logger.debug(alta_cmd)
         return_msg = subprocess.call(alta_cmd, shell=True,
                                      stdout=FNULL, stderr=FNULL)
         return return_msg
@@ -160,7 +160,7 @@ class apersharp(BaseModule):
         # get the file from alta
         alta_cmd = "iget -rfPIT -X {0} --lfrestart {1} --retries 5 {2} {3}/".format(
             irods_status_file, irods_status_lf_file, alta_file_name, output_path)
-        self.logger.debug(alta_cmd)
+        logger.debug(alta_cmd)
         return_msg = subprocess.check_call(
             alta_cmd, shell=True, stdout=FNULL, stderr=FNULL)
 
@@ -186,21 +186,21 @@ class apersharp(BaseModule):
             # check first if they do not already exists
             cube_path = self.get_cube_path(beam)
             if os.path.exists(cube_path):
-                self.logger.info(
+                logger.info(
                     "Cube {0}: Found cube for beam {1}".format(self.cube, beam))
 
                 # check also the continuum image
                 continuum_image_path = self.get_cont_path(beam)
                 if os.path.exists(continuum_image_path):
-                    self.logger.info("Cube {0}: Found continuum image for beam {1}".format(self.cube, beam))
+                    logger.info("Cube {0}: Found continuum image for beam {1}".format(self.cube, beam))
                     # self.continuum_image_list.append(continuum_image_path)
                 else:
                     error = "Did not find continuum image for beam {}".format(beam)
-                    self.logger.error(error)
+                    logger.error(error)
                     raise RuntimeError(error)
 
             else:
-                self.logger.info(
+                logger.info(
                     "Cube {0}: Getting cube for beam {1}".format(self.cube, beam))
 
                 # go through the different options of where data can come from
@@ -209,10 +209,10 @@ class apersharp(BaseModule):
                     local_basedir = os.path.join(
                         self.data_basedir, self.taskid)
                     if os.path.exists(local_basedir):
-                        self.logger.info(
+                        logger.info(
                             "Found local directory for data {}".format(local_basedir))
                         if local_basedir == self.sharpener_basedir:
-                            self.logger.info(
+                            logger.info(
                                 "Data is already in the working directory.")
                             get_data_local = True
                         else:
@@ -227,7 +227,7 @@ class apersharp(BaseModule):
 
                     # check that the beam is available on ALTA
                     if self.check_alta_path(alta_taskid_beam_dir) == 0:
-                        self.logger.info("Found beam {} of taskid {} on ALTA".format(
+                        logger.info("Found beam {} of taskid {} on ALTA".format(
                             beam, self.taskid))
 
                         # look for cube
@@ -240,14 +240,14 @@ class apersharp(BaseModule):
                             alta_taskid_beam_dir, "{}".format(cube_name))
                         # check that path exists on alta
                         if self.check_alta_path(alta_beam_cube_path) == 0:
-                            self.logger.info("Found cube on ALTA in {}".format(
+                            logger.info("Found cube on ALTA in {}".format(
                                 alta_beam_cube_path))
                         else:
                             # make empty again when no image was found
                             cube_name = ''
                         # if there is no cube, do not process it
                         if cube_name == '':
-                            self.logger.warning(
+                            logger.warning(
                                 "No cube {0} found on ALTA for beam {1} of taskid {2}".format(self.cube, beam, self.taskid))
                             if beam not in failed_beams:
                                 failed_beams.append(beam)
@@ -255,7 +255,7 @@ class apersharp(BaseModule):
                             # create directory for beam in the directory
                             cube_beam_dir = self.get_cube_beam_dir(beam)
                             if not os.path.exists(cube_beam_dir):
-                                self.logger.debug(
+                                logger.debug(
                                     "Creating directory for beam {0} of cube {1}".format(beam, self.cube))
                                 os.mkdir(cube_beam_dir)
                             # check whether file already there:
@@ -264,15 +264,15 @@ class apersharp(BaseModule):
                                 return_msg = self.getdata_from_alta(
                                     alta_beam_cube_path, cube_beam_dir)
                                 if return_msg == 0:
-                                    self.logger.info("Getting image of beam {0} of taskid {1} ... Done".format(
+                                    logger.info("Getting image of beam {0} of taskid {1} ... Done".format(
                                         beam, self.taskid))
                                 else:
-                                    self.logger.warning("Getting image of beam {0} of taskid {1} ... Failed".format(
+                                    logger.warning("Getting image of beam {0} of taskid {1} ... Failed".format(
                                         beam, self.taskid))
                                     if beam not in failed_beams:
                                         failed_beams.append(beam)
                             else:
-                                self.logger.info("Cube {0} of beam {1} of taskid {2} already on disk".format(
+                                logger.info("Cube {0} of beam {1} of taskid {2} already on disk".format(
                                     self.cube, beam, self.taskid))
                             
                             # getting continuum fits image
@@ -298,10 +298,10 @@ class apersharp(BaseModule):
                                 if continuum_image_name == '':
                                     error = "No image found on ALTA for beam {0} of taskid {1} but cube {2} exists. This should not happen. Abort".format(
                                         beam, self.taskid, self.cube)
-                                    self.logger.error(error)
+                                    logger.error(error)
                                     raise RuntimeError(error)
                                 else:
-                                    self.logger.info(
+                                    logger.info(
                                         "Found continuum image for beam {} on ALTA".format(beam))
                                     # check whether file already there:
                                     if not os.path.exists(os.path.join(self.get_cube_dir(), os.path.basename(alta_beam_image_path))):
@@ -309,27 +309,27 @@ class apersharp(BaseModule):
                                         return_msg = self.getdata_from_alta(
                                             alta_beam_image_path, cube_beam_dir)
                                         if return_msg == 0:
-                                            self.logger.info("Getting image of beam {0} of taskid {1} ... Done".format(
+                                            logger.info("Getting image of beam {0} of taskid {1} ... Done".format(
                                                 beam, self.taskid))
                                         else:
                                             error = "Getting image of beam {0} of taskid {1} ... Failed".format(
                                                 beam, self.taskid)
-                                            self.logger.error(error)
+                                            logger.error(error)
                                             raise RuntimeError(error)
 
                                         # rename the file
                                         original_continuum_image_name = os.path.join(cube_beam_dir, continuum_image_name)
                                         continuum_image_name = os.path.join(cube_beam_dir, "image_mf.fits")
-                                        self.logger.info("Renaming {0} to {1}".format(original_continuum_image_name, continuum_image_name))
+                                        logger.info("Renaming {0} to {1}".format(original_continuum_image_name, continuum_image_name))
                                         os.rename(original_continuum_image_name, continuum_image_name)
 
                                         # self.continuum_image_list.append(
                                         #     continuum_image_name)
                                     else:
-                                        self.logger.info("Image of beam {0} of taskid {1} already on disk".format(
+                                        logger.info("Image of beam {0} of taskid {1} already on disk".format(
                                             beam, self.mosaic_taskid))
                     else:
-                        self.logger.warning("Did not find beam {0} of taskid {1}".format(
+                        logger.warning("Did not find beam {0} of taskid {1}".format(
                             beam, self.taskid))
                         # remove the beam
                         if beam not in failed_beams:
@@ -338,7 +338,7 @@ class apersharp(BaseModule):
                     self.abort_function("Getting data from happili not supported at the moment")
 
                     # works only within ASTRON network
-                    self.logger.warning(
+                    logger.warning(
                         "Cube {}: Assuming that data was transferred from happili keeping pipeline directory structure.".format(self.cube))
                     # get the happili path
                     if self.data_basedir == '':
@@ -356,11 +356,11 @@ class apersharp(BaseModule):
                             self.sharpener_basedir, "cube{0}/HI_image_cube{1}.fits".format(beam, self.cube))
                         # check if link exists
                         if not os.path.exists(link_name):
-                            self.logger.debug("Cube {0}: Creating link {1} to cube {2}".format(
+                            logger.debug("Cube {0}: Creating link {1} to cube {2}".format(
                                 self.cube, link_name, cube_path))
                             os.symlink(cube_path, link_name)
                         else:
-                            self.logger.debug("Cube {0}: Cube {1} already exists".format(
+                            logger.debug("Cube {0}: Cube {1} already exists".format(
                                 self.cube, link_name))
 
                         # for the continuum images
@@ -370,11 +370,11 @@ class apersharp(BaseModule):
                         if not os.path.exists(link_name):
                             cont_path = os.path.join(
                                 self.data_basedir, "{0}/cont/cubes/HI_image_cube{1}.fits".format(beam, self.cube))
-                            self.logger.debug("Cube {0}: Creating link {1} to cube {2}".format(
+                            logger.debug("Cube {0}: Creating link {1} to cube {2}".format(
                                 self.cube, link_name, cube_path))
                             os.symlink(cube_path, link_name)
                         else:
-                            self.logger.debug("Cube {0}: Continuum image {1} already exists".format(
+                            logger.debug("Cube {0}: Continuum image {1} already exists".format(
                                 self.cube, link_name))
 
                     # data_basedir = os.path.join(self.data_basedir, self.taskid)
@@ -385,23 +385,23 @@ class apersharp(BaseModule):
 
                     # rsync_cmd = 'rsync -Razuve ssh {0}@{1}:"{2}" {3}/'.format(
                     #     user_name, self.data_source, happili_path, self.cube_dir)
-                    # self.logger.debug(rsync_cmd)
+                    # logger.debug(rsync_cmd)
 
                     # try:
-                    #     self.logger.info("Cube {0}: Copying data from {1}".format(
+                    #     logger.info("Cube {0}: Copying data from {1}".format(
                     #         self.cube, self.data_source))
                     #     subprocess.check_call(
                     #         rsync_cmd, shell=True, stdout=FNULL, stderr=FNULL)
                     # except Exception as e:
-                    #     self.logger.error(
+                    #     logger.error(
                     #         "Cube {0}:Copying data from {1} ... Failed".format(self.cube, self.data_source))
-                    #     self.logger.exception(e)
+                    #     logger.exception(e)
                     # else:
-                    #     self.logger.info(
+                    #     logger.info(
                     #         "Cube {0}:Copying data from {1} ... Done".format(self.cube, self.data_source))
                 else:
                     error = "Did not recognize data source. Abort"
-                    self.logger.error(error)
+                    logger.error(error)
                     raise RuntimeError(error)
 
         # check the failed beams
@@ -409,16 +409,16 @@ class apersharp(BaseModule):
             abort_function(
                 "Did not find cube {0} for all beams.".format(self.cube))
         elif len(failed_beams) != 0:
-            self.logger.warning("Could not find cube {0} for beams {1}. Removing those beams".format(self.cube,
+            logger.warning("Could not find cube {0} for beams {1}. Removing those beams".format(self.cube,
                                                                                                 str(failed_beams)))
             new_beam_list = self.beam_list.tolist()
             for beam in failed_beams:
                 new_beam_list.remove(beam)
             self.beam_list = np.array(new_beam_list)
-            self.logger.warning("Will only process cube {0} for {1} beams ({2})".format(
+            logger.warning("Will only process cube {0} for {1} beams ({2})".format(
                 self.cube, len(self.beam_list), str(self.beam_list)))
         else:
-            self.logger.info("Found cube {0} for all beams".format(self.cube))
+            logger.info("Found cube {0} for all beams".format(self.cube))
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++
     def setup_sharpener(self):
@@ -427,7 +427,7 @@ class apersharp(BaseModule):
         """
         import sharpener
 
-        self.logger.info("Setting up sharpener")
+        logger.info("Setting up sharpener")
 
         # if no template configfile was specified, get the default one
         if self.configfilename is None:
@@ -436,28 +436,28 @@ class apersharp(BaseModule):
                 sharpener.__file__), "sharpener_default.yml")
             # make sure it is there
             if os.path.exists(default_configfile):
-                self.logger.info("Using default sharpener config file from {}".format(
+                logger.info("Using default sharpener config file from {}".format(
                     default_configfile))
             else:
                 error = "Could not find default sharpener config file in {}. Abort".format(
                     self.configfilename)
-                self.logger.error(error)
+                logger.error(error)
                 raise RuntimeError(error)
             self.configfilename = default_configfile
         else:
             # check that the file exist
             if os.path.exists(self.configfilename):
-                self.logger.info("Using specified config file: {}".format(
+                logger.info("Using specified config file: {}".format(
                     self.configfilename))
             else:
                 error = "Could not find the specificed config file: {}. Abort".format(
                     self.configfilename)
-                self.logger.error(error)
+                logger.error(error)
                 raise RuntimeError(error)
 
         # go through the list of beams, copy the config file and adjust the settings
         for beam in self.beam_list:
-            self.logger.info(
+            logger.info(
                 "Cube {0}: Setting up sharpener for beam {1}".format(self.cube, beam))
 
             # get beam directory for given cube
@@ -510,10 +510,10 @@ class apersharp(BaseModule):
                 yaml.dump(sharpener_settings, outfile,
                           default_flow_style=False, allow_unicode=True)
 
-            self.logger.info(
+            logger.info(
                 "Cube {0}: Setting up sharpener for beam {1} ... Done".format(self.cube, beam))
 
-        self.logger.info("Setting up sharpener ... Done")
+        logger.info("Setting up sharpener ... Done")
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++
     def run_sharpener(self):
@@ -521,7 +521,7 @@ class apersharp(BaseModule):
         Function to run sharpener in parallel
         """
 
-        self.logger.info("Cube {0}: Running sharpener".format(self.cube))
+        logger.info("Cube {0}: Running sharpener".format(self.cube))
 
         beam_directory_list = np.array([
             self.get_cube_beam_dir(beam) for beam in self.beam_list])
@@ -531,13 +531,13 @@ class apersharp(BaseModule):
 
         # if only one core is requested, use loop instead of pool
         if self.n_cores == 1:
-            self.logger.info("Cube{0}: Processing on one core only".format(self.cube))
+            logger.info("Cube{0}: Processing on one core only".format(self.cube))
             for beam_index in beam_count:
                 sharpener_pipeline(beam_directory_list, True, True, True, self.do_sdss, beam_index)
-                setup_logger('DEBUG', logfile=self.logfile, new_logfile=False)
-                self.logger = logging.getLogger(__name__)
+                setup_logger('DEBUG', logfile=logfile, new_logfile=False)
+                logger. = logging.getLogger(__name__)
         else:
-            self.logger.info("Cube{0}: Processing on {1} core".format(self.cube, self.n_cores))
+            logger.info("Cube{0}: Processing on {1} core".format(self.cube, self.n_cores))
             # create pool object with number of processes
             pool = mp.Pool(processes=self.n_cores)
 
@@ -550,10 +550,10 @@ class apersharp(BaseModule):
             pool.close()
             pool.join()
 
-            setup_logger('DEBUG', logfile=self.logfile, new_logfile=False)
-            self.logger = logging.getLogger(__name__)
+            setup_logger('DEBUG', logfile=logfile, new_logfile=False)
+            logger. = logging.getLogger(__name__)
 
-        self.logger.info("Cube {0}: Running sharpener ... Done".format(
+        logger.info("Cube {0}: Running sharpener ... Done".format(
             self.cube, str(self.beam_list)))
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -562,13 +562,13 @@ class apersharp(BaseModule):
         Function to combine the results
         """
 
-        self.logger.info(
+        logger.info(
             "Cube {0}: Collecting the results from sharpener".format(self.cube))
 
         # Create a zip file with all the plots
         # ++++++++++++++++++++++++++++++++++++
 
-        self.logger.info("Creating zip files for plots")
+        logger.info("Creating zip files for plots")
 
         cube_beam_dir_pattern = self.get_cube_beam_dir("??")
 
@@ -587,11 +587,11 @@ class apersharp(BaseModule):
                         os.path.dirname(cube_beam_dir_pattern), "").split("/")[1], os.path.basename(plot)))
                     # myzip.write(plot, os.path.basename(plot))
 
-            self.logger.info("Creating zip files for plots ... Done")
+            logger.info("Creating zip files for plots ... Done")
         else:
-            self.logger.warning("No files to zip.")
+            logger.warning("No files to zip.")
 
-        self.logger.info("Creating zip files for source list")
+        logger.info("Creating zip files for source list")
 
         csv_list = glob.glob(os.path.join(
             cube_beam_dir_pattern, "sharpOut/abs/mir_src_sharp.csv"))
@@ -633,11 +633,11 @@ class apersharp(BaseModule):
                         myzip.write(karma, "beam_{0:s}_{1:s}".format(karma.replace(
                             os.path.dirname(cube_beam_dir_pattern), "").split("/")[1], os.path.basename(karma)))
 
-            self.logger.info("Creating zip files for source list ... Done")
+            logger.info("Creating zip files for source list ... Done")
         else:
-            self.logger.warning("No files to zip.")
+            logger.warning("No files to zip.")
 
-        self.logger.info(
+        logger.info(
             "Cube {0}: Collecting the results from sharpener".format(self.cube))
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -646,29 +646,29 @@ class apersharp(BaseModule):
         Function to remove cubes and continuum fits files
         """
 
-        self.logger.info("Cube {}: Removing cubes and continuum fits files".format(self.cube))
+        logger.info("Cube {}: Removing cubes and continuum fits files".format(self.cube))
 
         for beam in self.beam_list:
 
             # get the path to the cube
             cube_file = self.get_cube_path(beam)
             # remove cube
-            self.logger.debug("Removing {}".format(cube_file))
+            logger.debug("Removing {}".format(cube_file))
             if os.path.exists(cube_file):
                 os.remove(cube_file)
 
             # get the path to the continuum image
             continuum_file = self.get_cont_path(beam)
             # removing continum image
-            self.logger.debug("Removing {}".format(continuum_file))
+            logger.debug("Removing {}".format(continuum_file))
             if os.path.exists(continuum_file):
                 os.remove(continuum_file)
 
             # remove the miriad image
             continuum_file_mir = continuum_file.replace(os.path.basename(continuum_file),"sharpOut/{0}".format(os.path.basename(continuum_file).replace(".fits", ".mir")))
-            self.logger.debug("Removing {}".format(continuum_file_mir))
+            logger.debug("Removing {}".format(continuum_file_mir))
             if os.path.isdir(continuum_file_mir):
                 shutil.rmtree(continuum_file_mir, ignore_errors=True)
 
-        self.logger.info(
+        logger.info(
             "Cube {}: Removing cubes and continuum fits files ... Done".format(self.cube))
