@@ -21,6 +21,8 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
     from sharp_modules import sdss_match
     imp.reload(sharpy)
 
+    logger = logging.getLogger(__name__)
+
     """Function to run sharpener
     """
     time_start_run = time.time()

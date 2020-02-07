@@ -530,7 +530,7 @@ class apersharp(BaseModule):
         beam_count = np.arange(np.size(beam_directory_list))
 
         # if only one core is requested, use loop instead of pool
-        if self.n_cores == 0:
+        if self.n_cores == 1:
             logger.info("Cube {0}: Processing on one core only".format(self.cube))
             for beam_index in beam_count:
                 sharpener_pipeline(beam_directory_list, True, True, True, self.do_sdss, beam_index)
