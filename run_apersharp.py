@@ -149,10 +149,14 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
             try:
                 p.go()
             except Exception as e:
+                setup_logger('DEBUG', logfile=logfile, new_logfile=False)
+                logger = logging.getLogger(__name__)
                 logger.warning(
                     "Processing cube {0} of taskid {1} with SHARPener ... Failed ({2:.0f}s)".format(cube, taskid, time() - start_time_cube))
                 logger.exception(e)
             else:
+                setup_logger('DEBUG', logfile=logfile, new_logfile=Flase)
+                logger = logging.getLogger(__name__)
                 logger.info(
                     "Processing cube {0} of taskid {1} with SHARPener ... Done ({2:.0f})".format(cube, taskid, time() - start_time_cube))
 
