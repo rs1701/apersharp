@@ -18,7 +18,7 @@ from base import BaseModule
 
 #from sharpener.srun_sharpener_mp import run_sharpener as sharpener_mp
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 FNULL = open(os.devnull, 'w')
 
