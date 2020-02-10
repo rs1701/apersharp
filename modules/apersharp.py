@@ -18,6 +18,7 @@ from lib.sharpener_pipeline import sharpener_pipeline
 from base import BaseModule
 
 #from sharpener.srun_sharpener_mp import run_sharpener as sharpener_mp
+logging.getLogger("matplotlib").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 
