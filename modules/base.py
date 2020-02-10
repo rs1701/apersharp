@@ -30,6 +30,7 @@ class BaseModule:
     n_cores = None
     do_sdss = False
     NBEAMS = 40
+    logfile = None
 
     def get_cube_dir(self):
         """

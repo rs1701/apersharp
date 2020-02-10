@@ -134,6 +134,7 @@ def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='
             p.cont_src_resource = cont_src_resource
             p.beam_list = beam_list
             p.configfilename = configfilename
+            p.logfile = logfile_taskid
 
         logfile_taskid = os.path.join(sharpener_basedir_taskid,
                                       "{}_apersharp.log".format(taskid))
