@@ -26,8 +26,14 @@ FNULL = open(os.devnull, 'w')
 
 class apersharp(BaseModule):
     """
-    Class to handle getting cubes, setting everything up for sharpener
-    and running sharpener
+    Class to handle getting cubes, setting everything up for sharpener, 
+    running sharpener and cleaning up afterwards.
+
+    TODO:
+    -----
+    Expand analysis of data:
+    1. Find sources with possible detection
+    1. Match sources between beams
     """
 
     module_name = "Apersharp"
@@ -262,16 +268,23 @@ class apersharp(BaseModule):
                             # check whether file already there:
                             if not os.path.exists(os.path.join(cube_beam_dir, os.path.basename(alta_beam_cube_path))):
                                 # copy the cube to this directory
-                                return_msg = self.getdata_from_alta(
-                                    alta_beam_cube_path, cube_beam_dir)
+                                try:
+                                    return_msg = self.getdata_from_alta(
+                                        alta_beam_cube_path, cube_beam_dir)
+                                except Exception as e:
+                                    logger.error("Could not retrive cube {0}".format(alta_beam_cube_path))
+                                    logger.exception(e)
+                                    return_msg = -1
                                 if return_msg == 0:
-                                    logger.info("Getting image of beam {0} of taskid {1} ... Done".format(
+                                    logger.info("Getting image cube of beam {0} of taskid {1} ... Done".format(
                                         beam, self.taskid))
                                 else:
-                                    logger.warning("Getting image of beam {0} of taskid {1} ... Failed".format(
+                                    logger.warning("Getting image cube of beam {0} of taskid {1} ... Failed".format(
                                         beam, self.taskid))
                                     if beam not in failed_beams:
                                         failed_beams.append(beam)
+                                    #  no need to try to get an image if there is no cube
+                                    continue
                             else:
                                 logger.info("Cube {0} of beam {1} of taskid {2} already on disk".format(
                                     self.cube, beam, self.taskid))
@@ -292,7 +305,6 @@ class apersharp(BaseModule):
                                     else:
                                         # make empty again when no image was found
                                         continuum_image_name = ''
-                                        continue
                                 # if there is no continuum image, this is a critical error
                                 # This should not happen because the continuum image is necessary
                                 # for the continuum subtraction
