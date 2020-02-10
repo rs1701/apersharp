@@ -549,7 +549,7 @@ class apersharp(BaseModule):
                 # setup_logger('DEBUG', logfile=logfile, new_logfile=False)
                 # logger = logging.getLogger(__name__)
         else:
-            logger.info("Cube {0}: Processing on {1} core".format(self.cube, self.n_cores))
+            logger.info("Cube {0}: Processing on {1} cores".format(self.cube, self.n_cores))
             # create pool object with number of processes
             pool = mp.Pool(processes=self.n_cores)
 
