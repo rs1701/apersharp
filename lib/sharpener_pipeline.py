@@ -14,6 +14,9 @@ from setup_logger import setup_logger
 
 
 def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extraction, do_plots, do_sdss, beam_count):
+    """Function to run sharpener
+    """
+
     import sharpener as sharpy
     from sharp_modules import cont_src as cont_src
     from sharp_modules import spec_ex as spec_ex
@@ -21,10 +24,10 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
     from sharp_modules import sdss_match
     imp.reload(sharpy)
 
-    logger = logging.getLogger(__name__)
+    logging.getLogger("matplotlib").setLevel(logging.WARNING)
 
-    """Function to run sharpener
-    """
+    # logger = logging.getLogger(__name__)
+
     time_start_run = time.time()
 
     # get process
