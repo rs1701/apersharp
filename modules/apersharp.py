@@ -12,9 +12,9 @@ import multiprocessing as mp
 import functools
 
 
-from ..lib.setup_logger import setup_logger
-from ..lib.abort_function import abort_function
-from ..lib.sharpener_pipeline import sharpener_pipeline
+from lib.setup_logger import setup_logger
+from lib.abort_function import abort_function
+from lib.sharpener_pipeline import sharpener_pipeline
 from base import BaseModule
 
 #from sharpener.srun_sharpener_mp import run_sharpener as sharpener_mp
