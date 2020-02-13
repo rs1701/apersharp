@@ -1,6 +1,5 @@
 import logging
 import os
-import apersharp
 import subprocess
 
 
@@ -50,9 +49,5 @@ def setup_logger(level="DEBUG", logfile=None, new_logfile=True):
         logger.info(
             "Logging to file. To see the log in a bash window use the following command:")
         logger.info("tail -n +1 -f {}".format(logfile))
-
-        # gitinfo = subprocess.check_output('cd ' + os.path.dirname(apersharp.__file__) +
-        #                                   '&& git describe --tag; cd', shell=True).strip()
-        # logger.info("Apersched version: {}".format(gitinfo))
 
     return logger
