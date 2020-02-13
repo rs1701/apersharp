@@ -547,8 +547,8 @@ class apersharp(BaseModule):
             logger.info("Cube {0}: Processing on one core only".format(self.cube))
             for beam_index in beam_count:
                 sharpener_pipeline(beam_directory_list, True, True, True, self.do_sdss, beam_index)
-                setup_logger('DEBUG', logfile=self.logfile, new_logfile=False)
-                logger = logging.getLogger(__name__)
+                #setup_logger('DEBUG', logfile=self.logfile, new_logfile=False)
+                #logger = logging.getLogger(__name__)
         else:
             logger.info("Cube {0}: Processing on {1} cores".format(self.cube, self.n_cores))
             # create pool object with number of processes
@@ -563,8 +563,8 @@ class apersharp(BaseModule):
             pool.close()
             pool.join()
 
-            setup_logger('DEBUG', logfile=self.logfile, new_logfile=False)
-            logger = logging.getLogger(__name__)
+            #setup_logger('DEBUG', logfile=self.logfile, new_logfile=False)
+            #%logger = logging.getLogger(__name__)
 
         logger.info("Cube {0}: Running sharpener ... Done".format(
             self.cube, str(self.beam_list)))
