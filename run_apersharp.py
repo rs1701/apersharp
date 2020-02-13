@@ -16,7 +16,7 @@ from lib.abort_function import abort_function
 from modules.apersharp import apersharp
 
 
-def run_apersharp(taskid, sharpener_basedir='', data_basedir=None, data_source='ALTA', steps=None, user=None, beams='all', output_form="pdf", cubes="0", cont_src_resource="continuum", configfilename=None, do_sdss=False, n_cores=1):
+def run_apersharp(taskid, sharpener_basedir, data_basedir=None, data_source='ALTA', steps=None, user=None, beams='all', output_form="pdf", cubes="0", cont_src_resource="continuum", configfilename=None, do_sdss=False, n_cores=1):
     """
     Main function run apersharp.
 
@@ -183,7 +183,7 @@ if __name__ == "__main__":
     parser.add_argument("taskid", type=str,
                         help='Taskid of the observation. Multiple taskids can be separated using commas.')
 
-    parser.add_argument("--sharpener_basedir", type=str, default='',
+    parser.add_argument("sharpener_basedir", type=str,
                         help='Directory for the directory where the data should be stored for processing')
 
     parser.add_argument("--data_basedir", type=str, default='',
