@@ -11,9 +11,9 @@ import argparse
 from time import time
 import numpy as np
 
-from apersharp.lib.setup_logger import setup_logger
-from apersharp.lib.abort_function import abort_function
-from apersharp.modules.apersharp import apersharp
+from lib.setup_logger import setup_logger
+from lib.abort_function import abort_function
+from modules.apersharp import apersharp
 
 
 def run_apersharp(taskid, sharpener_basedir, data_basedir=None, data_source='ALTA', steps=None, user=None, beams='all', output_form="pdf", cubes="0", cont_src_resource="continuum", configfilename=None, do_sdss=False, n_cores=1):
