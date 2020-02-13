@@ -16,7 +16,7 @@ from lib.abort_function import abort_function
 from modules.apersharp import apersharp
 
 
-def run_apersharp(taskid, sharpener_basedir, data_basedir=None, data_source='ALTA', steps=None, user=None, beams='all', output_form="pdf", cubes="0", cont_src_resource="continuum", configfilename=None, do_sdss=False, n_cores=1):
+def run_apersharp(taskid, sharpener_basedir, data_basedir=None, data_source='ALTA', steps=None, user=None, beams='all', output_form="pdf", cubes="0", cont_src_resource="continuum", configfilename=None, no_sdss=False, n_cores=1):
     """
     Main function run apersharp.
 
@@ -40,7 +40,7 @@ def run_apersharp(taskid, sharpener_basedir, data_basedir=None, data_source='ALT
     cubes (str): Select the cube to be processed. If "all", all cubes will be processed.
     cont_src_resource (str): Select what should be used for continuum source counterparts.
     configfilename (str): Default config file name to run SHARPener. Taken from SHARPener by default
-    do_sdss (bool): Enable/Disable SDSS cross-matching of radio continuum sources
+    no_sdss (bool): Enable/Disable SDSS cross-matching of radio continuum sources
     n_cores (int): Number of cores for running sharpener in parallel
     """
 
@@ -54,6 +54,11 @@ def run_apersharp(taskid, sharpener_basedir, data_basedir=None, data_source='ALT
         sharpener_basedir = os.getcwd()
     if not os.path.exists(sharpener_basedir):
         os.mkdir(sharpener_basedir)
+
+    if no_sdss:
+        do_sdss = False
+    else:
+        do_sdss = True
 
     logfile = os.path.join(sharpener_basedir, "apersharp_main.log")
     setup_logger('DEBUG', logfile=logfile)
@@ -216,10 +221,10 @@ if __name__ == "__main__":
     parser.add_argument("--n_cores", type=int, default=1,
                         help='Number of cores for running sharpener')
 
-    parser.add_argument("--do_sdss", action="store_true", default=False,
+    parser.add_argument("--no_sdss", action="store_true", default=False,
                         help='Enable sdss cross-matching')
 
     args = parser.parse_args()
 
     run_apersharp(args.taskid, args.sharpener_basedir, data_basedir=args.data_basedir, data_source=args.data_source,
-                  steps=args.steps, user=args.user, beams=args.beams, output_form=args.output_form, cubes=args.cubes, cont_src_resource=args.cont_src_resource, configfilename=args.configfilename, do_sdss=args.do_sdss, n_cores=args.n_cores)
+                  steps=args.steps, user=args.user, beams=args.beams, output_form=args.output_form, cubes=args.cubes, cont_src_resource=args.cont_src_resource, configfilename=args.configfilename, no_sdss=args.no_sdss, n_cores=args.n_cores)
