@@ -83,6 +83,9 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
         # rename the ID column
         src_data.rename_column('ID', 'Beam_Source_ID')
 
+        # fix the column type
+        src_data['FFLAG'] = np.array([str(flag) for flag in src_data['FFLAG']])
+
         # create a new columns for ID, taskid, beam and cube
         src_id = np.array(["{0}_C{1}_B{2}_{3}".format(
             taskid, cube_nr, beam.zfill(2), src_name) for src_name in src_data['J2000']])
