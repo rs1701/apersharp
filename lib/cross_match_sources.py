@@ -41,14 +41,15 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
     if taskid is None:
         taskid = os.path.dirname(cube_dir).split("/")[-1]
 
-    logger.info("Cube {0} of {1}: Collecting source information from all beams".format(
-        cube_nr, taskid))
+    logger.info("Collecting source information from all beams")
+
+    logger.debug("Processing cube {0} of taskid {1}".format(cube_nr, taskid))
 
     # get a list of beams
     if beam_list is None:
         beam_list = glob.glob(os.path.join(cube_dir, "??"))
         if len(beam_list) == 0:
-            error = "Did not find any beams. Abort"
+            error = "Did not find any beams in . Abort"
             logger.error(error)
             raise RuntimeError(error)
         beam_list.sort()
@@ -86,30 +87,28 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
         src_id = np.array(["{0}_C{1}_B{2}_{3}".format(
             taskid, cube_nr, beam.zfill(2), src_name) for src_name in src_data['J2000']])
         src_beam = np.array([beam] for i in range(n_src)])
-        src_cube = np.array([cube_nr for i in range(n_src)])
+        src_cube= np.array([cube_nr for i in range(n_src)])
 
         # create a new table with these three columns
-        new_table = Table([src_id, src_cube, src_beam], names=["Source_ID", "Cube", "Beam"])
+        new_table= Table([src_id, src_cube, src_beam], names=["Source_ID", "Cube", "Beam"])
 
         # merge with source table
-        new_src_table = hstack([new_table, src_data])
+        new_src_table= hstack([new_table, src_data])
 
         # merge with full list
         if np.size(full_list) == 0:
-            full_list = new_src_table
+            full_list= new_src_table
         else:
-            full_list = vstack([full_list, new_src_table])
+            full_list= vstack([full_list, new_src_table])
 
         logger.debug("Processing beam {} ... Done".format(beam))
 
     # save the file if there is something to save
     if np.size(full_list) != 0:
         full_list.write(output_file_name, format="ascii.csv")
-        logger.info("Cube {0} of {1}: Collecting source information from all beams ... Done".format(
-            cube_nr, taskid))
+        logger.info("Collecting source information from all beams ... Done")
     else:
-        error = "Table with all sources is emtpy. Abort"
+        error= "Table with all sources is emtpy. Abort"
         logger.error(error)
-        logger.error("Cube {0} of {1}: Collecting source information from all beams ... Failed".format(
-            cube_nr, taskid))
+        logger.error("Collecting source information from all beams ... Failed")
         raise RuntimeError(error)
