@@ -86,20 +86,21 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
         # create a new columns for ID, taskid, beam and cube
         src_id = np.array(["{0}_C{1}_B{2}_{3}".format(
             taskid, cube_nr, beam.zfill(2), src_name) for src_name in src_data['J2000']])
-        src_beam = np.array([beam] for i in range(n_src)])
-        src_cube= np.array([cube_nr for i in range(n_src)])
+        src_beam = np.array([beam for i in range(n_src)])
+        src_cube = np.array([cube_nr for i in range(n_src)])
 
         # create a new table with these three columns
-        new_table= Table([src_id, src_cube, src_beam], names=["Source_ID", "Cube", "Beam"])
+        new_table = Table([src_id, src_cube, src_beam],
+                          names=["Source_ID", "Cube", "Beam"])
 
         # merge with source table
-        new_src_table= hstack([new_table, src_data])
+        new_src_table = hstack([new_table, src_data])
 
         # merge with full list
         if np.size(full_list) == 0:
-            full_list= new_src_table
+            full_list = new_src_table
         else:
-            full_list= vstack([full_list, new_src_table])
+            full_list = vstack([full_list, new_src_table])
 
         logger.debug("Processing beam {} ... Done".format(beam))
 
@@ -108,7 +109,7 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
         full_list.write(output_file_name, format="ascii.csv")
         logger.info("Collecting source information from all beams ... Done")
     else:
-        error= "Table with all sources is emtpy. Abort"
+        error = "Table with all sources is emtpy. Abort"
         logger.error(error)
         logger.error("Collecting source information from all beams ... Failed")
         raise RuntimeError(error)
