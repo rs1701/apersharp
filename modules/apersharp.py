@@ -687,9 +687,11 @@ class apersharp(BaseModule):
         logger.info(
             "Cube {}: Matching sources from different beams".format(self.cube))
 
+        self.cube_dir = self.get_cube_dir()
+
         # Name of the csv file with all sources
         csv_file_name = os.path.join(
-            self.get_cube_dir(), "{0}_C{1}_all_sources.csv".format(self.taskid, self.cube))
+            self.get_cube, "{0}_C{1}_all_sources.csv".format(self.taskid, self.cube))
 
         if os.path.exists(csv_file_name):
             logger.warning(
