@@ -689,7 +689,7 @@ class apersharp(BaseModule):
 
         # Name of the csv file with all sources
         csv_file_name = os.path.join(
-            self.cube_dir, "{0}_C{1}_all_sources.csv".format(self.taskid, self.cube))
+            self.get_cube_dir(), "{0}_C{1}_all_sources.csv".format(self.taskid, self.cube))
 
         if os.path.exists(csv_file_name):
             logger.warning(
