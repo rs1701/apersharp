@@ -271,58 +271,58 @@ def match_sources_of_beams(src_table_file, output_file_name, max_sep=3):
         else:
             # remove the overlapping beam that is the same as the beam
             overlapping_beam_list = overlapping_beam_list[np.where(
-                overlapping_beam_list) != int(beam))]
+                overlapping_beam_list != int(beam))]
 
         logger.debug("Beam {0} overlaps with beams {1}".format(
             beam, str(overlapping_beam_list)))
 
         # get the source name and the coordinates for the sources of beams that overlap
-        src_ids_overlapping_beam=np.array([])
-        src_coords_overlapping_beam=np.array([])
+        src_ids_overlapping_beam = np.array([])
+        src_coords_overlapping_beam = np.array([])
         for overlapping_beam in overlapping_beam_list:
             # avoid using the same beam
-            src_data_overlapping_beam=src_data[np.where(
+            src_data_overlapping_beam = src_data[np.where(
                 src_data['Beam'] == overlapping_beam)]
-            src_ids_overlapping_beam=np.concatenate(
+            src_ids_overlapping_beam = np.concatenate(
                 [src_ids_overlapping_beam, src_data_overlapping_beam['Source_ID']])
-            src_coords_overlapping_beam=np.concatenate([src_coords_overlapping_beam, SkyCoord(
+            src_coords_overlapping_beam = np.concatenate([src_coords_overlapping_beam, SkyCoord(
                 src_data_overlapping_beam['ra'], src_data_overlapping_beam['dec'], unit=(u.hourangle, u.deg), frame='fk5')])
-        n_src_overlapping_beams=np.size(src_ids_overlapping_beam)
+        n_src_overlapping_beams = np.size(src_ids_overlapping_beam)
 
         # go through the list of sources for this beam
         for src_index in range(np.size(src_data_beam['Source_ID'])):
 
-            src_name=src_data_beam['Source_ID'][src_index]
+            src_name = src_data_beam['Source_ID'][src_index]
 
             logger.debug(
                 "Searching for matches for {0} within {1} arcsec".format(src_name, max_sep))
 
-            src_coord=SkyCoord(src_data_beam['ra'][src_index], src_data_beam['dec'][src_index], unit = (
-                u.hourangle, u.deg), frame = 'fk5')
+            src_coord = SkyCoord(src_data_beam['ra'][src_index], src_data_beam['dec'][src_index], unit=(
+                u.hourangle, u.deg), frame='fk5')
 
             # to store the sources that match as strings
-            matched_src=""
+            matched_src = ""
 
             # calculate the distance of this source to  through the list of overlapping beams
-            src_distance=np.zeros(n_src_overlapping_beams)
+            src_distance = np.zeros(n_src_overlapping_beams)
             for k in range(n_src_overlapping_beams):
 
                 # calculate the distance of the source
-                src_distance[k]=src_coord.separation(
+                src_distance[k] = src_coord.separation(
                     src_coords_overlapping_beam[k])
 
             # check if there are sources within the limits
-            matched_indices=np.where(
+            matched_indices = np.where(
                 src_distance < max_sep * units.arcsec)[0]
             if len(matched_indices) != 0:
-                matched_src=",".join(
+                matched_src = ",".join(
                     src_ids_overlapping_beam[matched_indices])
                 logger.debug("Found the following matches within {0}: {1}".format(
                     max_sep, matched_src))
             else:
                 logger.debug(
                     "Did not find any matches with {} arcsec".format(max_sep))
-                matched_src="-"
+                matched_src = "-"
 
             # add to the list of matched sources
             match_list.append(matched_src)
@@ -330,9 +330,9 @@ def match_sources_of_beams(src_table_file, output_file_name, max_sep=3):
         logger.debug("Processing sources from beam {} ... Done".format(beam))
 
     # creating a Table for the matched sources and added it to the existing one
-    matched_src_table=Table(
-        [np.array(matched_src)], names = ["Matching_Sources"])
-    src_data_expanded=hstack([src_data, matched_src_table])
+    matched_src_table = Table(
+        [np.array(matched_src)], names=["Matching_Sources"])
+    src_data_expanded = hstack([src_data, matched_src_table])
 
     # save the file
-    src_data_expanded.write(output_file_name, format = "ascii.csv")
+    src_data_expanded.write(output_file_name, format="ascii.csv")
