@@ -241,7 +241,7 @@ def match_sources_of_beams(src_table_file, output_file_name, max_sep=3):
     beam_matrix = get_beam_overlap_matrix()
 
     # reading in file
-    src_data = Table.read(src_table_file, format="ascii.read")
+    src_data = Table.read(src_table_file, format="ascii.csv")
 
     # number of sources
     n_src = np.size(src_data['Source_ID'])
