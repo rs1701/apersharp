@@ -321,6 +321,7 @@ def match_sources_of_beams(src_table_file, output_file_name, max_sep=3):
 
             # check if there are sources within the limits
             matched_distance = d2d < max_sep * units.arcsec
+            logger.debug(str(matched_distance))
             if len(matched_distance) != 0:
                 matched_src = ",".join(
                     src_ids_overlapping_beam[matched_distance])
