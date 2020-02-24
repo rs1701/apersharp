@@ -338,7 +338,7 @@ def match_sources_of_beams(src_table_file, output_file_name, max_sep=3):
 
     # creating a Table for the matched sources and added it to the existing one
     matched_src_table = Table(
-        [np.array(matched_list)], names=["Matching_Sources"])
+        [np.array(match_list)], names=["Matching_Sources"])
     src_data_expanded = hstack([src_data, matched_src_table])
 
     # save the file
