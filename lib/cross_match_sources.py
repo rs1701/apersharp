@@ -279,15 +279,18 @@ def match_sources_of_beams(src_table_file, output_file_name, max_sep=3):
 
         # get the source name and the coordinates for the sources of beams that overlap
         src_ids_overlapping_beam = np.array([])
-        src_coords_overlapping_beam = np.array([])
+        src_ra_overlapping_beam = np.array([])
+        src_dec_overlapping_beam = np.array([])
         for overlapping_beam in overlapping_beam_list:
             # avoid using the same beam
             src_data_overlapping_beam = src_data[np.where(
                 src_data['Beam'] == overlapping_beam)]
             src_ids_overlapping_beam = np.concatenate(
                 [src_ids_overlapping_beam, src_data_overlapping_beam['Source_ID']])
-            src_coords_overlapping_beam = np.concatenate([src_coords_overlapping_beam, SkyCoord(
-                src_data_overlapping_beam['ra'], src_data_overlapping_beam['dec'], unit=(units.hourangle, units.deg), frame='fk5')])
+            src_ra_overlapping_beam = src_data_overlapping_beam['ra']
+            src_dec_overlapping_beam = src_data_overlapping_beam['dec']
+        src_coords_overlapping_beam = np.concatenate([src_coords_overlapping_beam, SkyCoord(
+            src_ra_overlapping_beam, src_dec_overlapping_beam['dec'], unit=(units.hourangle, units.deg), frame='fk5')])
         n_src_overlapping_beams = np.size(src_ids_overlapping_beam)
 
         # go through the list of sources for this beam
