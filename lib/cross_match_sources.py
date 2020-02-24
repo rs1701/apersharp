@@ -268,10 +268,10 @@ def match_sources_of_beams(src_table_file, output_file_name, max_sep=3):
         if len(overlapping_beam_list) == 0:
             logger.error("Did not find any overlapping beams. Abort")
             raise RuntimeError("No overlapping beams")
-        else
-        # remove the overlapping beam that is the same as the beam
-        overlapping_beam_list = overlapping_beam_list[np.where(
-            overlapping_beam_list) != int(beam))]
+        else:
+            # remove the overlapping beam that is the same as the beam
+            overlapping_beam_list = overlapping_beam_list[np.where(
+                overlapping_beam_list) != int(beam))]
 
         logger.debug("Beam {0} overlaps with beams {1}".format(
             beam, str(overlapping_beam_list)))
