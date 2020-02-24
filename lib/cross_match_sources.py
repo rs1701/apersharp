@@ -293,6 +293,7 @@ def match_sources_of_beams(src_table_file, output_file_name, max_sep=3):
                 [src_dec_overlapping_beam, src_data_overlapping_beam['dec']])
         src_coords_overlapping_beam = SkyCoord(
             src_ra_overlapping_beam, src_dec_overlapping_beam, unit=(units.hourangle, units.deg), frame='fk5')
+        logger.debug(src_coords_overlapping_beam)
         n_src_overlapping_beams = np.size(src_ids_overlapping_beam)
 
         # go through the list of sources for this beam
