@@ -23,6 +23,7 @@ import glob
 import logging
 from astropy.table import Table, vstack, hstack
 import astropy.units as units
+from astropy.coordinates import SkyCoord
 
 logger = logging.getLogger(__name__)
 
