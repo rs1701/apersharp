@@ -287,7 +287,7 @@ def match_sources_of_beams(src_table_file, output_file_name, max_sep=3):
             src_ids_overlapping_beam = np.concatenate(
                 [src_ids_overlapping_beam, src_data_overlapping_beam['Source_ID']])
             src_coords_overlapping_beam = np.concatenate([src_coords_overlapping_beam, SkyCoord(
-                src_data_overlapping_beam['ra'], src_data_overlapping_beam['dec'], unit=(u.hourangle, u.deg), frame='fk5')])
+                src_data_overlapping_beam['ra'], src_data_overlapping_beam['dec'], unit=(units.hourangle, units.deg), frame='fk5')])
         n_src_overlapping_beams = np.size(src_ids_overlapping_beam)
 
         # go through the list of sources for this beam
@@ -299,7 +299,7 @@ def match_sources_of_beams(src_table_file, output_file_name, max_sep=3):
                 "Searching for matches for {0} within {1} arcsec".format(src_name, max_sep))
 
             src_coord = SkyCoord(src_data_beam['ra'][src_index], src_data_beam['dec'][src_index], unit=(
-                u.hourangle, u.deg), frame='fk5')
+                units.hourangle, units.deg), frame='fk5')
 
             # to store the sources that match as strings
             matched_src = ""
