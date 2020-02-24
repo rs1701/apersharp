@@ -22,8 +22,120 @@ import numpy as np
 import glob
 import logging
 from astropy.table import Table, vstack, hstack
+import astropy.units as units
 
 logger = logging.getLogger(__name__)
+
+
+def get_beam_overlap_matrix():
+    """
+    Function to create matrix describing the overlap of compound beams
+    """
+
+    overlap_matrix = np.identity(40, dtype=np.float64)
+
+    overlap_matrix[0, 17] = 1
+    overlap_matrix[0, 24] = 1
+    overlap_matrix[0, 18] = 1
+    overlap_matrix[0, 23] = 1
+    overlap_matrix[1, 2] = 1
+    overlap_matrix[1, 8] = 1
+    overlap_matrix[2, 3] = 1
+    overlap_matrix[2, 8] = 1
+    overlap_matrix[2, 9] = 1
+    overlap_matrix[3, 4] = 1
+    overlap_matrix[3, 9] = 1
+    overlap_matrix[3, 10] = 1
+    overlap_matrix[4, 5] = 1
+    overlap_matrix[4, 10] = 1
+    overlap_matrix[4, 11] = 1
+    overlap_matrix[5, 6] = 1
+    overlap_matrix[5, 11] = 1
+    overlap_matrix[5, 12] = 1
+    overlap_matrix[6, 7] = 1
+    overlap_matrix[6, 12] = 1
+    overlap_matrix[6, 13] = 1
+    overlap_matrix[7, 13] = 1
+    overlap_matrix[7, 14] = 1
+    overlap_matrix[8, 9] = 1
+    overlap_matrix[8, 15] = 1
+    overlap_matrix[9, 10] = 1
+    overlap_matrix[9, 15] = 1
+    overlap_matrix[9, 16] = 1
+    overlap_matrix[10, 11] = 1
+    overlap_matrix[10, 16] = 1
+    overlap_matrix[10, 17] = 1
+    overlap_matrix[11, 12] = 1
+    overlap_matrix[11, 17] = 1
+    overlap_matrix[11, 18] = 1
+    overlap_matrix[12, 13] = 1
+    overlap_matrix[12, 18] = 1
+    overlap_matrix[12, 19] = 1
+    overlap_matrix[13, 14] = 1
+    overlap_matrix[13, 19] = 1
+    overlap_matrix[13, 20] = 1
+    overlap_matrix[14, 20] = 1
+    overlap_matrix[15, 16] = 1
+    overlap_matrix[15, 21] = 1
+    overlap_matrix[15, 22] = 1
+    overlap_matrix[16, 17] = 1
+    overlap_matrix[16, 22] = 1
+    overlap_matrix[16, 23] = 1
+    overlap_matrix[17, 18] = 1
+    overlap_matrix[17, 23] = 1
+    overlap_matrix[17, 24] = 1
+    overlap_matrix[18, 19] = 1
+    overlap_matrix[18, 24] = 1
+    overlap_matrix[18, 25] = 1
+    overlap_matrix[19, 20] = 1
+    overlap_matrix[19, 25] = 1
+    overlap_matrix[19, 26] = 1
+    overlap_matrix[20, 26] = 1
+    overlap_matrix[21, 22] = 1
+    overlap_matrix[21, 27] = 1
+    overlap_matrix[22, 23] = 1
+    overlap_matrix[22, 27] = 1
+    overlap_matrix[22, 28] = 1
+    overlap_matrix[23, 24] = 1
+    overlap_matrix[23, 28] = 1
+    overlap_matrix[23, 29] = 1
+    overlap_matrix[24, 25] = 1
+    overlap_matrix[24, 29] = 1
+    overlap_matrix[24, 30] = 1
+    overlap_matrix[25, 26] = 1
+    overlap_matrix[25, 30] = 1
+    overlap_matrix[25, 31] = 1
+    overlap_matrix[26, 31] = 1
+    overlap_matrix[26, 32] = 1
+    overlap_matrix[27, 28] = 1
+    overlap_matrix[27, 33] = 1
+    overlap_matrix[27, 34] = 1
+    overlap_matrix[28, 29] = 1
+    overlap_matrix[28, 34] = 1
+    overlap_matrix[28, 35] = 1
+    overlap_matrix[29, 30] = 1
+    overlap_matrix[29, 35] = 1
+    overlap_matrix[29, 36] = 1
+    overlap_matrix[30, 31] = 1
+    overlap_matrix[30, 36] = 1
+    overlap_matrix[30, 37] = 1
+    overlap_matrix[31, 32] = 1
+    overlap_matrix[31, 37] = 1
+    overlap_matrix[31, 38] = 1
+    overlap_matrix[32, 38] = 1
+    overlap_matrix[32, 39] = 1
+    overlap_matrix[33, 34] = 1
+    overlap_matrix[34, 35] = 1
+    overlap_matrix[35, 36] = 1
+    overlap_matrix[36, 37] = 1
+    overlap_matrix[37, 38] = 1
+    overlap_matrix[38, 39] = 1
+
+    # make symmetric
+    overlap_matrix = overlap_matrix + overlap_matrix.T - \
+        np.diag(overlap_matrix.diagonal())
+
+    return overlap_matrix
 
 
 def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=None, beam_list=None, src_file="radio_sdss_src_match.csv"):
@@ -116,3 +228,108 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
         logger.error(error)
         logger.error("Collecting source information from all beams ... Failed")
         raise RuntimeError(error)
+
+
+def match_sources_of_beams(src_table_file, output_file_name, max_sep=3):
+    """
+    Function to create a new table with sources match across beams
+    """
+
+    logger.info("Matching sources from different beams")
+
+    # get the overlap matrix
+    beam_matrix = get_beam_overlap_matrix()
+
+    # reading in file
+    src_data = Table.read(src_table_file, format="ascii.read")
+
+    # number of sources
+    n_src = np.size(src_data['Source_ID'])
+    logger.debug("Found {} sources".format(n_src))
+
+    # storing the matches and turning them later into a table
+    match_list = []
+
+    # get a list of beams
+    beam_list = np.unique(src_data['Beam'])
+
+    # got through each source
+    for beam in beam_list:
+
+        logger.debug("Processing sources from beam {}".format(beam))
+
+        # get the sources for this beam
+        src_data_beam = src_data[np.where(src_data['Beam'] == beam)]
+
+        # get the beams that overlap
+        overlapping_beam_list = np.where(beam_matrix[int(beam)] == 1)[0]
+
+        # just to make sure
+        if len(overlapping_beam_list) == 0:
+            logger.error("Did not find any overlapping beams. Abort")
+            raise RuntimeError("No overlapping beams")
+
+        logger.debug("Beam {0} overlaps with beams {1}".format(
+            beam, str(overlapping_beam_list)))
+
+        # get the source name and the coordinates for the sources of beams that overlap
+        src_ids_overlapping_beam = np.array([])
+        src_coords_overlapping_beam = np.array([])
+        for overlapping_beam in overlapping_beam_list:
+            # avoid using the same beam
+            if overlapping_beam != beam:
+                src_data_overlapping_beam = src_data[np.where(
+                    src_data['beam'] == overlapping_beam)]
+                src_ids_overlapping_beam = np.concatenate(
+                    [src_ids_overlapping_beam, src_data_overlapping_beam['Source_ID']])
+                src_coords_overlapping_beam = np.concatenate([src_coords_overlapping_beam, SkyCoord(
+                    src_data_overlapping_beam['ra'], src_data_overlapping_beam['dec'], unit=(u.hourangle, u.deg), frame='fk5')])
+        n_src_overlapping_beams = np.size(src_ids_overlapping_beam)
+
+        # go through the list of sources for this beam
+        for src_index in range(np.size(src_data_beam['Source_ID'])):
+
+            src_name = src_data_beam['Source_ID'][src_index]
+
+            logger.debug(
+                "Searching for matches for {0} within {1} arcsec".format(src_name, max_sep))
+
+            src_coord = SkyCoord(src_data_beam['ra'][src_index], src_data_beam['dec'][src_index], unit=(
+                u.hourangle, u.deg), frame='fk5')
+
+            # to store the sources that match as strings
+            matched_src = ""
+
+            # calculate the distance of this source to  through the list of overlapping beams
+            src_distance = np.zeros(n_src_overlapping_beams)
+            for k in range(n_src_overlapping_beams):
+
+                # calculate the distance of the source
+                src_distance[k] = src_coord.separation(
+                    src_coords_overlapping_beam[k])
+
+            # check if there are sources within the limits
+            matched_indices = np.where(
+                src_distance < max_sep * units.arcsec)[0]
+            if len(matched_indices) != 0:
+                matched_src = ",".join(
+                    src_ids_overlapping_beam[matched_indices])
+                logger.debug("Found the following matches within {0}: {1}".format(
+                    max_sep, matched_src))
+            else:
+                logger.debug(
+                    "Did not find any matches with {} arcsec".format(max_sep))
+                matched_src = "-"
+
+            # add to the list of matched sources
+            match_list.append(matched_src)
+
+        logger.debug("Processing sources from beam {} ... Done".format(beam))
+
+    # creating a Table for the matched sources and added it to the existing one
+    matched_src_table = Table(
+        [np.array(matched_src)], names=["Matching_Sources"])
+    src_data_expanded = hstack([src_data, matched_src_table])
+
+    # save the file
+    src_data_expanded.write(output_file_name, format="ascii.csv")
