@@ -311,12 +311,13 @@ def match_sources_of_beams(src_table_file, output_file_name, max_sep=3):
             matched_src = ""
 
             # calculate the distance of this source to  through the list of overlapping beams
-            src_distance = np.zeros(n_src_overlapping_beams)
-            for k in range(n_src_overlapping_beams):
+            src_distance = np.array([src_coord.separation(k)
+                                     for k in src_coords_overlapping_beam])
+            # for k in range(n_src_overlapping_beams):
 
-                # calculate the distance of the source
-                src_distance[k] = src_coord.separation(
-                    src_coords_overlapping_beam[k])
+            #     # calculate the distance of the source
+            #     src_distance[k] = src_coord.separation(
+            #         src_coords_overlapping_beam[k])
 
             # check if there are sources within the limits
             matched_distance = np.where(
