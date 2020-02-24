@@ -52,6 +52,8 @@ def run_apersharp(taskid, sharpener_basedir, data_basedir=None, data_source='ALT
     # Check base directory and create it if necessary
     if sharpener_basedir == '':
         sharpener_basedir = os.getcwd()
+    else:
+        sharpener_basedir = os.path.abspath(sharpener_basedir)
     if not os.path.exists(sharpener_basedir):
         os.mkdir(sharpener_basedir)
 
