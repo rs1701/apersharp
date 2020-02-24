@@ -312,7 +312,7 @@ def match_sources_of_beams(src_table_file, output_file_name, max_sep=3):
 
             # calculate the distance of this source to  through the list of overlapping beams
             src_distance = np.array([src_coord.separation(k)
-                                     for k in src_coords_overlapping_beam])
+                                     for k in src_coords_overlapping_beam], dtype=SkyCoord)
             # for k in range(n_src_overlapping_beams):
 
             #     # calculate the distance of the source
