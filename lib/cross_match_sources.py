@@ -293,7 +293,6 @@ def match_sources_of_beams(src_table_file, output_file_name, max_sep=3):
                 [src_dec_overlapping_beam, src_data_overlapping_beam['dec']])
         src_coords_overlapping_beam = SkyCoord(
             src_ra_overlapping_beam, src_dec_overlapping_beam, unit=(units.hourangle, units.deg), frame='fk5')
-        logger.debug(src_coords_overlapping_beam)
         n_src_overlapping_beams = np.size(src_ids_overlapping_beam)
 
         # go through the list of sources for this beam
@@ -322,15 +321,14 @@ def match_sources_of_beams(src_table_file, output_file_name, max_sep=3):
             # check if there are sources within the limits
             matched_distance = np.where(
                 src_distance < max_sep)[0]
-            logger.debug(matched_distance)
             if len(matched_distance) != 0:
                 matched_src = ",".join(
                     src_ids_overlapping_beam[matched_distance])
-                logger.debug("Found the following matches within {0}: {1}".format(
-                    max_sep, matched_src))
+                logger.debug("Searching for matches for {0} within {1} arcsec: Found the following matches: {2}".format(
+                    src_name, max_sep, matched_src))
             else:
                 logger.debug(
-                    "Did not find any matches with {} arcsec".format(max_sep))
+                    "Searching for matches for {0} within {1} arcsec: Did not find any matches".format(src_name, max_sep))
                 matched_src = "-"
 
             # add to the list of matched sources
@@ -340,7 +338,7 @@ def match_sources_of_beams(src_table_file, output_file_name, max_sep=3):
 
     # creating a Table for the matched sources and added it to the existing one
     matched_src_table = Table(
-        [np.array(matched_src)], names=["Matching_Sources"])
+        [np.array(matched_list)], names=["Matching_Sources"])
     src_data_expanded = hstack([src_data, matched_src_table])
 
     # save the file
