@@ -311,7 +311,7 @@ def match_sources_of_beams(src_table_file, output_file_name, max_sep=3):
             matched_src = ""
 
             # calculate the distance of this source to  through the list of overlapping beams
-            src_distance = np.array([src_coord.separation(k)
+            src_distance = np.array([src_coord.separation(k).to("arcsec").value
                                      for k in src_coords_overlapping_beam], dtype=SkyCoord)
             # for k in range(n_src_overlapping_beams):
 
@@ -321,7 +321,7 @@ def match_sources_of_beams(src_table_file, output_file_name, max_sep=3):
 
             # check if there are sources within the limits
             matched_distance = np.where(
-                src_distance < max_sep * units.arcsec)[0]
+                src_distance < max_sep)[0]
             logger.debug(matched_distance)
             if len(matched_distance) != 0:
                 matched_src = ",".join(
