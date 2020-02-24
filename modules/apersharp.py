@@ -693,13 +693,13 @@ class apersharp(BaseModule):
         csv_file_name = os.path.join(
             self.cube_dir, "{0}_Cube{1}_all_sources.csv".format(self.taskid, self.cube))
 
+        # first collect all sources, but check if this has been done before
         if os.path.exists(csv_file_name):
             logger.warning(
                 "{} already exists. File will be overwritten".format(csv_file_name))
-
-        # first collect all sources
-        get_all_sources_of_cube(csv_file_name, self.cube_dir,
-                                taskid=self.taskid, cube_nr=self.cube, beam_list=self.beam_list)
+        else:
+            get_all_sources_of_cube(csv_file_name, self.cube_dir,
+                                    taskid=self.taskid, cube_nr=self.cube, beam_list=self.beam_list)
 
         # match the srouces
         match_sources_of_beams(csv_file_name, csv_file_name.replace(
