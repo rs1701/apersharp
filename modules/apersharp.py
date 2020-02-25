@@ -463,6 +463,8 @@ class apersharp(BaseModule):
 
         logger.info("Setting up sharpener")
 
+        using_default_config_file = True
+
         # if no template configfile was specified, get the default one
         if self.configfilename is None:
             # the default sharpener configfile is here:
@@ -473,8 +475,7 @@ class apersharp(BaseModule):
                 logger.info("Using default sharpener config file from {}".format(
                     default_configfile))
             else:
-                error = "Could not find default sharpener config file in {}. Abort".format(
-                    self.configfilename)
+                error = "Could not find default sharpener config file. Abort"
                 logger.error(error)
                 raise RuntimeError(error)
             self.configfilename = default_configfile
@@ -483,6 +484,7 @@ class apersharp(BaseModule):
             if os.path.exists(self.configfilename):
                 logger.info("Using specified config file: {}".format(
                     self.configfilename))
+                using_default_config_file = False
             else:
                 error = "Could not find the specificed config file: {}. Abort".format(
                     self.configfilename)
@@ -517,29 +519,30 @@ class apersharp(BaseModule):
             sharpener_settings['general']['cubename'] = os.path.basename(self.get_cube_path(
                 beam))
 
-            # make sure that certain steps are disabled
-            sharpener_settings['source_catalog']['enable'] = False
-            sharpener_settings['simulate_continuum']['enable'] = False
-            sharpener_settings['polynomial_subtraction']['enable'] = False
-            sharpener_settings['hanning']['enable'] = False
+            # make sure that certain steps are disabled only if the default is used
+            if using_default_config_file:
+                sharpener_settings['source_catalog']['enable'] = False
+                sharpener_settings['simulate_continuum']['enable'] = False
+                sharpener_settings['polynomial_subtraction']['enable'] = False
+                sharpener_settings['hanning']['enable'] = False
 
-            sharpener_settings['source_finder']['enable'] = True
-            sharpener_settings['source_finder']['clip'] = 1e-2
+                sharpener_settings['source_finder']['enable'] = True
+                sharpener_settings['source_finder']['clip'] = 1e-2
 
-            sharpener_settings['source_catalog']['enable'] = False
+                sharpener_settings['source_catalog']['enable'] = False
 
-            sharpener_settings['sdss_match']['enable'] = self.do_sdss
-            sharpener_settings['sdss_match']['zunitCube'] = ""
-            sharpener_settings['sdss_match']['plot_format'] = "pdf"
+                sharpener_settings['sdss_match']['enable'] = self.do_sdss
+                sharpener_settings['sdss_match']['zunitCube'] = ""
+                sharpener_settings['sdss_match']['plot_format'] = "pdf"
 
-            sharpener_settings['spec_ex']['enable'] = True
-            sharpener_settings['spec_ex']['chrom_aberration'] = False
+                sharpener_settings['spec_ex']['enable'] = True
+                sharpener_settings['spec_ex']['chrom_aberration'] = False
 
-            sharpener_settings['abs_plot']['enable'] = True
-            sharpener_settings['abs_plot']['fixed_scale'] = False
-            sharpener_settings['abs_plot']['plot_contImage'] = True
-            # for the detailed plots, 3 rows
-            sharpener_settings['abs_plot']['channels_per_plot'] = 406
+                sharpener_settings['abs_plot']['enable'] = True
+                sharpener_settings['abs_plot']['fixed_scale'] = False
+                sharpener_settings['abs_plot']['plot_contImage'] = True
+                # for the detailed plots, 3 rows
+                sharpener_settings['abs_plot']['channels_per_plot'] = 406
 
             with io.open(beam_configfilename, 'w', encoding='utf8') as outfile:
                 yaml.dump(sharpener_settings, outfile,
