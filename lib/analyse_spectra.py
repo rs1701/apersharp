@@ -22,14 +22,17 @@ def get_source_spec_file(src_name, src_nr, beam, cube_dir):
 
     Args:
     -----
-    beam_list (list(str)): List of directories of the beams of this cube
+    src_name (str): Name of the source (J2000 coordinates)
+    src_nr (int): Number of the source in the beam
+    beam (int): Number of the beam
+    cube_dir (int): Directory of the cube that contains the beam and the source
 
     Return:
     -------
-    file_list (list(str)): List of file names with full path
+    (str): Path to the spectrum file of the source
     """
 
-    return os.path.join(cube_dir, "{0}/sharpOut/abs/{1}_J{2}.txt".format(str(beam).zfill(2), src_nr, src_name))
+    return os.path.join(cube_dir, "{0}/sharpOut/spec/{1}_J{2}.txt".format(str(beam).zfill(2), src_nr, src_name))
 
 
 def find_candidate(spec_data, src_name,  snr_threshold=-3):
