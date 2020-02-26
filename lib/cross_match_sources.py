@@ -200,8 +200,8 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
         src_data['FFLAG'] = np.array([str(flag) for flag in src_data['FFLAG']])
 
         # create a new columns for ID, taskid, beam and cube
-        src_id = np.array(["{0}_C{1}_B{2}_{3}".format(
-            taskid, cube_nr, beam.zfill(2), src_name) for src_name in src_data['J2000']])
+        src_id = np.array(["{0}_C{1}_B{2}_{3}_J{4}".format(
+            taskid, cube_nr, beam.zfill(2), src_data['Beam_Source_ID'][k], src_data['J2000'][k]) for k in range(n_src)])
         src_beam = np.array([beam for i in range(n_src)])
         src_cube = np.array([cube_nr for i in range(n_src)])
 
