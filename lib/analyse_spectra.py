@@ -29,7 +29,7 @@ def get_source_spec_file(src_name, src_nr, beam, cube_dir):
     file_list (list(str)): List of file names with full path
     """
 
-    return os.path.join(cube_dir, "{0}/sharpOut/abs/{1}_{2}.txt".format(str(beam).zfill(2), src_nr, src_name))
+    return os.path.join(cube_dir, "{0}/sharpOut/abs/{1}_J{2}.txt".format(str(beam).zfill(2), src_nr, src_name))
 
 
 def find_candidate(spec_data, src_name,  snr_threshold=-3):
@@ -106,6 +106,12 @@ def analyse_spectra(src_cat_file, output_file_name, cube_dir, snr_threshold=-3):
         # get the spectrum file for the source
         src_spec_file = get_source_spec_file(
             src_data['J2000'][src_index], src_data['Beam_Source_ID'][src_index] - 1, src_data['Beam'][src_index], cube_dir)
+
+        if not os.path.exists(src_spec_file):
+            logger.warning("Did not find spectrum for source {0} in {1}".format(
+                src_id, src_spec_file))
+        else:
+            pass
 
         # read in the file
         spec_data = Table.read(src_spec_file, format="ascii")
