@@ -63,7 +63,7 @@ def find_candidate(spec_data, src_name,  snr_threshold=-3):
         max_negative_snr_ch = np.where(ratio == max_negative_snr)[0][0]
         max_negative_snr_freq = spec_data['Frequency [Hz]'][max_negative_snr_ch]
 
-    return mean_noise, median_noise, max_flux, min_flux, snr_candidate, max_negative_snr, max_negative_snr_ch, max_negative_snr_freq
+    return snr_candidate, max_negative_snr, max_negative_snr_ch, max_negative_snr_freq
 
 
 def analyse_spectra(src_cat_file, output_file_name, cube_dir, snr_threshold=-3):
