@@ -169,7 +169,8 @@ def analyse_spectra(src_cat_file, output_file_name, cube_dir, snr_threshold=-3):
     src_id_candidates = new_data_table['Source_ID'][np.where(
         new_data_table['Candidate_SNR'] == 1)]
     n_candidates = np.size(src_id_candidates)
-    logger.info("Found {} candidates for absorption".format(n_candidates))
+    logger.info("Found {0} candidates for absorption (out of {1} sources".format(
+        n_candidates, n_src))
     logger.info("Candidates are: {}".format(str(src_id_candidates)))
 
     logger.info("#### Searching for candidates ... Done")
