@@ -163,4 +163,11 @@ def analyse_spectra(src_cat_file, output_file_name, cube_dir, snr_threshold=-3):
         "Saving data with candidates to {}".format(output_file_name))
     new_data_table.write(output_file_name, format="ascii.csv")
 
+    # number of candidates
+    src_id_candidates = new_data_table['Source_ID'][np.where(
+        new_data_table['Candidate_SNR'] == 1)]
+    n_candidates = np.size(src_id_candidates)
+    logger.info("Found {} candidates for absorption".format(n_candidates))
+    logger.info("Candidates are: {}".format(str(src_id_candidates)))
+
     logger.info("#### Searching for candidates ... Done")
