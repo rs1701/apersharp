@@ -16,7 +16,7 @@ from lib.setup_logger import setup_logger
 from lib.abort_function import abort_function
 from lib.sharpener_pipeline import sharpener_pipeline
 from lib.cross_match_sources import get_all_sources_of_cube, match_sources_of_beams
-from lib.analyze_spectra import analyse_spectra
+from lib.analyse_spectra import analyse_spectra
 from base import BaseModule
 
 #from sharpener.srun_sharpener_mp import run_sharpener as sharpener_mp
