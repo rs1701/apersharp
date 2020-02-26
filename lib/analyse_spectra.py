@@ -88,8 +88,8 @@ def analyse_spectra(src_cat_file, output_file_name, cube_dir, snr_threshold=-3):
     beam_list = np.unique(src_data['Beam'])
 
     # new columns
-    mean_rms = np.zeros(n_src)
-    median_rms = np.zeros(n_src)
+    mean_noise = np.zeros(n_src)
+    median_noise = np.zeros(n_src)
     min_flux = np.zeros(n_src)
     max_flux = np.zeros(n_src)
     mean_flux = np.zeros(n_src)
