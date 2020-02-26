@@ -85,6 +85,7 @@ def analyse_spectra(src_cat_file, output_file_name, cube_dir, snr_threshold=-3):
 
     # number of sources
     n_src = np.size(src_data['Source_ID'])
+    logger.info("Found {} sources to analyse".format(n_src))
 
     # get a list of beams
     beam_list = np.unique(src_data['Beam'])
@@ -145,7 +146,7 @@ def analyse_spectra(src_cat_file, output_file_name, cube_dir, snr_threshold=-3):
             spec_data, src_id, snr_threshold=snr_threshold)
 
         if snr_candidate[src_index] == 1:
-            logger.debug("Found candidate for absorption (SNR = {0}".format(
+            logger.debug("Found candidate for absorption (SNR = {0})".format(
                 max_negative_snr[src_index]))
         else:
             logger.debug("Not a candidate for absorption")
