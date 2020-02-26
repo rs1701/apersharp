@@ -32,6 +32,14 @@ class BaseModule:
     NBEAMS = 40
     logfile = None
 
+    # Name of the csv file with all sources
+    all_src_csv_file_name = None
+    # Name of the csv file with all sources after matching across beams
+    all_src_csv_file_name_matched = None
+    # Name of the csv file with all sources after checking for candidates
+    all_src_csv_file_name_candidates = None
+
+
     def get_cube_dir(self):
         """
         Function to return the directory of the cube for a given beam
@@ -59,3 +67,26 @@ class BaseModule:
         """
 
         return os.path.join(self.sharpener_basedir, "cube_{0}/{1}/image_mf.fits".format(self.cube, beam.zfill(2)))
+
+    def get_src_csv_file_name(self):
+        """
+        Function to return the path of CSV file with source information from all beams
+        """
+
+        return os.path.join(self.get_cube_dir(), "{0}_Cube{1}_all_sources.csv".format(self.taskid, self.cube))
+
+    def get_src_csv_file_name_matched(self):
+        """
+        Function to return the path of CSV file with source information from all beams 
+        and sources matched across beams
+        """
+
+        return self.get_src_csv_file_name().replace(".csv", "_matched.csv")
+
+    def get_src_csv_file_name_candidates(self):
+        """
+        Function to return the path of CSV file with source information from all beams 
+        and source spectra analysed for candidates of absorption
+        """
+
+        return self.get_src_csv_file_name().replace(".csv", "_candidates.csv")

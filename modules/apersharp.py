@@ -39,20 +39,8 @@ class apersharp(BaseModule):
     # logfile = None
     # logger = None
 
-    # Name of the csv file with all sources
-    all_src_csv_file_name = None
-    # Name of the csv file with all sources after matching across beams
-    all_src_csv_file_name_matched = None
-    # Name of the csv file with all sources after checking for candidates
-    all_src_csv_file_name_candidates = None
-
     def __init__(self, file_=None, **kwargs):
-        self.all_src_csv_file_name = os.path.join(
-            self.cube_dir, "{0}_Cube{1}_all_sources.csv".format(self.taskid, self.cube))
-        self.all_src_csv_file_name_matched = self.all_src_csv_file_name.replace(
-            ".csv", "_matched.csv")
-        self.all_src_csv_file_name_candidates = self.all_src_csv_file_name.replace(
-            ".csv", "_candidates.csv")
+        pass
 
     def go(self):
         """
@@ -731,16 +719,17 @@ class apersharp(BaseModule):
         self.cube_dir = self.get_cube_dir()
 
         # first collect all sources, but check if this has been done before
-        if os.path.exists(self.all_src_csv_file_name):
+        src_cat_file_name = self.get_src_csv_file_name()
+        if os.path.exists(src_cat_file_name):
             logger.warning(
-                "{} already exists. File will be overwritten".format(self.all_src_csv_file_name))
+                "{} already exists. File will be overwritten".format(src_cat_file_name))
         else:
-            get_all_sources_of_cube(self.all_src_csv_file_name, self.cube_dir,
+            get_all_sources_of_cube(src_cat_file_name, self.cube_dir,
                                     taskid=self.taskid, cube_nr=self.cube, beam_list=self.beam_list)
 
         # match the srouces
-        match_sources_of_beams(self.all_src_csv_file_name,
-                               self.all_src_csv_file_name_matched, max_sep=3)
+        match_sources_of_beams(src_cat_file_name,
+                               self.get_src_csv_file_name_matched(), max_sep=3)
 
         logger.info(
             "Cube {}: Matching sources from different beams ... Done".format(self.cube))
@@ -756,25 +745,25 @@ class apersharp(BaseModule):
 
         # check that csv file exists
         # i.e., that the previous step was executed
-        if not os.path.exists(self.all_src_csv_file_name_matched):
-            if not os.path.exists(self.all_src_csv_file_name):
+        if not os.path.exists(self.get_src_csv_file_name_matched()):
+            if not os.path.exists(self.get_src_csv_file_name()):
                 logger.warning(
                     "Could not find file with source information from previous step. Will run previous step now before continuing.")
                 self.match_sources()
                 logger.warning(
                     "Collected source information. Continue with analysing spectra")
-                src_cat_file_name = self.all_src_csv_file_name_matched
+                src_cat_file_name = self.get_src_csv_file_name_matched
             else:
                 raise RuntimeError(
                     "Did not find correct file with source information")
         else:
-            src_cat_file_name = self.all_src_csv_file_name_matched
+            src_cat_file_name = self.get_src_csv_file_name_matched
 
         cube_dir = self.get_cube_dir()
 
         # analyze spectra of sources
         analyse_spectra(
-            src_cat_file_name, self.all_src_csv_file_name_candidates, cube_dir, snr_threshold=-3)
+            src_cat_file_name, self.get_src_csv_file_name_candidates, cube_dir, snr_threshold=-3)
 
         logger.info(
             "Cube {}: Analysing spectra of sources from different beams ... Done".format(self.cube))
