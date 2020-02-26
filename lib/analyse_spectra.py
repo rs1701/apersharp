@@ -114,6 +114,7 @@ def analyse_spectra(src_cat_file, output_file_name, cube_dir, snr_threshold=-3):
         if not os.path.exists(src_spec_file):
             logger.warning("Did not find spectrum for source {0} in {1}".format(
                 src_id, src_spec_file))
+            continue
         else:
             pass
 
