@@ -71,7 +71,12 @@ def analyse_spectra(src_cat_file, output_file_name, cube_dir, snr_threshold=-3):
     logger.info("#### Searching for candidates")
 
     # get the source data
-    src_data = Table.read(src_cat_file, format="ascii.csv")
+    if not os.path.exists(src_cat_file):
+        error = "Could not find src file {}".format(src_cat_file)
+        logger.error(error)
+        raise RuntimeError(error)
+    else:
+        src_data = Table.read(src_cat_file, format="ascii.csv")
 
     # number of sources
     n_src = np.size(src_data['Source_ID'])

@@ -757,7 +757,7 @@ class apersharp(BaseModule):
                 raise RuntimeError(
                     "Did not find correct file with source information")
         else:
-            src_cat_file_name = self.get_src_csv_file_name_matched
+            src_cat_file_name = self.get_src_csv_file_name_matched()
 
         cube_dir = self.get_cube_dir()
 
