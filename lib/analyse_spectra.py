@@ -161,7 +161,7 @@ def analyse_spectra(src_cat_file, output_file_name, cube_dir, snr_threshold=-3):
     # write out table
     logger.info(
         "Saving data with candidates to {}".format(output_file_name))
-    new_data_table.write(output_file_name, format="ascii.csv")
+    new_data_table.write(output_file_name, format="ascii.csv", overwrite=True)
 
     # number of candidates
     src_id_candidates = new_data_table['Source_ID'][np.where(
