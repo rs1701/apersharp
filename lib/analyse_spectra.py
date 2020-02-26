@@ -42,7 +42,7 @@ def find_candidate(spec_data, src_name,  snr_threshold=-3):
 
     # try to determine the snr
     try:
-        ratio = src_data["Flux [Jy]"] / src_data["Noise [Jy]"]
+        ratio = spec_data["Flux [Jy]"] / spec_data["Noise [Jy]"]
     except RuntimeWarning as rw:
         logger.warning(
             "Calculating SNR failed for {0}. No noise information".format(src_name))
