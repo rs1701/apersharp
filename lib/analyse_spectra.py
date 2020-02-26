@@ -1,0 +1,149 @@
+"""
+Functionality to identify candidates for hi absorption
+
+1. get all the sources from all beams 
+and for each source
+2. determine ratio of flux to noise
+3. keep source only if ratio is below -3sigma (assumes good continuum subtraction)
+"""
+
+import os
+import numpy as np
+import glob
+import logging
+from astropy.table import Table
+
+logger = logging.getLogger(__name__)
+
+
+def get_source_spec_file(src_name, src_nr, beam, cube_dir):
+    """
+    Function to get the spectrum file for a given source
+
+    Args:
+    -----
+    beam_list (list(str)): List of directories of the beams of this cube
+
+    Return:
+    -------
+    file_list (list(str)): List of file names with full path
+    """
+
+    return os.path.join(cube_dir, "{0}/sharpOut/abs/{1}_{2}.txt".format(str(beam).zfill(2), src_nr, src_name))
+
+
+def find_candidate(spec_data, src_name,  snr_threshold=-3):
+    """
+    Function to get various metrics from spectrum
+    """
+
+    # try to determine the snr
+    try:
+        ratio = src_data["Flux [Jy]"] / src_data["Noise [Jy]"]
+    except RuntimeWarning as rw:
+        logger.warning(
+            "Calculating SNR failed for {0}. No noise information".format(src_name))
+        logger.exception(rw)
+        ratio = None
+
+    if ratio is None:
+        snr_candidate = 0
+        max_negative_snr = 0
+        max_negative_snr_ch = 0
+        max_negative_snr_freq = 0
+    else:
+        max_negative_snr = np.nanmin(ratio)
+        if max_negative_snr <= snr_threshold:
+            snr_candidate = 1
+        else:
+            pass
+        max_negative_snr_ch = np.where(ratio == max_negative_snr)[0][0]
+        max_negative_snr_freq = spec_data['Frequency [Hz]'][max_negative_snr_ch]
+
+    return mean_noise, median_noise, max_flux, min_flux, snr_candidate, max_negative_snr, max_negative_snr_ch, max_negative_snr_freq
+
+
+def analyse_spectra(src_cat_file, output_file_name, cube_dir, snr_threshold=-3):
+    """
+    Function to run quality check and find candidates for absorption
+    """
+
+    logger.info("#### Searching for candidates")
+
+    # get the source data
+    src_data = Table.read(src_cat_file, format="ascii.csv")
+
+    # number of sources
+    n_src = np.size(src_data['Source_ID'])
+
+    # get a list of beams
+    beam_list = np.unique(src_data['Beam'])
+
+    # new columns
+    mean_rms = np.zeros(n_src)
+    median_rms = np.zeros(n_src)
+    min_flux = np.zeros(n_src)
+    max_flux = np.zeros(n_src)
+    mean_flux = np.zeros(n_src)
+    median_flux = np.zeros(n_src)
+    snr_candidate = np.zeros(n_src)
+    max_negative_snr = np.zeros(n_src)
+    max_negative_snr_ch = np.zeros(n_src)
+    max_negative_snr_freq = np.zeros(n_src)
+
+    # go through the each source files
+    for src_index in range(n_src):
+
+        src_id = src_data['Source_ID'][src_index]
+
+        logger.info("## Processing {}".format(src_id))
+
+        # get the spectrum file for the source
+        src_spec_file = get_source_spec_file(
+            src_data['J2000'][src_index], src_data['Beam_Source_ID'][src_index] - 1, src_data['Beam'][src_index], cube_dir)
+
+        # read in the file
+        spec_data = Table.read(src_spec_file, format="ascii")
+
+        # get mean noise
+        mean_noise[src_index] = np.nanmean(spec_data['Noise [Jy]'])
+
+        # get the median noise
+        median_noise[src_index] = np.nanmedian(spec_data['Noise [Jy]'])
+
+        # get max flux
+        max_flux[src_index] = np.nanmax(spec_data['Flux [Jy]'])
+
+        # get min flux
+        min_flux[src_index] = np.nanmin(spec_data['Flux [Jy]'])
+
+        # get mean flux
+        mean_flux[src_index] = np.nanmean(spec_data['Flux [Jy]'])
+
+        # get the median flux
+        median_flux[src_index] = np.nanmedian(spec_data['Flux [Jy]'])
+
+        # find candidate
+        snr_candidate[src_index], max_negative_snr[src_index], max_negative_snr_ch[src_index], max_negative_snr_freq[src_index] = find_candidate(
+            spec_data, src_id, snr_threshold=snr_threshold)
+
+        if snr_candidate[src_index] == 1:
+            logger.debug("Found candidate for absorption")
+        else:
+            logger.debug("Not a candidate for absorption")
+
+        logger.info("## Processing {} ... Done".format(src_id))
+
+    # for storing new table later
+    metrics_table = Table([mean_noise, median_noise, min_flux, max_flux, mean_flux, median_flux, snr_candidate,
+                           max_negative_snr, max_negative_snr_ch, max_negative_snr_freq], names=("Mean_Noise", "Median_Noise", "Min_Flux", "Max_Flux", "Mean_Flux", "Median_Flux", "Candidate_SNR", "Max_Negative_SNR", "Max_Negative_SNR_Channel", "Max_Negative_SNR_Frequency"))
+
+    # combine old and new table
+    new_data_table = hstack([src_data, metrics_table])
+
+    # write out table
+    logger.info(
+        "Saving data with candidates to {}".format(output_file_name))
+    new_data_table.write(output_file_name, format="ascii.csv")
+
+    logger.info("#### Searching for candidates ... Done")
