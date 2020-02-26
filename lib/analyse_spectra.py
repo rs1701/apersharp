@@ -11,7 +11,7 @@ import os
 import numpy as np
 import glob
 import logging
-from astropy.table import Table
+from astropy.table import Table, hstack, vstack
 
 logger = logging.getLogger(__name__)
 
