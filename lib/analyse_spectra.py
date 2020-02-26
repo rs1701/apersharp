@@ -59,6 +59,7 @@ def find_candidate(spec_data, src_name,  snr_threshold=-3):
         if max_negative_snr <= snr_threshold:
             snr_candidate = 1
         else:
+            snr_candidate = 0
             pass
         max_negative_snr_ch = np.where(ratio == max_negative_snr)[0][0]
         max_negative_snr_freq = spec_data['Frequency [Hz]'][max_negative_snr_ch]
@@ -142,7 +143,8 @@ def analyse_spectra(src_cat_file, output_file_name, cube_dir, snr_threshold=-3):
             spec_data, src_id, snr_threshold=snr_threshold)
 
         if snr_candidate[src_index] == 1:
-            logger.debug("Found candidate for absorption")
+            logger.debug("Found candidate for absorption (SNR = {0}".format(
+                max_negative_snr[src_index]))
         else:
             logger.debug("Not a candidate for absorption")
 
