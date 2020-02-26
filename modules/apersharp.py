@@ -16,6 +16,7 @@ from lib.setup_logger import setup_logger
 from lib.abort_function import abort_function
 from lib.sharpener_pipeline import sharpener_pipeline
 from lib.cross_match_sources import get_all_sources_of_cube, match_sources_of_beams
+from lib.analyze_spectra import analyse_spectra
 from base import BaseModule
 
 #from sharpener.srun_sharpener_mp import run_sharpener as sharpener_mp
@@ -31,11 +32,6 @@ class apersharp(BaseModule):
     Class to handle getting cubes, setting everything up for sharpener, 
     running sharpener and cleaning up afterwards.
 
-    TODO:
-    -----
-    Expand analysis of data:
-    1. Find sources with possible detection
-    1. Match sources between beams
     """
 
     module_name = "Apersharp"
@@ -43,8 +39,20 @@ class apersharp(BaseModule):
     # logfile = None
     # logger = None
 
+    # Name of the csv file with all sources
+    all_src_csv_file_name = None
+    # Name of the csv file with all sources after matching across beams
+    all_src_csv_file_name_matched = None
+    # Name of the csv file with all sources after checking for candidates
+    all_src_csv_file_name_candidates = None
+
     def __init__(self, file_=None, **kwargs):
-        pass
+        self.all_src_csv_file_name = os.path.join(
+            self.cube_dir, "{0}_Cube{1}_all_sources.csv".format(self.taskid, self.cube))
+        self.all_src_csv_file_name_matched = self.all_src_csv_file_name.replace(
+            ".csv", "_matched.csv")
+        self.all_src_csv_file_name_candidates = self.all_src_csv_file_name.replace(
+            ".csv", "_candidates.csv")
 
     def go(self):
         """
@@ -109,6 +117,17 @@ class apersharp(BaseModule):
         else:
             logger.info("# Skipping Matching sources from sharpener")
 
+        if "analyse_sources" in self.steps:
+            logger.info("# Analysing spectra of sources from sharpener")
+
+            self.analyse_sources()
+
+            logger.info(
+                "# Analysing spectra of sources from sharpener ... Done")
+        else:
+            logger.info(
+                "# Skipping analysis of spectra of sources from sharpener")
+
         # clean up by removing the images and cubes
         if "clean_up" in self.steps:
             logger.info("# Removing cubes and continuum images")
@@ -157,7 +176,16 @@ class apersharp(BaseModule):
     def check_alta_path(self, alta_path):
         """
         Function to quickly check the path exists on ALTA
+
+        Args:
+        ----
+        alta_path (str): The path to check on ALTA
+
+        Return:
+        -------
+        return_msg (bool): True or False if path is found
         """
+
         alta_cmd = "ils {}".format(alta_path)
         logger.debug(alta_cmd)
         return_msg = subprocess.call(alta_cmd, shell=True,
@@ -170,6 +198,16 @@ class apersharp(BaseModule):
         Function to get files from ALTA
 
         Could be done by getdata_alta package, too.
+
+        Args
+        ----
+        alta_file_name (str): The name of the file on ALTA
+        output_path (str): The path where the file should be saved to
+
+        Return
+        ------
+        return_msg (bool): True or False if retrieving data was successfull
+
         """
 
         # set the irod files location
@@ -692,24 +730,54 @@ class apersharp(BaseModule):
 
         self.cube_dir = self.get_cube_dir()
 
-        # Name of the csv file with all sources
-        csv_file_name = os.path.join(
-            self.cube_dir, "{0}_Cube{1}_all_sources.csv".format(self.taskid, self.cube))
-
         # first collect all sources, but check if this has been done before
-        if os.path.exists(csv_file_name):
+        if os.path.exists(self.all_src_csv_file_name):
             logger.warning(
-                "{} already exists. File will be overwritten".format(csv_file_name))
+                "{} already exists. File will be overwritten".format(self.all_src_csv_file_name))
         else:
-            get_all_sources_of_cube(csv_file_name, self.cube_dir,
+            get_all_sources_of_cube(self.all_src_csv_file_name, self.cube_dir,
                                     taskid=self.taskid, cube_nr=self.cube, beam_list=self.beam_list)
 
         # match the srouces
-        match_sources_of_beams(csv_file_name, csv_file_name.replace(
-            ".csv", "_matched.csv"), max_sep=3)
+        match_sources_of_beams(self.all_src_csv_file_name,
+                               self.all_src_csv_file_name_matched, max_sep=3)
 
         logger.info(
             "Cube {}: Matching sources from different beams ... Done".format(self.cube))
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++
+    def analyse_sources(self):
+        """
+        Function to analyse the spectra of the sources
+        """
+
+        logger.info(
+            "Cube {}: Analysing spectra of sources from different beams".format(self.cube))
+
+        # check that csv file exists
+        # i.e., that the previous step was executed
+        if not os.path.exists(self.all_src_csv_file_name_matched):
+            if not os.path.exists(self.all_src_csv_file_name):
+                logger.warning(
+                    "Could not find file with source information from previous step. Will run previous step now before continuing.")
+                self.match_sources()
+                logger.warning(
+                    "Collected source information. Continue with analysing spectra")
+                src_cat_file_name = self.all_src_csv_file_name_matched
+            else:
+                raise RuntimeError(
+                    "Did not find correct file with source information")
+        else:
+            src_cat_file_name = self.all_src_csv_file_name_matched
+
+        cube_dir = self.get_cube_dir()
+
+        # analyze spectra of sources
+        analyse_spectra(
+            src_cat_file_name, self.all_src_csv_file_name_candidates, cube_dir, snr_threshold=-3)
+
+        logger.info(
+            "Cube {}: Analysing spectra of sources from different beams ... Done".format(self.cube))
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++
 
