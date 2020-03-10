@@ -224,21 +224,21 @@ def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, snr_thr
         logger.info("## Processing {} ... Done".format(src_id))
 
     # for storing new table later
-    metrics_table = Table([mean_noise, median_noise, min_flux, max_flux, mean_flux, median_flux, snr_candidate,
+    metrics_table = Table([mean_noise, median_noise, min_flux, max_flux, mean_flux, median_flux, snr_candidates,
                            max_negative_snr, max_negative_snr_ch, max_negative_snr_freq, max_positive_snr, max_positive_snr_ch, max_positive_snr_freq], names=("Mean_Noise", "Median_Noise", "Min_Flux", "Max_Flux", "Mean_Flux", "Median_Flux", "Candidate_SNR", "Max_Negative_SNR", "Max_Negative_SNR_Channel", "Max_Negative_SNR_Frequency", "Max_Positive_SNR", "Max_Positive_SNR_Channel", "Max_Positive_SNR_Frequency"))
 
     # combine old and new table
     new_data_table = hstack([src_data, metrics_table])
 
     # get a list of candidates
-    snr_candidates = find_candidate(
+    src_snr_candidates = find_candidate(
         spec_data, output_file_name_candidates, max_negative_snr, max_positive_snr)
 
     # change entries for the candidate
     logger.info("Marking candidates in source catalogue")
-    for candidate in snr_candidates:
+    for src in src_snr_candidates:
         new_data_table['Candidate_SNR'][np.where(
-            new_data_table['Source_ID']) == candidate] = 1
+            new_data_table['Source_ID']) == src] = 1
 
     # write out table
     logger.info(
