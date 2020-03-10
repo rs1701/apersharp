@@ -49,9 +49,9 @@ def find_candidate(src_data, output_file_name_candidates,  negative_snr_threshol
     logger.info(
         "Found {} sources exceeding negative SNR threshold".format(n_src_neg_snr))
 
-    # second, get the sources that have no positive SNR
+    # second, get the sources that have no positive SNR entries
     src_data_neg_snr_no_pos_snr = src_data_neg_snr[np.where(
-        src_data['Max_Positive_SNR'] == 0.)]
+        src_data_neg_snr['Max_Positive_SNR'] == 0.)]
 
     # get the number of sources
     n_src_neg_snr_no_pos_snr = np.size(
