@@ -67,7 +67,7 @@ def find_candidate(src_data, output_file_name_candidates,  negative_snr_threshol
 
     snr_candidates = src_data_neg_snr_below_pos_snr['Source_ID']
 
-    if n_src_neg_snr_no_pos_snr == 0:
+    if n_src_neg_snr_below_pos_snr == 0:
         logger.info("No candidates were found".format(str(snr_candidates)))
     else:
         logger.info("Candidates are: {}".format(str(snr_candidates)))
