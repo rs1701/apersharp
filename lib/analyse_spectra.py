@@ -135,7 +135,7 @@ def get_max_positive_snr(spec_data, src_name):
     return max_positive_snr, max_positive_snr_ch, max_positive_snr_freq
 
 
-def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, snr_threshold=-3):
+def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, negative_snr_threshold=-5, positive_snr_threshold=5):
     """
     Function to run quality check and find candidates for absorption
     """
@@ -236,7 +236,7 @@ def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, snr_thr
 
     # get a list of candidates
     src_snr_candidates = find_candidate(
-        new_data_table, output_file_name_candidates, max_negative_snr, max_positive_snr)
+        new_data_table, output_file_name_candidates, negative_snr_threshold=negative_snr_threshold, positive_snr_threshold=positive_snr_threshold)
 
     # change entries for the candidate
     logger.info("Marking candidates in source catalogue")
