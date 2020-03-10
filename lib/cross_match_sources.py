@@ -342,4 +342,4 @@ def match_sources_of_beams(src_table_file, max_sep=3):
     src_data_expanded = hstack([src_data, matched_src_table])
 
     # save the file
-    src_data_expanded.write(src_cat_file, format="ascii.csv", overwrite=True)
+    src_data_expanded.write(src_table_file, format="ascii.csv", overwrite=True)
