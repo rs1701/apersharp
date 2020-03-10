@@ -751,11 +751,10 @@ class apersharp(BaseModule):
             logger.info(
                 "Collected source information. Continue with analysing spectra")
         else:
-            raise RuntimeError(
-                "Did not find correct file with source information")
-        
+            logger.info("Found source catalogue file")
+
         src_cat_file_name = self.get_src_csv_file_name()
-        
+
         cube_dir = self.get_cube_dir()
 
         # analyze spectra of sources
