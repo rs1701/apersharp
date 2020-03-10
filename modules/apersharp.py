@@ -759,7 +759,7 @@ class apersharp(BaseModule):
 
         # analyze spectra of sources
         analyse_spectra(
-            src_cat_file_name, self.get_src_csv_file_name_candidates(), cube_dir, negative_snr_threshold=negative_snr_threshold, positive_snr_threshold=positive_snr_threshold)
+            src_cat_file_name, self.get_src_csv_file_name_candidates(), cube_dir, negative_snr_threshold=-5, positive_snr_threshold=5)
 
         logger.info(
             "Cube {}: Analysing spectra of sources from different beams ... Done".format(self.cube))
