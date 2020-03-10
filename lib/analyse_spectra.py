@@ -232,7 +232,7 @@ def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, snr_thr
 
     # get a list of candidates
     src_snr_candidates = find_candidate(
-        spec_data, output_file_name_candidates, max_negative_snr, max_positive_snr)
+        new_data_table, output_file_name_candidates, max_negative_snr, max_positive_snr)
 
     # change entries for the candidate
     logger.info("Marking candidates in source catalogue")
