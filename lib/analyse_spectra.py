@@ -172,6 +172,17 @@ def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, negativ
     max_positive_snr_ch = np.zeros(n_src)
     max_positive_snr_freq = np.zeros(n_src)
 
+    # names of table columns
+    new_col_names = ["Mean_Noise", "Median_Noise", "Min_Flux", "Max_Flux", "Mean_Flux", "Median_Flux", "Candidate_SNR", "Max_Negative_SNR",
+                     "Max_Negative_SNR_Channel", "Max_Negative_SNR_Frequency", "Max_Positive_SNR", "Max_Positive_SNR_Channel", "Max_Positive_SNR_Frequency"]
+    # removes these if they exists
+    try:
+        src_data.remove_columns(new_col_names)
+    except Exception as e:
+        pass
+    else:
+        logger.debug("Removed table entries from previous analysis run")
+
     # go through the each source files
     for src_index in range(n_src):
 
@@ -229,7 +240,7 @@ def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, negativ
 
     # for storing new table later
     metrics_table = Table([mean_noise, median_noise, min_flux, max_flux, mean_flux, median_flux, snr_candidates,
-                           max_negative_snr, max_negative_snr_ch, max_negative_snr_freq, max_positive_snr, max_positive_snr_ch, max_positive_snr_freq], names=("Mean_Noise", "Median_Noise", "Min_Flux", "Max_Flux", "Mean_Flux", "Median_Flux", "Candidate_SNR", "Max_Negative_SNR", "Max_Negative_SNR_Channel", "Max_Negative_SNR_Frequency", "Max_Positive_SNR", "Max_Positive_SNR_Channel", "Max_Positive_SNR_Frequency"))
+                           max_negative_snr, max_negative_snr_ch, max_negative_snr_freq, max_positive_snr, max_positive_snr_ch, max_positive_snr_freq], names=new_col_names)
 
     # combine old and new table
     new_data_table = hstack([src_data, metrics_table])
