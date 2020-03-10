@@ -135,7 +135,7 @@ def get_max_positive_snr(spec_data, src_name):
     return max_positive_snr, max_positive_snr_ch, max_positive_snr_freq
 
 
-def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, negative_snr_threshold=-5, positive_snr_threshold=5):
+def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, do_subtract_median=True, do_subtract_mean=False, negative_snr_threshold=-5, positive_snr_threshold=5):
     """
     Function to run quality check and find candidates for absorption
     """
@@ -221,6 +221,18 @@ def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, negativ
 
         # get the median flux
         median_flux[src_index] = np.nanmedian(spec_data['Flux [Jy]'])
+
+        # subtracting mean or median
+        if do_subtract_median:
+            logger.debug(
+                "Subtracting median: {} mJy/beam".format(median_flux[src_index] * 1.e3))
+            spec_data['Flux [Jy]'] = spec_data['Flux [Jy]'] - \
+                median_flux[src_index]
+        elif do_subtract_mean:
+            logger.debug(
+                "Subtracting mean: {} mJy/beam".format(median_flux[src_index] * 1.e3))
+            spec_data['Flux [Jy]'] = spec_data['Flux [Jy]'] - \
+                mean_flux[src_index]
 
         # get maximum negative snr values
         max_negative_snr[src_index], max_negative_snr_ch[src_index], max_negative_snr_freq[src_index] = get_max_negative_snr(
