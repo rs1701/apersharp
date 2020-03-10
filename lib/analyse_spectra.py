@@ -64,9 +64,9 @@ def find_candidate(src_data, output_file_name_candidates,  negative_snr_threshol
     logger.info("Found {0} candidates for absorption after checking negative and positive SNR thresholds".format(
         n_src_neg_snr_pos_snr))
 
-    snr_candidates = src_data_neg_snr_no_pos_snr['Source_ID'])
+    snr_candidates = src_data_neg_snr_no_pos_snr['Source_ID']
 
-        logger.info("Candidates are: {}".format(str(snr_candidates))
+    logger.info("Candidates are: {}".format(str(snr_candidates)))
 
     # writing file
     logger.info("Writing candidates to file {}".format(
