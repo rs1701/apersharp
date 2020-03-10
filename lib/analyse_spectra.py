@@ -51,21 +51,21 @@ def find_candidate(src_data, output_file_name_candidates,  negative_snr_threshol
         "Found {} sources exceeding negative SNR threshold".format(n_src_neg_snr))
 
     # second, get the sources that have no positive SNR entries
-    src_data_neg_snr_no_pos_snr = src_data_neg_snr[np.where(
-        src_data_neg_snr['Max_Positive_SNR'] >= positive_snr_threshold)]
+    src_data_neg_snr_below_pos_snr = src_data_neg_snr[np.where(
+        src_data_neg_snr['Max_Positive_SNR'] <= positive_snr_threshold)]
 
     # get the number of sources
-    n_src_neg_snr_no_pos_snr = np.size(
-        src_data_neg_snr_no_pos_snr['Source_ID'])
-    n_src_neg_snr_pos_snr = n_src_neg_snr - n_src_neg_snr_no_pos_snr
+    n_src_neg_snr_below_pos_snr = np.size(
+        src_data_neg_snr_below_pos_snr['Source_ID'])
+    n_src_neg_snr_above_pos_snr = n_src_neg_snr - n_src_neg_snr_below_pos_snr
 
     logger.info("Disregarding {0} sources out of {1} that exceed positive SNR threshold".format(
-        n_src_neg_snr_pos_snr, n_src_neg_snr))
+        n_src_neg_snr_above_pos_snr, n_src_neg_snr))
 
     logger.info("Found {0} candidates for absorption after checking negative and positive SNR thresholds".format(
-        n_src_neg_snr_no_pos_snr))
+        n_src_neg_snr_below_pos_snr))
 
-    snr_candidates = src_data_neg_snr_no_pos_snr['Source_ID']
+    snr_candidates = src_data_neg_snr_below_pos_snr['Source_ID']
 
     if n_src_neg_snr_no_pos_snr == 0:
         logger.info("No candidates were found".format(str(snr_candidates)))
@@ -75,7 +75,7 @@ def find_candidate(src_data, output_file_name_candidates,  negative_snr_threshol
     # writing file
     logger.info("Writing candidates to file {}".format(
         output_file_name_candidates))
-    src_data_neg_snr_no_pos_snr.write(
+    src_data_neg_snr_below_pos_snr.write(
         output_file_name_candidates, format="ascii.csv", overwrite=True)
 
     return snr_candidates
