@@ -234,8 +234,6 @@ def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, negativ
     # combine old and new table
     new_data_table = hstack([src_data, metrics_table])
 
-    logger.debug(new_data_table.keys())
-
     # get a list of candidates
     src_snr_candidates = find_candidate(
         new_data_table, output_file_name_candidates, negative_snr_threshold=negative_snr_threshold, positive_snr_threshold=positive_snr_threshold)
