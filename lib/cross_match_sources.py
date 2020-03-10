@@ -222,7 +222,7 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
 
     # save the file if there is something to save
     if np.size(full_list) != 0:
-        full_list.write(output_file_name, format="ascii.csv")
+        full_list.write(output_file_name, format="ascii.csv", overwrite=True)
         logger.info("Collecting source information from all beams ... Done")
     else:
         error = "Table with all sources is emtpy. Abort"
@@ -231,7 +231,7 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
         raise RuntimeError(error)
 
 
-def match_sources_of_beams(src_table_file, output_file_name, max_sep=3):
+def match_sources_of_beams(src_table_file, max_sep=3):
     """
     Function to create a new table with sources match across beams
     """
@@ -342,4 +342,4 @@ def match_sources_of_beams(src_table_file, output_file_name, max_sep=3):
     src_data_expanded = hstack([src_data, matched_src_table])
 
     # save the file
-    src_data_expanded.write(output_file_name, format="ascii.csv")
+    src_data_expanded.write(src_cat_file, format="ascii.csv", overwrite=True)

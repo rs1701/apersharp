@@ -35,9 +35,51 @@ def get_source_spec_file(src_name, src_nr, beam, cube_dir):
     return os.path.join(cube_dir, "{0}/sharpOut/spec/{1}_J{2}.txt".format(str(beam).zfill(2), src_nr, src_name))
 
 
-def find_candidate(spec_data, src_name,  snr_threshold=-3):
+def find_candidate(src_data, output_file_name_candidates,  negative_snr_threshold=-5, positive_snr_threshold=5):
     """
-    Function to get various metrics from spectrum
+    Function to check the snr results for candidates
+    """
+
+    # first get all sources with negative SNR entries
+    src_data_neg_snr = src_data[np.where(src_data['Max_Negative_SNR'] != 0.)]
+
+    # get the number of sources
+    n_src_neg_snr = np.size(src_data_neg_snr['Source_ID'])
+
+    logger.info(
+        "Found {} sources exceeding negative SNR threshold".format(n_src_neg_snr))
+
+    # second, get the sources that have no positive SNR
+    src_data_neg_snr_no_pos_snr = src_data_neg_snr[np.where(
+        src_data['Max_Positive_SNR'] == 0.)]
+
+    # get the number of sources
+    n_src_neg_snr_no_pos_snr = np.size(
+        src_data_neg_snr_no_pos_snr['Source_ID'])
+    n_src_neg_snr_pos_snr = n_src_neg_snr - n_src_neg_snr_no_pos_snr
+
+    logger.info("Disregarding {0} sources out of {1} that exceed positive SNR threshold".format(
+        n_src_neg_snr_pos_snr, n_src_neg_snr))
+
+    logger.info("Found {0} candidates for absorption after checking negative and positive SNR thresholds".format(
+        n_src_neg_snr_pos_snr))
+
+    snr_candidates = src_data_neg_snr_no_pos_snr['Source_ID'])
+
+        logger.info("Candidates are: {}".format(str(snr_candidates))
+
+    # writing file
+    logger.info("Writing candidates to file {}".format(
+        output_file_name_candidates))
+    src_data_neg_snr_no_pos_snr.write(
+        output_file_name_candidates, format="ascii.csv", overwrite=True)
+
+    return snr_candidates
+
+
+def get_max_negative_snr(spec_data, src_name):
+    """
+    Function to get the maximum negative SNR and supplementary information
     """
 
     # try to determine the snr
@@ -51,24 +93,45 @@ def find_candidate(spec_data, src_name,  snr_threshold=-3):
         ratio = spec_data["Flux [Jy]"] / spec_data["Noise [Jy]"]
 
     if ratio is None:
-        snr_candidate = 0
         max_negative_snr = 0
         max_negative_snr_ch = 0
         max_negative_snr_freq = 0
     else:
         max_negative_snr = np.nanmin(ratio)
-        if max_negative_snr <= snr_threshold:
-            snr_candidate = 1
-        else:
-            snr_candidate = 0
-            pass
         max_negative_snr_ch = np.where(ratio == max_negative_snr)[0][0]
         max_negative_snr_freq = spec_data['Frequency [Hz]'][max_negative_snr_ch]
 
-    return snr_candidate, max_negative_snr, max_negative_snr_ch, max_negative_snr_freq
+    return max_negative_snr, max_negative_snr_ch, max_negative_snr_freq
 
 
-def analyse_spectra(src_cat_file, output_file_name, cube_dir, snr_threshold=-3):
+def get_max_positive_snr(spec_data, src_name):
+    """
+    Function to get the maximum positive SNR and supplementary information
+    """
+
+    # try to determine the snr
+    # after checking that noise is not 0:
+    noise_check = np.unique(spec_data["Noise [Jy]"])
+    if np.size(noise_check) and noise_check[0] == 0:
+        logger.warning(
+            "Calculating SNR failed for {0}. No noise information".format(src_name))
+        ratio = None
+    else:
+        ratio = spec_data["Flux [Jy]"] / spec_data["Noise [Jy]"]
+
+    if ratio is None:
+        max_positive_snr = 0
+        max_positive_snr_ch = 0
+        max_positive_snr_freq = 0
+    else:
+        max_positive_snr = np.nanmax(ratio)
+        max_positive_snr_ch = np.where(ratio == max_positive_snr)[0][0]
+        max_positive_snr_freq = spec_data['Frequency [Hz]'][max_positive_snr_ch]
+
+    return max_positive_snr, max_positive_snr_ch, max_positive_snr_freq
+
+
+def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, snr_threshold=-3):
     """
     Function to run quality check and find candidates for absorption
     """
@@ -97,10 +160,13 @@ def analyse_spectra(src_cat_file, output_file_name, cube_dir, snr_threshold=-3):
     max_flux = np.zeros(n_src)
     mean_flux = np.zeros(n_src)
     median_flux = np.zeros(n_src)
-    snr_candidate = np.zeros(n_src)
+    snr_candidates = np.zeros(n_src)
     max_negative_snr = np.zeros(n_src)
     max_negative_snr_ch = np.zeros(n_src)
     max_negative_snr_freq = np.zeros(n_src)
+    max_positive_snr = np.zeros(n_src)
+    max_positive_snr_ch = np.zeros(n_src)
+    max_positive_snr_freq = np.zeros(n_src)
 
     # go through the each source files
     for src_index in range(n_src):
@@ -141,36 +207,42 @@ def analyse_spectra(src_cat_file, output_file_name, cube_dir, snr_threshold=-3):
         # get the median flux
         median_flux[src_index] = np.nanmedian(spec_data['Flux [Jy]'])
 
-        # find candidate
-        snr_candidate[src_index], max_negative_snr[src_index], max_negative_snr_ch[src_index], max_negative_snr_freq[src_index] = find_candidate(
-            spec_data, src_id, snr_threshold=snr_threshold)
+        # get maximum negative snr values
+        max_negative_snr[src_index], max_negative_snr_ch[src_index], max_negative_snr_freq[src_index] = get_max_negative_snr(
+            spec_data, src_id)
 
-        if snr_candidate[src_index] == 1:
-            logger.debug("Found candidate for absorption (SNR = {0})".format(
-                max_negative_snr[src_index]))
-        else:
-            logger.debug("Not a candidate for absorption")
+        # get maximum positive snr values
+        max_positive_snr[src_index], max_positive_snr_ch[src_index], max_positive_snr_freq[src_index] = get_max_positive_snr(
+            spec_data, src_id)
+
+        # if snr_candidate[src_index] == 1:
+        #     logger.debug("Found candidate for absorption (SNR = {0})".format(
+        #         max_negative_snr[src_index]))
+        # else:
+        #     logger.debug("Not a candidate for absorption")
 
         logger.info("## Processing {} ... Done".format(src_id))
 
     # for storing new table later
     metrics_table = Table([mean_noise, median_noise, min_flux, max_flux, mean_flux, median_flux, snr_candidate,
-                           max_negative_snr, max_negative_snr_ch, max_negative_snr_freq], names=("Mean_Noise", "Median_Noise", "Min_Flux", "Max_Flux", "Mean_Flux", "Median_Flux", "Candidate_SNR", "Max_Negative_SNR", "Max_Negative_SNR_Channel", "Max_Negative_SNR_Frequency"))
+                           max_negative_snr, max_negative_snr_ch, max_negative_snr_freq, max_positive_snr, max_positive_snr_ch, max_positive_snr_freq], names=("Mean_Noise", "Median_Noise", "Min_Flux", "Max_Flux", "Mean_Flux", "Median_Flux", "Candidate_SNR", "Max_Negative_SNR", "Max_Negative_SNR_Channel", "Max_Negative_SNR_Frequency", "Max_Positive_SNR", "Max_Positive_SNR_Channel", "Max_Positive_SNR_Frequency"))
 
     # combine old and new table
     new_data_table = hstack([src_data, metrics_table])
 
+    # get a list of candidates
+    snr_candidates = find_candidate(
+        spec_data, output_file_name_candidates, max_negative_snr, max_positive_snr)
+
+    # change entries for the candidate
+    logger.info("Marking candidates in source catalogue")
+    for candidate in snr_candidates:
+        new_data_table['Candidate_SNR'][np.where(
+            new_data_table['Source_ID']) == candidate] = 1
+
     # write out table
     logger.info(
-        "Saving data with candidates to {}".format(output_file_name))
-    new_data_table.write(output_file_name, format="ascii.csv", overwrite=True)
-
-    # number of candidates
-    src_id_candidates = new_data_table['Source_ID'][np.where(
-        new_data_table['Candidate_SNR'] == 1)]
-    n_candidates = np.size(src_id_candidates)
-    logger.info("Found {0} candidates for absorption (out of {1} sources".format(
-        n_candidates, n_src))
-    logger.info("Candidates are: {}".format(str(src_id_candidates)))
+        "Updating source catalogue {}".format(src_cat_file))
+    new_data_table.write(src_cat_file, format="ascii.csv", overwrite=True)
 
     logger.info("#### Searching for candidates ... Done")

@@ -39,7 +39,6 @@ class BaseModule:
     # Name of the csv file with all sources after checking for candidates
     all_src_csv_file_name_candidates = None
 
-
     def get_cube_dir(self):
         """
         Function to return the directory of the cube for a given beam
@@ -89,4 +88,4 @@ class BaseModule:
         and source spectra analysed for candidates of absorption
         """
 
-        return self.get_src_csv_file_name().replace(".csv", "_candidates.csv")
+        return self.get_src_csv_file_name().replace("_all_sources.csv", "_snr_candidates.csv")

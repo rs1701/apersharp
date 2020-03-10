@@ -728,8 +728,7 @@ class apersharp(BaseModule):
                                     taskid=self.taskid, cube_nr=self.cube, beam_list=self.beam_list)
 
         # match the srouces
-        match_sources_of_beams(src_cat_file_name,
-                               self.get_src_csv_file_name_matched(), max_sep=3)
+        match_sources_of_beams(src_cat_file_name, max_sep=3)
 
         logger.info(
             "Cube {}: Matching sources from different beams ... Done".format(self.cube))
@@ -745,20 +744,18 @@ class apersharp(BaseModule):
 
         # check that csv file exists
         # i.e., that the previous step was executed
-        if not os.path.exists(self.get_src_csv_file_name_matched()):
-            if not os.path.exists(self.get_src_csv_file_name()):
-                logger.warning(
-                    "Could not find file with source information from previous step. Will run previous step now before continuing.")
-                self.match_sources()
-                logger.warning(
-                    "Collected source information. Continue with analysing spectra")
-                src_cat_file_name = self.get_src_csv_file_name_matched
-            else:
-                raise RuntimeError(
-                    "Did not find correct file with source information")
+        if not os.path.exists(self.get_src_csv_file_name()):
+            logger.warning(
+                "Could not find file with source information from previous step. Will run previous step now before continuing.")
+            self.match_sources()
+            logger.info(
+                "Collected source information. Continue with analysing spectra")
         else:
-            src_cat_file_name = self.get_src_csv_file_name_matched()
-
+            raise RuntimeError(
+                "Did not find correct file with source information")
+        
+        src_cat_file_name = self.get_src_csv_file_name()
+        
         cube_dir = self.get_cube_dir()
 
         # analyze spectra of sources
