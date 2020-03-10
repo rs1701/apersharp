@@ -41,7 +41,8 @@ def find_candidate(src_data, output_file_name_candidates,  negative_snr_threshol
     """
 
     # first get all sources with negative SNR entries
-    src_data_neg_snr = src_data[np.where(src_data['Max_Negative_SNR'] != 0.)]
+    src_data_neg_snr = src_data[np.where(
+        src_data['Max_Negative_SNR'] <= negative_snr_threshold)]
 
     # get the number of sources
     n_src_neg_snr = np.size(src_data_neg_snr['Source_ID'])
@@ -51,7 +52,7 @@ def find_candidate(src_data, output_file_name_candidates,  negative_snr_threshol
 
     # second, get the sources that have no positive SNR entries
     src_data_neg_snr_no_pos_snr = src_data_neg_snr[np.where(
-        src_data_neg_snr['Max_Positive_SNR'] == 0.)]
+        src_data_neg_snr['Max_Positive_SNR'] >= positive_snr_threshold)]
 
     # get the number of sources
     n_src_neg_snr_no_pos_snr = np.size(
@@ -62,11 +63,14 @@ def find_candidate(src_data, output_file_name_candidates,  negative_snr_threshol
         n_src_neg_snr_pos_snr, n_src_neg_snr))
 
     logger.info("Found {0} candidates for absorption after checking negative and positive SNR thresholds".format(
-        n_src_neg_snr_pos_snr))
+        n_src_neg_snr_no_pos_snr))
 
     snr_candidates = src_data_neg_snr_no_pos_snr['Source_ID']
 
-    logger.info("Candidates are: {}".format(str(snr_candidates)))
+    if n_src_neg_snr_no_pos_snr == 0:
+        logger.info("No candidates were found".format(str(snr_candidates)))
+    else:
+        logger.info("Candidates are: {}".format(str(snr_candidates)))
 
     # writing file
     logger.info("Writing candidates to file {}".format(
