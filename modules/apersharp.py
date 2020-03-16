@@ -17,6 +17,7 @@ from lib.abort_function import abort_function
 from lib.sharpener_pipeline import sharpener_pipeline
 from lib.cross_match_sources import get_all_sources_of_cube, match_sources_of_beams
 from lib.analyse_spectra import analyse_spectra
+from lib.load_config import load_config
 from base import BaseModule
 
 #from sharpener.srun_sharpener_mp import run_sharpener as sharpener_mp
@@ -29,7 +30,7 @@ FNULL = open(os.devnull, 'w')
 
 class apersharp(BaseModule):
     """
-    Class to handle getting cubes, setting everything up for sharpener, 
+    Class to handle getting cubes, setting everything up for sharpener,
     running sharpener and cleaning up afterwards.
 
     """
@@ -38,9 +39,14 @@ class apersharp(BaseModule):
     # create logfile
     # logfile = None
     # logger = None
+    do_sdss = False
+    do_subtract_median = True
+    do_subtract_mean = False
+    positive_snr_threshold = 5
+    negative_snr_threshold = 5
 
-    def __init__(self, file_=None, **kwargs):
-        pass
+    def __init__(self, config_file=None, **kwargs):
+        self.default = lib.load_config(self, config_file)
 
     def go(self):
         """
@@ -51,84 +57,88 @@ class apersharp(BaseModule):
         # setup_logger('DEBUG', logfile=logfile)
         # logger = logging.getLogger(__name__)
 
-        logger.info("#### Apersharp processing taskid {}".format(self.taskid))
+        for cube in self.cube_list:
 
-        if "get_data" in self.steps:
-            logger.info("# Creating directories and getting data")
-            # create the directory structure
-            self.set_directories()
+        logger.info("#### Apersharp processing cube {0} of taskid {1}".format(
+            cube, self.taskid))
 
-            # get the data
-            self.get_data()
+           if "get_data" in self.steps:
+                logger.info("# Creating directories and getting data")
+                # create the directory structure
+                self.set_directories()
 
-            logger.info("# Creating directories and getting data ... Done")
-        else:
-            logger.info("# Skippting creating directories and getting data")
+                # get the data
+                self.get_data()
 
-        # set things up for sharpener
-        if "setup_sharpener" in self.steps:
-            logger.info("# Setting up sharpner")
+                logger.info("# Creating directories and getting data ... Done")
+            else:
+                logger.info(
+                    "# Skippting creating directories and getting data")
 
-            self.setup_sharpener()
+            # set things up for sharpener
+            if "setup_sharpener" in self.steps:
+                logger.info("# Setting up sharpner")
 
-            logger.info("# Setting up sharpner ... Done")
-        else:
-            logger.info("# Skipping setting up sharpener")
+                self.setup_sharpener()
 
-        # run sharpener
-        if "run_sharpener" in self.steps:
-            logger.info("# Running sharpener")
+                logger.info("# Setting up sharpner ... Done")
+            else:
+                logger.info("# Skipping setting up sharpener")
 
-            self.run_sharpener()
+            # run sharpener
+            if "run_sharpener" in self.steps:
+                logger.info("# Running sharpener")
 
-            logger.info("# Running sharpener ... Done")
-        else:
-            logger.info("# Skipping running sharpener")
+                self.run_sharpener()
 
-        # collect results from sharpener
-        if "collect_results" in self.steps:
-            logger.info("# Collecting results from sharpener")
+                logger.info("# Running sharpener ... Done")
+            else:
+                logger.info("# Skipping running sharpener")
 
-            self.collect_sharpener_results()
+            # collect results from sharpener
+            if "collect_results" in self.steps:
+                logger.info("# Collecting results from sharpener")
 
-            logger.info("# Collecting results from sharpener ... Done")
-        else:
-            logger.info("# Skipping collecting results from sharpener")
+                self.collect_sharpener_results()
 
-        # collect results from sharpener
-        if "match_sources" in self.steps:
-            logger.info("# Matching sources from sharpener")
+                logger.info("# Collecting results from sharpener ... Done")
+            else:
+                logger.info("# Skipping collecting results from sharpener")
 
-            self.match_sources()
+            # collect results from sharpener
+            if "match_sources" in self.steps:
+                logger.info("# Matching sources from sharpener")
 
-            logger.info("# Matching sources from sharpener ... Done")
-        else:
-            logger.info("# Skipping Matching sources from sharpener")
+                self.match_sources()
 
-        if "analyse_sources" in self.steps:
-            logger.info("# Analysing spectra of sources from sharpener")
+                logger.info("# Matching sources from sharpener ... Done")
+            else:
+                logger.info("# Skipping Matching sources from sharpener")
 
-            self.analyse_sources()
+            if "analyse_sources" in self.steps:
+                logger.info("# Analysing spectra of sources from sharpener")
+
+                self.analyse_sources()
+
+                logger.info(
+                    "# Analysing spectra of sources from sharpener ... Done")
+            else:
+                logger.info(
+                    "# Skipping analysis of spectra of sources from sharpener")
+
+            # clean up by removing the images and cubes
+            if "clean_up" in self.steps:
+                logger.info("# Removing cubes and continuum images")
+
+                self.clean_up()
+
+                logger.info("# Removing cubes and continuum images ... Done")
+            else:
+                logger.warning(
+                    "# Did not remove cubes and continuum images. WARNING. Be aware of the disk space used by the fits files")
 
             logger.info(
-                "# Analysing spectra of sources from sharpener ... Done")
-        else:
-            logger.info(
-                "# Skipping analysis of spectra of sources from sharpener")
-
-        # clean up by removing the images and cubes
-        if "clean_up" in self.steps:
-            logger.info("# Removing cubes and continuum images")
-
-            self.clean_up()
-
-            logger.info("# Removing cubes and continuum images ... Done")
-        else:
-            logger.warning(
-                "# Did not remove cubes and continuum images. WARNING. Be aware of the disk space used by the fits files")
-
-        logger.info(
-            "#### Apersharp processing taskid {} ... Done".format(self.taskid))
+                "#### Apersharp processing cube {0} of taskid {1} ... Done".format(cube, self.taskid))
 
     def set_directories(self):
         """
@@ -546,29 +556,29 @@ class apersharp(BaseModule):
                 beam))
 
             # make sure that certain steps are disabled only if the default is used
-            if using_default_config_file:
-                sharpener_settings['source_catalog']['enable'] = False
-                sharpener_settings['simulate_continuum']['enable'] = False
-                sharpener_settings['polynomial_subtraction']['enable'] = False
-                sharpener_settings['hanning']['enable'] = False
+            # if using_default_config_file:
+            #     sharpener_settings['source_catalog']['enable'] = False
+            #     sharpener_settings['simulate_continuum']['enable'] = False
+            #     sharpener_settings['polynomial_subtraction']['enable'] = False
+            #     sharpener_settings['hanning']['enable'] = False
 
-                sharpener_settings['source_finder']['enable'] = True
-                sharpener_settings['source_finder']['clip'] = 1e-2
+            #     sharpener_settings['source_finder']['enable'] = True
+            #     sharpener_settings['source_finder']['clip'] = 1e-2
 
-                sharpener_settings['source_catalog']['enable'] = False
+            #     sharpener_settings['source_catalog']['enable'] = False
 
-                sharpener_settings['sdss_match']['enable'] = self.do_sdss
-                sharpener_settings['sdss_match']['zunitCube'] = ""
-                sharpener_settings['sdss_match']['plot_format'] = "pdf"
+            #     sharpener_settings['sdss_match']['enable'] = self.do_sdss
+            #     sharpener_settings['sdss_match']['zunitCube'] = ""
+            #     sharpener_settings['sdss_match']['plot_format'] = "pdf"
 
-                sharpener_settings['spec_ex']['enable'] = True
-                sharpener_settings['spec_ex']['chrom_aberration'] = False
+            #     sharpener_settings['spec_ex']['enable'] = True
+            #     sharpener_settings['spec_ex']['chrom_aberration'] = False
 
-                sharpener_settings['abs_plot']['enable'] = True
-                sharpener_settings['abs_plot']['fixed_scale'] = False
-                sharpener_settings['abs_plot']['plot_contImage'] = True
-                # for the detailed plots, 3 rows
-                sharpener_settings['abs_plot']['channels_per_plot'] = 406
+            #     sharpener_settings['abs_plot']['enable'] = True
+            #     sharpener_settings['abs_plot']['fixed_scale'] = False
+            #     sharpener_settings['abs_plot']['plot_contImage'] = True
+            #     # for the detailed plots, 3 rows
+            #     sharpener_settings['abs_plot']['channels_per_plot'] = 406
 
             with io.open(beam_configfilename, 'w', encoding='utf8') as outfile:
                 yaml.dump(sharpener_settings, outfile,
@@ -759,7 +769,7 @@ class apersharp(BaseModule):
 
         # analyze spectra of sources
         analyse_spectra(
-            src_cat_file_name, self.get_src_csv_file_name_candidates(), cube_dir, negative_snr_threshold=-5, positive_snr_threshold=5)
+            src_cat_file_name, self.get_src_csv_file_name_candidates(), cube_dir, do_subtract_median=self.do_subtract_median, do_subtract_mean=self.do_subtract_mean, negative_snr_threshold=self.negative_snr_threshold, positive_snr_threshold=self.positive_snr_threshold)
 
         logger.info(
             "Cube {}: Analysing spectra of sources from different beams ... Done".format(self.cube))

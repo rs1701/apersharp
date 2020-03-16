@@ -93,32 +93,32 @@ def run_apersharp(taskid, sharpener_basedir, data_basedir=None, data_source='ALT
         # logger = logging.getLogger(__name__)
 
         # check the steps
-        if steps is None:
-            steps_list = ["get_data", "setup_sharpener",
-                          "run_sharpener", "collect_results", "clean_up"]
-        else:
-            steps_list = steps.split(",")
+        # if steps is None:
+        #     steps_list = ["get_data", "setup_sharpener",
+        #                   "run_sharpener", "collect_results", "clean_up"]
+        # else:
+        #     steps_list = steps.split(",")
 
-        if beams is None:
-            beam_list = np.array(["{}".format(str(beam).zfill(2))
-                                  for beam in np.arange(40)])
-        elif beams == 'all':
-            beam_list = np.array(["{}".format(str(beam).zfill(2))
-                                  for beam in np.arange(40)])
-        else:
-            beam_list = np.array(beams.split(","))
+        # if beams is None:
+        #     beam_list = np.array(["{}".format(str(beam).zfill(2))
+        #                           for beam in np.arange(40)])
+        # elif beams == 'all':
+        #     beam_list = np.array(["{}".format(str(beam).zfill(2))
+        #                           for beam in np.arange(40)])
+        # else:
+        #     beam_list = np.array(beams.split(","))
 
         logger.info("##")
         logger.info("# Apersharp called with:")
         logger.info("# taskid: {}".format(taskid))
         logger.info("# basedir: {}".format(sharpener_basedir_taskid))
-        logger.info("# steps: {}".format(str(steps)))
-        logger.info("# output format: {}".format(output_form))
-        logger.info("# cubes: {}".format(cubes))
-        logger.info("# beams: {}".format(str(beam_list)))
-        #logger.info(" ")
-        logger.info("# do_sdss: {}".format(do_sdss))
-        logger.info("# n_cores: {}".format(n_cores))
+        # logger.info("# steps: {}".format(str(steps)))
+        # logger.info("# output format: {}".format(output_form))
+        # logger.info("# cubes: {}".format(cubes))
+        # logger.info("# beams: {}".format(str(beam_list)))
+        # #logger.info(" ")
+        # logger.info("# do_sdss: {}".format(do_sdss))
+        # logger.info("# n_cores: {}".format(n_cores))
         logger.info("##")
 
         # get a list of cubes
@@ -129,20 +129,40 @@ def run_apersharp(taskid, sharpener_basedir, data_basedir=None, data_source='ALT
             Helper to set the base parameters for the module
             """
 
-            p.taskid = taskid
-            p.sharpener_basedir = sharpener_basedir_taskid
-            p.data_basedir = data_basedir
-            p.data_source = data_source
-            p.output_form = output_form
-            p.cube = cube
-            p.steps = steps_list
-            p.do_sdss = do_sdss
-            p.n_cores = n_cores
-            p.cont_src_resource = cont_src_resource
-            p.beam_list = beam_list
-            p.configfilename = configfilename
-            p.logfile = logfile_taskid
+            # overwrite the number of cores
+            if n_cores is not None:
+                logger.info(
+                    "Overwriting default setting for number of cores: {}".format(n_cores))
+                p.n_cores = n_cores
+            # overwrite the steps
+            if steps is not None:
+                logger.info(
+                    "Overwriting default setting for steps: {}".format(steps))
+                p.steps_list = steps.split(",")
+            # overwrite beams
+            if beams is not None:
+                logger.info("Ovewriting default list of beams")
+                beam_list = np.array(beams.split(","))
+            elif beams == "all":
+                beam_list = np.array(["{}".format(str(beam).zfill(2))
+                                      for beam in np.arange(40)])
+            # overwrite list of cubes
+            if cubes is not None:
+                cube_list = cubes.split(",")
 
+            # p.taskid = taskid
+            # p.sharpener_basedir = sharpener_basedir_taskid
+            # p.data_basedir = data_basedir
+            # p.data_source = data_source
+            # p.output_form = output_form
+            # p.cube = cube
+            # p.steps = steps_list
+            # p.do_sdss = do_sdss
+            # p.n_cores = n_cores
+            # p.cont_src_resource = cont_src_resource
+            # p.beam_list = beam_list
+            # p.configfilename = configfilename
+            
         logfile_taskid = os.path.join(sharpener_basedir_taskid,
                                       "{}_apersharp.log".format(taskid))
         setup_logger('DEBUG', logfile=logfile_taskid)
@@ -157,7 +177,7 @@ def run_apersharp(taskid, sharpener_basedir, data_basedir=None, data_source='ALT
             logger.info(
                 "Processing cube {0} of taskid {1} with SHARPener".format(cube, taskid))
 
-            p = apersharp()
+            p = apersharp(config_file=configfilename)
             set_params(p)
             try:
                 p.go()
