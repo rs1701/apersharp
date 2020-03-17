@@ -16,7 +16,8 @@ from lib.abort_function import abort_function
 from modules.apersharp import apersharp
 
 
-def run_apersharp(taskid, sharpener_basedir, data_basedir=None, data_source='ALTA', steps=None, user=None, beams='all', output_form="pdf", cubes="0", cont_src_resource="continuum", configfilename=None, no_sdss=False, n_cores=1):
+# def run_apersharp(taskid, sharpener_basedir, data_basedir=None, data_source='ALTA', steps=None, user=None, beams='all', output_form="pdf", cubes="0", cont_src_resource="continuum", configfilename=None, no_sdss=False, n_cores=1):
+def run_apersharp(taskid, sharpener_basedir, apersharp_configfilename=None, steps=None, beams='all', cubes="0", n_cores=1):
     """
     Main function run apersharp.
 
@@ -126,7 +127,7 @@ def run_apersharp(taskid, sharpener_basedir, data_basedir=None, data_source='ALT
 
         def set_params(p):
             """
-            Helper to set the base parameters for the module
+            Helper to set/overwrite the base parameters for the module
             """
 
             # overwrite the number of cores
@@ -142,13 +143,14 @@ def run_apersharp(taskid, sharpener_basedir, data_basedir=None, data_source='ALT
             # overwrite beams
             if beams is not None:
                 logger.info("Ovewriting default list of beams")
-                beam_list = np.array(beams.split(","))
+                p.beam_list = np.array(beams.split(","))
             elif beams == "all":
-                beam_list = np.array(["{}".format(str(beam).zfill(2))
-                                      for beam in np.arange(40)])
+                p.beam_list = np.array(["{}".format(str(beam).zfill(2))
+                                        for beam in np.arange(40)])
             # overwrite list of cubes
             if cubes is not None:
-                cube_list = cubes.split(",")
+                logger.info("Overwriting default settings")
+                p.cube_list = cubes.split(",")
 
             # p.taskid = taskid
             # p.sharpener_basedir = sharpener_basedir_taskid
@@ -162,7 +164,7 @@ def run_apersharp(taskid, sharpener_basedir, data_basedir=None, data_source='ALT
             # p.cont_src_resource = cont_src_resource
             # p.beam_list = beam_list
             # p.configfilename = configfilename
-            
+
         logfile_taskid = os.path.join(sharpener_basedir_taskid,
                                       "{}_apersharp.log".format(taskid))
         setup_logger('DEBUG', logfile=logfile_taskid)
@@ -177,7 +179,7 @@ def run_apersharp(taskid, sharpener_basedir, data_basedir=None, data_source='ALT
             logger.info(
                 "Processing cube {0} of taskid {1} with SHARPener".format(cube, taskid))
 
-            p = apersharp(config_file=configfilename)
+            p = apersharp(config_file=apersharp_configfilename)
             set_params(p)
             try:
                 p.go()
@@ -213,40 +215,43 @@ if __name__ == "__main__":
     parser.add_argument("sharpener_basedir", type=str,
                         help='Directory for the directory where the data should be stored for processing')
 
-    parser.add_argument("--data_basedir", type=str, default='',
-                        help='(Remote-)directory where the taskid is located')
+    # parser.add_argument("--data_basedir", type=str, default='',
+    #                     help='(Remote-)directory where the taskid is located')
 
-    parser.add_argument("--data_source", type=str, default='ALTA',
-                        help='Name of remote server to get the data from')
+    # parser.add_argument("--data_source", type=str, default='ALTA',
+    #                     help='Name of remote server to get the data from')
 
     parser.add_argument("--steps", type=str, default=None,
                         help='List of steps to run through.')
 
-    parser.add_argument("--user", type=str, default=None,
-                        help='The username for getting data from Happili.')
+    # parser.add_argument("--user", type=str, default=None,
+    #                     help='The username for getting data from Happili.')
 
-    parser.add_argument("--output_form", type=str, default='pdf',
-                        help='Choose between "pdf" and "html" for the output plots')
+    # parser.add_argument("--output_form", type=str, default='pdf',
+    #                     help='Choose between "pdf" and "html" for the output plots')
 
-    parser.add_argument("--beams", type=str, default='all',
-                        help='Comma-separated list of beams given as a single string or all.')
+    parser.add_argument("--beams", type=str, default=None,
+                        help='Comma-separated list of beams given as a single string or all. Will overwrite config file setting.')
 
-    parser.add_argument("--cubes", type=str, default='0',
-                        help='Select the cube to be processed. If "all", all cubes will be processed.')
+    parser.add_argument("--cubes", type=str, default=None,
+                        help='Comma-separated list of cubes. Will overwrite config file setting.')
 
-    parser.add_argument("--cont_src_resource", type=str, default='image',
-                        help='Select the resources to get continuum source for HI absorption source')
+    # parser.add_argument("--cont_src_resource", type=str, default='image',
+    #                     help='Select the resources to get continuum source for HI absorption source')
 
-    parser.add_argument("--configfilename", type=str, default=None,
-                        help='Default config file name to run SHARPener. Taken from SHARPener by default')
+    parser.add_argument("--config", type=str, default=None,
+                        help='Specify a user-defined config file for Apersharp.')
 
-    parser.add_argument("--n_cores", type=int, default=1,
-                        help='Number of cores for running sharpener')
+    parser.add_argument("--n_cores", type=int, default=None,
+                        help='Number of cores for running sharpener. Will overwrite config file setting.')
 
-    parser.add_argument("--no_sdss", action="store_true", default=False,
-                        help='Enable sdss cross-matching')
+    # parser.add_argument("--no_sdss", action="store_true", default=False,
+    #                     help='Enable sdss cross-matching')
 
     args = parser.parse_args()
 
-    run_apersharp(args.taskid, args.sharpener_basedir, data_basedir=args.data_basedir, data_source=args.data_source,
-                  steps=args.steps, user=args.user, beams=args.beams, output_form=args.output_form, cubes=args.cubes, cont_src_resource=args.cont_src_resource, configfilename=args.configfilename, no_sdss=args.no_sdss, n_cores=args.n_cores)
+    # run_apersharp(args.taskid, args.sharpener_basedir, data_basedir=args.data_basedir, data_source=args.data_source,
+    #               steps=args.steps, user=args.user, beams=args.beams, output_form=args.output_form, cubes=args.cubes, cont_src_resource=args.cont_src_resource, configfilename=args.configfilename, no_sdss=args.no_sdss, n_cores=args.n_cores)
+
+    run_apersharp(args.taskid, args.sharpener_basedir, apersharp_configfilename=args.config,
+                  steps=args.steps, beams=args.beams, cubes=args.cubes, n_cores=args.n_cores)

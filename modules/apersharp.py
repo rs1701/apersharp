@@ -15,12 +15,13 @@ import functools
 from lib.setup_logger import setup_logger
 from lib.abort_function import abort_function
 from lib.sharpener_pipeline import sharpener_pipeline
-from lib.cross_match_sources import get_all_sources_of_cube, match_sources_of_beams
+from lib.get_master_table import get_all_sources_of_cube
+from lib.cross_match_sources import match_sources_of_beams
 from lib.analyse_spectra import analyse_spectra
 from lib.load_config import load_config
 from base import BaseModule
 
-#from sharpener.srun_sharpener_mp import run_sharpener as sharpener_mp
+# from sharpener.srun_sharpener_mp import run_sharpener as sharpener_mp
 logging.getLogger("matplotlib").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
@@ -35,15 +36,18 @@ class apersharp(BaseModule):
 
     """
 
-    module_name = "Apersharp"
+    module_name = "APERSHARP"
     # create logfile
     # logfile = None
     # logger = None
-    do_sdss = False
-    do_subtract_median = True
-    do_subtract_mean = False
-    positive_snr_threshold = 5
-    negative_snr_threshold = 5
+    apersharp_do_subtract_median = True
+    apersharp_do_subtract_mean = False
+    apersharp_positive_snr_threshold = 5
+    apersharp_negative_snr_threshold = 5
+    sharpener_do_source_finding = True
+    sharpener_do_spectra_extraction = True
+    sharpener_do_plots = True
+    sharpener_do_sdss = True
 
     def __init__(self, config_file=None, **kwargs):
         self.default = lib.load_config(self, config_file)
@@ -105,15 +109,25 @@ class apersharp(BaseModule):
             else:
                 logger.info("# Skipping collecting results from sharpener")
 
-            # collect results from sharpener
+            # create master table
+            if "get_master_table" in self.steps:
+                logger.info("# Create master table with source information from all beams")
+
+                self.get_master_table()
+
+                logger.info("# Create master table with source information from all beams ... Done")
+            else:
+                logger.info("# Skipping Create master table with source information from all beams")
+
+            # match sources across beams
             if "match_sources" in self.steps:
-                logger.info("# Matching sources from sharpener")
+                logger.info("# Matching sources found by sharpener")
 
                 self.match_sources()
 
-                logger.info("# Matching sources from sharpener ... Done")
+                logger.info("# Matching sources found by sharpener ... Done")
             else:
-                logger.info("# Skipping Matching sources from sharpener")
+                logger.info("# Skipping Matching sources found by sharpener")
 
             if "analyse_sources" in self.steps:
                 logger.info("# Analysing spectra of sources from sharpener")
@@ -495,7 +509,7 @@ class apersharp(BaseModule):
         """
         Function to setup the parameters for sharpener
         """
-        #import sharpener
+        # import sharpener
 
         logger.info("Setting up sharpener")
 
@@ -610,8 +624,8 @@ class apersharp(BaseModule):
             for beam_index in beam_count:
                 sharpener_pipeline(beam_directory_list, True,
                                    True, True, self.do_sdss, beam_index)
-                #setup_logger('DEBUG', logfile=self.logfile, new_logfile=False)
-                #logger = logging.getLogger(__name__)
+                # setup_logger('DEBUG', logfile=self.logfile, new_logfile=False)
+                # logger = logging.getLogger(__name__)
         else:
             logger.info("Cube {0}: Processing on {1} cores".format(
                 self.cube, self.n_cores))
@@ -620,14 +634,14 @@ class apersharp(BaseModule):
 
             # create function iterater to provide additional arguments
             fct_partial = functools.partial(
-                sharpener_pipeline, beam_directory_list, True, True, True, self.do_sdss)
+                sharpener_pipeline, beam_directory_list, self.sharpener_do_source_finding, self.sharpener_do_spectra_extraction, self.sharpener_do_plots, self.sharpener_do_sdss)
 
             # create and run map
             pool.map(fct_partial, beam_count)
             pool.close()
             pool.join()
 
-            #setup_logger('DEBUG', logfile=self.logfile, new_logfile=False)
+            # setup_logger('DEBUG', logfile=self.logfile, new_logfile=False)
             # %logger = logging.getLogger(__name__)
 
         logger.info("Cube {0}: Running sharpener ... Done".format(
@@ -718,13 +732,13 @@ class apersharp(BaseModule):
             "Cube {0}: Collecting the results from sharpener".format(self.cube))
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++
-    def match_sources(self):
+    def get_master_table(self):
         """
-        Function to match the sources from different beams
+        Function to create master table with sources from all beams
         """
 
         logger.info(
-            "Cube {}: Matching sources from different beams".format(self.cube))
+            "Cube {}: Collecting source information from different beams".format(self.cube))
 
         self.cube_dir = self.get_cube_dir()
 
@@ -736,6 +750,33 @@ class apersharp(BaseModule):
         else:
             get_all_sources_of_cube(src_cat_file_name, self.cube_dir,
                                     taskid=self.taskid, cube_nr=self.cube, beam_list=self.beam_list)
+
+        logger.info(
+            "Cube {}: Collecting source information from different beams ... Done".format(self.cube))
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++
+    def match_sources(self):
+        """
+        Function to match the sources from different beams
+        """
+
+        logger.info(
+            "Cube {}: Matching sources from different beams".format(self.cube))
+
+        # check that csv file exists
+        # i.e., that the master table has been created
+        if not os.path.exists(self.get_src_csv_file_name()):
+            logger.warning(
+                "Could not find file with source information. Will create master table now before continuing.")
+            self.get_master_table()
+            logger.info(
+                "Collected source information. Continue with analysing spectra")
+        else:
+            logger.info("Found source catalogue file")
+        
+        src_cat_file_name = self.get_src_csv_file_name()
+
+        self.cube_dir = self.get_cube_dir()
 
         # match the srouces
         match_sources_of_beams(src_cat_file_name, max_sep=3)
@@ -756,8 +797,8 @@ class apersharp(BaseModule):
         # i.e., that the previous step was executed
         if not os.path.exists(self.get_src_csv_file_name()):
             logger.warning(
-                "Could not find file with source information from previous step. Will run previous step now before continuing.")
-            self.match_sources()
+                "Could not find file with source information. Will create master table now before continuing.")
+            self.get_master_table()
             logger.info(
                 "Collected source information. Continue with analysing spectra")
         else:
