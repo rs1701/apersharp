@@ -42,6 +42,7 @@ class apersharp(BaseModule):
     # logger = None
     apersharp_do_subtract_median = True
     apersharp_do_subtract_mean = False
+    apersharp_use_rms = True
     apersharp_positive_snr_threshold = 5
     apersharp_negative_snr_threshold = 5
     sharpener_do_source_finding = True
@@ -810,7 +811,7 @@ class apersharp(BaseModule):
 
         # analyze spectra of sources
         analyse_spectra(
-            src_cat_file_name, self.get_src_csv_file_name_candidates(), cube_dir, do_subtract_median=self.do_subtract_median, do_subtract_mean=self.do_subtract_mean, negative_snr_threshold=self.negative_snr_threshold, positive_snr_threshold=self.positive_snr_threshold)
+            src_cat_file_name, self.get_src_csv_file_name_candidates(), cube_dir, do_subtract_median=self.do_subtract_median, do_subtract_mean=self.do_subtract_mean, use_rms=self.apersharp_use_rms, negative_snr_threshold=self.negative_snr_threshold, positive_snr_threshold=self.positive_snr_threshold)
 
         logger.info(
             "Cube {}: Analysing spectra of sources from different beams ... Done".format(self.cube))
