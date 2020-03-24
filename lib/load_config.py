@@ -1,4 +1,5 @@
 import logging
+import os
 from ConfigParser import ConfigParser
 
 logger = logging.getLogger(__name__)
