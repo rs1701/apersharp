@@ -64,10 +64,10 @@ class apersharp(BaseModule):
 
         for cube in self.cube_list:
 
-        logger.info("#### Apersharp processing cube {0} of taskid {1}".format(
-            cube, self.taskid))
+            logger.info("#### Apersharp processing cube {0} of taskid {1}".format(
+                cube, self.taskid))
 
-           if "get_data" in self.steps:
+            if "get_data" in self.steps:
                 logger.info("# Creating directories and getting data")
                 # create the directory structure
                 self.set_directories()
@@ -112,13 +112,16 @@ class apersharp(BaseModule):
 
             # create master table
             if "get_master_table" in self.steps:
-                logger.info("# Create master table with source information from all beams")
+                logger.info(
+                    "# Create master table with source information from all beams")
 
                 self.get_master_table()
 
-                logger.info("# Create master table with source information from all beams ... Done")
+                logger.info(
+                    "# Create master table with source information from all beams ... Done")
             else:
-                logger.info("# Skipping Create master table with source information from all beams")
+                logger.info(
+                    "# Skipping Create master table with source information from all beams")
 
             # match sources across beams
             if "match_sources" in self.steps:
@@ -774,7 +777,7 @@ class apersharp(BaseModule):
                 "Collected source information. Continue with analysing spectra")
         else:
             logger.info("Found source catalogue file")
-        
+
         src_cat_file_name = self.get_src_csv_file_name()
 
         self.cube_dir = self.get_cube_dir()
