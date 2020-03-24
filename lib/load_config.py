@@ -21,6 +21,8 @@ def load_config(config_object, config_file=None):
     Settings of class object based on config
     """
 
+    logger.info("Loading config")
+
     config = ConfigParser()  # Initialise the config parser
     if config_file is not None:
         if not os.path.exists(config_file):
@@ -46,5 +48,5 @@ def load_config(config_object, config_file=None):
             setattr(config_object, item[0], eval(item[1]))
 
     logger.info(
-        'Reading configuration file ... Done'.format(config_file))
+        'Loading config ... Done'.format(config_file))
     return config
