@@ -17,7 +17,7 @@ from modules.apersharp import apersharp
 
 
 # def run_apersharp(taskid, sharpener_basedir, data_basedir=None, data_source='ALTA', steps=None, user=None, beams='all', output_form="pdf", cubes="0", cont_src_resource="continuum", configfilename=None, no_sdss=False, n_cores=1):
-def run_apersharp(taskid, sharpener_basedir, apersharp_configfilename=None, steps=None, beams='all', cubes="0", n_cores=1):
+def run_apersharp(taskid, sharpener_basedir, apersharp_configfilename=None, steps=None, beams=None, cubes=None, n_cores=None):
     """
     Main function run apersharp.
 
@@ -33,15 +33,9 @@ def run_apersharp(taskid, sharpener_basedir, apersharp_configfilename=None, step
     =====
     taskid (str): Name of the taskid to process. Multiple taskids are separated using a comma
     sharpener_basedir (str): Directory for the directory where the data should be stored for processing
-    data_basedir (str): (Remote-)directory where the taskid is located
-    data_source (str): Name of remote server to get the data from
+    apersharp_configfile (str): Set the config file used by Apersharp
     steps (str): List of steps to run through.
-    user (str): The username for getting data from Happili
-    output_form (str): Choose between "pdf" and "html" for the output plots
     cubes (str): Select the cube to be processed. If "all", all cubes will be processed.
-    cont_src_resource (str): Select what should be used for continuum source counterparts.
-    configfilename (str): Default config file name to run SHARPener. Taken from SHARPener by default
-    no_sdss (bool): Enable/Disable SDSS cross-matching of radio continuum sources
     n_cores (int): Number of cores for running sharpener in parallel
     """
 
@@ -57,11 +51,6 @@ def run_apersharp(taskid, sharpener_basedir, apersharp_configfilename=None, step
         sharpener_basedir = os.path.abspath(sharpener_basedir)
     if not os.path.exists(sharpener_basedir):
         os.mkdir(sharpener_basedir)
-
-    if no_sdss:
-        do_sdss = False
-    else:
-        do_sdss = True
 
     logfile = os.path.join(sharpener_basedir, "apersharp_main.log")
     setup_logger('DEBUG', logfile=logfile)
