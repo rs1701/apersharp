@@ -771,8 +771,10 @@ class apersharp(BaseModule):
             logger.warning(
                 "{} already exists. File will be overwritten".format(src_cat_file_name))
         else:
-            get_all_sources_of_cube(src_cat_file_name, self.cube_dir,
-                                    taskid=self.taskid, cube_nr=self.cube, beam_list=self.beam_list)
+            pass
+
+        get_all_sources_of_cube(src_cat_file_name, self.cube_dir,
+                                taskid=self.taskid, cube_nr=self.cube, beam_list=self.beam_list)
 
         logger.info(
             "Cube {}: Collecting source information from different beams ... Done".format(self.cube))
