@@ -71,3 +71,8 @@ python2 $HOME/sharp/apersharp/run_apersharp.py --config="/path/to/apersharp/conf
 ```
 
 SHARPener requires a configuration file, too. Apersharp comes with a default configuration file for SHARPener and adjusts it to its needs. It is possible to provide a user-defined version of the SHARPener configuration file in the Apersharp configuration file (setting `sharpener_configfilename`). Note that the changing the `general`-settings for `workdir`, `cubename`, and `contname` does not have any affect because these are adjusted by Apersharp to the specific file names of the image cube and continuum image.
+
+Steps 5 till 7 of Apersharp will create a master table for the cube that was processed. The file location will be `<output_directory>/<taskid>/cube_<cube_number>/<taskid>_Cube<cube_number>_all_sources.csv` and `<output_directory>/<taskid>/cube_<cube_number>/<taskid>_Cube<cube_number>_snr_candidates.csv`. It is strongly recommended to use these files when checking the plots of the spectra and any other further analysis. These files contain all information on the continuuum source location coming from `IMSAD`, in addition to information on a possible SDSS match, match of the source in other beams and quantities derived from the spectrum (more documentation will follow).
+
+## To-Do
+1. Add better plotting in Apersharp
