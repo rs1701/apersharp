@@ -14,23 +14,25 @@ class BaseModule:
     def module_name(self):
         pass
 
-    taskid = None
     user = None
-    sharpener_basedir = None
     output_form = None
     data_basedir = None
     data_source = None
-    configfilename = None
-    cube = None
-    cube_dir = None
+    sharpener_configfilename = None
+    cube_list = None
     beam_list = None
-    # continuum_image_list = None
-    cont_src_resource = None
-    steps = None
+    steps_list = None
     n_cores = None
-    do_sdss = False
-    NBEAMS = 40
+
+    taskid = None
+    sharpener_basedir = None
+    cube_dir = None
+    # continuum_image_list = None
+
+    # setting that should not be changed
+    cont_src_resource = 'image'
     logfile = None
+    NBEAMS = 40
 
     # Name of the csv file with all sources
     all_src_csv_file_name = None
@@ -72,7 +74,10 @@ class BaseModule:
         Function to return the path of CSV file with source information from all beams
         """
 
-        return os.path.join(self.get_cube_dir(), "{0}_Cube{1}_all_sources.csv".format(self.taskid, self.cube))
+        if self.all_src_csv_file_name is None:
+            return os.path.join(self.get_cube_dir(), "{0}_Cube{1}_all_sources.csv".format(self.taskid, self.cube))
+        else:
+            return self.all_src_csv_file_name
 
     def get_src_csv_file_name_matched(self):
         """
@@ -80,7 +85,10 @@ class BaseModule:
         and sources matched across beams
         """
 
-        return self.get_src_csv_file_name().replace(".csv", "_matched.csv")
+        if self.all_src_csv_file_name_matched is None:
+            return self.get_src_csv_file_name().replace(".csv", "_matched.csv")
+        else:
+            return self.all_src_csv_file_name_matched
 
     def get_src_csv_file_name_candidates(self):
         """
@@ -88,4 +96,7 @@ class BaseModule:
         and source spectra analysed for candidates of absorption
         """
 
-        return self.get_src_csv_file_name().replace("_all_sources.csv", "_snr_candidates.csv")
+        if self.all_src_csv_file_name_candidates is None:
+            return self.get_src_csv_file_name().replace("_all_sources.csv", "_snr_candidates.csv")
+        else:
+            return self.all_src_csv_file_name_candidates

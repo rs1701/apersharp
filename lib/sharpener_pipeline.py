@@ -62,8 +62,7 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
     if not os.path.exists(parameter_file):
         logger.info("(Pid {0:d}) ERROR: File {1:s} not found. Abort".format(
             proc, parameter_file))
-        # sys.exit(1)
-
+        
     spar = sharpy.sharpener(parameter_file)
 
     # continue only if all files are available
