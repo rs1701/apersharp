@@ -1,6 +1,8 @@
 import logging
 from ConfigParser import ConfigParser
 
+logger = logging.getLogger(__name__)
+
 
 def load_config(config_object, config_file=None):
     """
