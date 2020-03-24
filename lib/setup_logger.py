@@ -17,7 +17,7 @@ def setup_logger(level="DEBUG", logfile=None, new_logfile=True):
 
     """
 
-    logger = logging.getLogger("Logger_Setup")
+    logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
     logger.propagate = False
     logger.handlers = []
