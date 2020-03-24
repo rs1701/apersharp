@@ -36,15 +36,16 @@ python2 $HOME/sharp/apersharp/run_apersharp.py --cube="0" --beams="10" <taskid> 
 ## Overview
 (Work in progress)
 
-Apersharp does the following steps by default:
-1. Get data from ALTA
-2. Set up SHARpener
-3. Run the SHARPener from above
-4. Collect results from SHARPener (i.e., create the zip files with pdfs and source tables)
-5. Create Master table from all cubes
-6. Match sources across beams
-7. Analyse spectra
-8. Clean up by removing cubes and images
+Apersharp does the following steps by default. 
+1. "get_data": Get data from ALTA
+2. "setup_sharpener": Set up the configuration file for SHARpener
+3. "run_sharpener": Run the SHARPener pipeline with the steps set in the configuration file
+4. "collect_results": Collect results from SHARPener (i.e., create the zip files with pdfs and source tables)
+5. "get_master_table" Create Master table with the sources from all cubes
+6. "match_sources": Match sources across beams and write the cross-matched source IDs to the master table
+7. "analys_sources": Analyse spectra of all sources and search for candidates of absorption using negative and positive SNR tests
+8. "clean_up": Clean up by removing cubes and images to clear up disk space.
+It is possible to leave steps out or run them separately.
 
 This is what SHARPener does in a nutshell:
 1. Find the continuum sources
