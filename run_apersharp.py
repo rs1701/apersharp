@@ -140,8 +140,8 @@ def run_apersharp(taskid, sharpener_basedir, apersharp_configfilename=None, step
                     "Overwriting default settings for list of cubes: {}".format(cubes))
                 p.cube_list = cubes.split(",")
 
-            # p.taskid = taskid
-            # p.sharpener_basedir = sharpener_basedir_taskid
+            p.taskid = taskid
+            p.sharpener_basedir = sharpener_basedir_taskid
             # p.data_basedir = data_basedir
             # p.data_source = data_source
             # p.output_form = output_form
