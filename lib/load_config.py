@@ -34,7 +34,7 @@ def load_config(config_object, config_file=None):
     else:
         logger.info(
             'Reading default configuration file')
-        default_cfg = os.path.join(os.path.basename(
+        default_cfg = os.path.join(os.path.dirname(
             __file__), "../apersharp_config/apersharp_default.cfg")
         config.readfp(open(default_cfg))
 
