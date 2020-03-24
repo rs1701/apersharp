@@ -645,8 +645,8 @@ class apersharp(BaseModule):
             logger.info(
                 "Cube {0}: Processing on one core only".format(self.cube))
             for beam_index in beam_count:
-                sharpener_pipeline(beam_directory_list, True,
-                                   True, True, self.do_sdss, beam_index)
+                sharpener_pipeline(beam_directory_list, self.sharpener_do_source_finding,
+                                   self.sharpener_do_spectra_extraction, self.sharpener_do_plots, self.sharpener_do_sdss, beam_index)
                 # setup_logger('DEBUG', logfile=self.logfile, new_logfile=False)
                 # logger = logging.getLogger(__name__)
         else:
