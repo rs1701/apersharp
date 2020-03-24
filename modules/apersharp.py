@@ -41,6 +41,7 @@ class apersharp(BaseModule):
     # create logfile
     # logfile = None
     # logger = None
+    cube = None
     apersharp_do_subtract_median = True
     apersharp_do_subtract_mean = False
     apersharp_use_rms = True
@@ -65,7 +66,9 @@ class apersharp(BaseModule):
 
         for cube in self.cube_list:
 
-             # start time for processing this cube
+            self.cube = cube
+
+            # start time for processing this cube
             start_time_cube = time()
 
             logger.info("#### Apersharp processing cube {0} of taskid {1}".format(

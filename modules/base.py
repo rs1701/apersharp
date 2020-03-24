@@ -18,8 +18,8 @@ class BaseModule:
     output_form = None
     data_basedir = None
     data_source = None
-    configfilename = None
-    cube = None
+    sharpener_configfilename = None
+    cube_list = None
     beam_list = None
     steps_list = None
     n_cores = None
