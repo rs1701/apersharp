@@ -10,6 +10,7 @@ import zipfile
 import io
 import multiprocessing as mp
 import functools
+from time import time
 
 
 from lib.setup_logger import setup_logger
@@ -64,99 +65,113 @@ class apersharp(BaseModule):
 
         for cube in self.cube_list:
 
+             # start time for processing this cube
+            start_time_cube = time()
+
             logger.info("#### Apersharp processing cube {0} of taskid {1}".format(
                 cube, self.taskid))
 
-            if "get_data" in self.steps:
-                logger.info("# Creating directories and getting data")
-                # create the directory structure
-                self.set_directories()
+            try:
 
-                # get the data
-                self.get_data()
+                if "get_data" in self.steps:
+                    logger.info("# Creating directories and getting data")
+                    # create the directory structure
+                    self.set_directories()
 
-                logger.info("# Creating directories and getting data ... Done")
+                    # get the data
+                    self.get_data()
+
+                    logger.info(
+                        "# Creating directories and getting data ... Done")
+                else:
+                    logger.info(
+                        "# Skippting creating directories and getting data")
+
+                # set things up for sharpener
+                if "setup_sharpener" in self.steps:
+                    logger.info("# Setting up sharpner")
+
+                    self.setup_sharpener()
+
+                    logger.info("# Setting up sharpner ... Done")
+                else:
+                    logger.info("# Skipping setting up sharpener")
+
+                # run sharpener
+                if "run_sharpener" in self.steps:
+                    logger.info("# Running sharpener")
+
+                    self.run_sharpener()
+
+                    logger.info("# Running sharpener ... Done")
+                else:
+                    logger.info("# Skipping running sharpener")
+
+                # collect results from sharpener
+                if "collect_results" in self.steps:
+                    logger.info("# Collecting results from sharpener")
+
+                    self.collect_sharpener_results()
+
+                    logger.info("# Collecting results from sharpener ... Done")
+                else:
+                    logger.info("# Skipping collecting results from sharpener")
+
+                # create master table
+                if "get_master_table" in self.steps:
+                    logger.info(
+                        "# Create master table with source information from all beams")
+
+                    self.get_master_table()
+
+                    logger.info(
+                        "# Create master table with source information from all beams ... Done")
+                else:
+                    logger.info(
+                        "# Skipping Create master table with source information from all beams")
+
+                # match sources across beams
+                if "match_sources" in self.steps:
+                    logger.info("# Matching sources found by sharpener")
+
+                    self.match_sources()
+
+                    logger.info(
+                        "# Matching sources found by sharpener ... Done")
+                else:
+                    logger.info(
+                        "# Skipping Matching sources found by sharpener")
+
+                if "analyse_sources" in self.steps:
+                    logger.info(
+                        "# Analysing spectra of sources from sharpener")
+
+                    self.analyse_sources()
+
+                    logger.info(
+                        "# Analysing spectra of sources from sharpener ... Done")
+                else:
+                    logger.info(
+                        "# Skipping analysis of spectra of sources from sharpener")
+
+                # clean up by removing the images and cubes
+                if "clean_up" in self.steps:
+                    logger.info("# Removing cubes and continuum images")
+
+                    self.clean_up()
+
+                    logger.info(
+                        "# Removing cubes and continuum images ... Done")
+                else:
+                    logger.warning(
+                        "# Did not remove cubes and continuum images. WARNING. Be aware of the disk space used by the fits files")
+            except Exception as e:
+                logger.error("# Apersharp processing cube {0} of taskid {1} ... Failed ({2:.0f}s)".format(
+                    cube, self.taskid, time() - start_time_cube))
+                logger.exception(e)
             else:
                 logger.info(
-                    "# Skippting creating directories and getting data")
-
-            # set things up for sharpener
-            if "setup_sharpener" in self.steps:
-                logger.info("# Setting up sharpner")
-
-                self.setup_sharpener()
-
-                logger.info("# Setting up sharpner ... Done")
-            else:
-                logger.info("# Skipping setting up sharpener")
-
-            # run sharpener
-            if "run_sharpener" in self.steps:
-                logger.info("# Running sharpener")
-
-                self.run_sharpener()
-
-                logger.info("# Running sharpener ... Done")
-            else:
-                logger.info("# Skipping running sharpener")
-
-            # collect results from sharpener
-            if "collect_results" in self.steps:
-                logger.info("# Collecting results from sharpener")
-
-                self.collect_sharpener_results()
-
-                logger.info("# Collecting results from sharpener ... Done")
-            else:
-                logger.info("# Skipping collecting results from sharpener")
-
-            # create master table
-            if "get_master_table" in self.steps:
-                logger.info(
-                    "# Create master table with source information from all beams")
-
-                self.get_master_table()
-
-                logger.info(
-                    "# Create master table with source information from all beams ... Done")
-            else:
-                logger.info(
-                    "# Skipping Create master table with source information from all beams")
-
-            # match sources across beams
-            if "match_sources" in self.steps:
-                logger.info("# Matching sources found by sharpener")
-
-                self.match_sources()
-
-                logger.info("# Matching sources found by sharpener ... Done")
-            else:
-                logger.info("# Skipping Matching sources found by sharpener")
-
-            if "analyse_sources" in self.steps:
-                logger.info("# Analysing spectra of sources from sharpener")
-
-                self.analyse_sources()
-
-                logger.info(
-                    "# Analysing spectra of sources from sharpener ... Done")
-            else:
-                logger.info(
-                    "# Skipping analysis of spectra of sources from sharpener")
-
-            # clean up by removing the images and cubes
-            if "clean_up" in self.steps:
-                logger.info("# Removing cubes and continuum images")
-
-                self.clean_up()
-
-                logger.info("# Removing cubes and continuum images ... Done")
-            else:
-                logger.warning(
-                    "# Did not remove cubes and continuum images. WARNING. Be aware of the disk space used by the fits files")
-
-            logger.info(
-                "#### Apersharp processing cube {0} of taskid {1} ... Done".format(cube, self.taskid))
+                    "## Apersharp processing cube {0} of taskid {1} ... Done ({2:.0f}s)".format(cube, self.taskid, time() - start_time_cube))
 
     def set_directories(self):
         """

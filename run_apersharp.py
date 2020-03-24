@@ -65,7 +65,7 @@ def run_apersharp(taskid, sharpener_basedir, apersharp_configfilename=None, step
         # get the start time of the function call
         start_time_taskid = time()
 
-        logger.info("## Apersharp processing of taskid {}".format(taskid))
+        logger.info("#### Apersharp processing of taskid {}".format(taskid))
 
         # check the output directory
         # if sharpener_basedir == '':
@@ -111,9 +111,6 @@ def run_apersharp(taskid, sharpener_basedir, apersharp_configfilename=None, step
         # logger.info("# n_cores: {}".format(n_cores))
         logger.info("##")
 
-        # get a list of cubes
-        cube_list = cubes.split(",")
-
         def set_params(p):
             """
             Helper to set/overwrite the base parameters for the module
@@ -131,14 +128,16 @@ def run_apersharp(taskid, sharpener_basedir, apersharp_configfilename=None, step
                 p.steps_list = steps.split(",")
             # overwrite beams
             if beams is not None:
-                logger.info("Ovewriting default list of beams")
+                logger.info(
+                    "Ovewriting default list of beams: {}".format(beams))
                 p.beam_list = np.array(beams.split(","))
             elif beams == "all":
                 p.beam_list = np.array(["{}".format(str(beam).zfill(2))
                                         for beam in np.arange(40)])
             # overwrite list of cubes
             if cubes is not None:
-                logger.info("Overwriting default settings")
+                logger.info(
+                    "Overwriting default settings for list of cubes: {}".format(cubes))
                 p.cube_list = cubes.split(",")
 
             # p.taskid = taskid
@@ -159,30 +158,24 @@ def run_apersharp(taskid, sharpener_basedir, apersharp_configfilename=None, step
         setup_logger('DEBUG', logfile=logfile_taskid)
         logger = logging.getLogger(__name__)
 
-        # now go through the list of cubes
-        for cube in cube_list:
+        # start time for processing this cube
+        start_time_cube = time()
 
-            # start time for processing this cube
-            start_time_cube = time()
-
+        p = apersharp(config_file=apersharp_configfilename)
+        set_params(p)
+        try:
+            p.go()
+        except Exception as e:
+            setup_logger('DEBUG', logfile=logfile, new_logfile=False)
+            logger = logging.getLogger(__name__)
+            logger.warning(
+                "Processing of taskid {0} ... Failed ({1:.0f}s)".format(taskid, time() - start_time_cube))
+            logger.exception(e)
+        else:
+            setup_logger('DEBUG', logfile=logfile, new_logfile=False)
+            logger = logging.getLogger(__name__)
             logger.info(
-                "Processing cube {0} of taskid {1} with SHARPener".format(cube, taskid))
-
-            p = apersharp(config_file=apersharp_configfilename)
-            set_params(p)
-            try:
-                p.go()
-            except Exception as e:
-                setup_logger('DEBUG', logfile=logfile, new_logfile=False)
-                logger = logging.getLogger(__name__)
-                logger.warning(
-                    "Processing cube {0} of taskid {1} with SHARPener ... Failed ({2:.0f}s)".format(cube, taskid, time() - start_time_cube))
-                logger.exception(e)
-            else:
-                setup_logger('DEBUG', logfile=logfile, new_logfile=False)
-                logger = logging.getLogger(__name__)
-                logger.info(
-                    "Processing cube {0} of taskid {1} with SHARPener ... Done ({2:.0f})".format(cube, taskid, time() - start_time_cube))
+                "Processing of taskid {0} ... Done ({1:.0f})".format(taskid, time() - start_time_cube))
 
         logger.info("## Apershap finished processing of taskid {0} after {1:.0f}s".format(
             taskid, time() - start_time_taskid))
