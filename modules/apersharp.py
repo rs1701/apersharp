@@ -539,7 +539,7 @@ class apersharp(BaseModule):
         using_default_config_file = True
 
         # if no template configfile was specified, get the default one
-        if self.configfilename is None:
+        if self.sharpener_configfilename is None:
             # the default sharpener configfile is here:
             default_configfile = os.path.join(os.path.dirname(
                 os.path.dirname(__file__)), "sharpener_config/sharpener_default.yml")
@@ -551,16 +551,16 @@ class apersharp(BaseModule):
                 error = "Could not find default sharpener config file. Abort"
                 logger.error(error)
                 raise RuntimeError(error)
-            self.configfilename = default_configfile
+            self.sharpener_configfilename = default_configfile
         else:
             # check that the file exist
-            if os.path.exists(self.configfilename):
+            if os.path.exists(self.sharpener_configfilename):
                 logger.info("Using specified config file: {}".format(
-                    self.configfilename))
+                    self.sharpener_configfilename))
                 using_default_config_file = False
             else:
                 error = "Could not find the specificed config file: {}. Abort".format(
-                    self.configfilename)
+                    self.sharpener_configfilename)
                 logger.error(error)
                 raise RuntimeError(error)
 
@@ -574,10 +574,10 @@ class apersharp(BaseModule):
 
             # configfile of the beam
             beam_configfilename = os.path.join(
-                cube_beam_dir, "beam_{0}_{1}".format(beam.zfill(2), os.path.basename(self.configfilename).replace("default", "settings")))
+                cube_beam_dir, "beam_{0}_{1}".format(beam.zfill(2), os.path.basename(self.sharpener_configfilename).replace("default", "settings")))
 
             # copy the file
-            shutil.copy2(self.configfilename, beam_configfilename)
+            shutil.copy2(self.sharpener_configfilename, beam_configfilename)
 
             # open and read the default sharpener setup file
             with open("{0}".format(beam_configfilename)) as stream:
