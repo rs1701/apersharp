@@ -51,7 +51,7 @@ class apersharp(BaseModule):
     sharpener_do_sdss = True
 
     def __init__(self, config_file=None, **kwargs):
-        self.default = lib.load_config(self, config_file)
+        self.default = load_config(self, config_file)
 
     def go(self):
         """
