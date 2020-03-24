@@ -81,25 +81,33 @@ def find_candidate(src_data, output_file_name_candidates,  negative_snr_threshol
     return snr_candidates
 
 
-def get_max_negative_snr(spec_data, src_name):
+def get_max_negative_snr(spec_data, src_name, rms=None):
     """
     Function to get the maximum negative SNR and supplementary information
     """
 
     # try to determine the snr
-    # after checking that noise is not 0:
-    noise_check = np.unique(spec_data["Noise [Jy]"])
-    if np.size(noise_check) and noise_check[0] == 0:
-        logger.warning(
-            "Calculating SNR failed for {0}. No noise information".format(src_name))
-        ratio = None
+    if rms is not None:
+        ratio = np.nanmin(spec_data["Flux [Jy]"]) / rms
     else:
-        ratio = spec_data["Flux [Jy]"] / spec_data["Noise [Jy]"]
+        # after checking that noise is not 0:
+        noise_check = np.unique(spec_data["Noise [Jy]"])
+        if np.size(noise_check) and noise_check[0] == 0:
+            logger.warning(
+                "Calculating SNR failed for {0}. No noise information".format(src_name))
+            ratio = None
+        else:
+            ratio = spec_data["Flux [Jy]"] / spec_data["Noise [Jy]"]
 
     if ratio is None:
         max_negative_snr = 0
         max_negative_snr_ch = 0
         max_negative_snr_freq = 0
+    elif rms is not None:
+        max_negative_snr = ratio
+        max_negative_snr_ch = np.where(
+            spec_data["Flux [Jy]"] == np.nanmin(spec_data["Flux [Jy]"]))[0][0]
+        max_negative_snr_freq = spec_data['Frequency [Hz]'][max_negative_snr_ch]
     else:
         max_negative_snr = np.nanmin(ratio)
         max_negative_snr_ch = np.where(ratio == max_negative_snr)[0][0]
@@ -108,25 +116,33 @@ def get_max_negative_snr(spec_data, src_name):
     return max_negative_snr, max_negative_snr_ch, max_negative_snr_freq
 
 
-def get_max_positive_snr(spec_data, src_name):
+def get_max_positive_snr(spec_data, src_name, rms=None):
     """
     Function to get the maximum positive SNR and supplementary information
     """
 
     # try to determine the snr
-    # after checking that noise is not 0:
-    noise_check = np.unique(spec_data["Noise [Jy]"])
-    if np.size(noise_check) and noise_check[0] == 0:
-        logger.warning(
-            "Calculating SNR failed for {0}. No noise information".format(src_name))
-        ratio = None
+    if rms is not None:
+        ratio = np.nanmax(spec_data["Flux [Jy]"]) / rms
     else:
-        ratio = spec_data["Flux [Jy]"] / spec_data["Noise [Jy]"]
+        # after checking that noise is not 0:
+        noise_check = np.unique(spec_data["Noise [Jy]"])
+        if np.size(noise_check) and noise_check[0] == 0:
+            logger.warning(
+                "Calculating SNR failed for {0}. No noise information".format(src_name))
+            ratio = None
+        else:
+            ratio = spec_data["Flux [Jy]"] / spec_data["Noise [Jy]"]
 
     if ratio is None:
         max_positive_snr = 0
         max_positive_snr_ch = 0
         max_positive_snr_freq = 0
+    elif rms is not None:
+        max_positive_snr = ratio
+        max_positive_snr_ch = np.where(
+            spec_data["Flux [Jy]"] == np.nanmax(spec_data["Flux [Jy]"]))[0][0]
+        max_positive_snr_freq = spec_data['Frequency [Hz]'][max_positive_snr_ch]
     else:
         max_positive_snr = np.nanmax(ratio)
         max_positive_snr_ch = np.where(ratio == max_positive_snr)[0][0]
@@ -135,7 +151,7 @@ def get_max_positive_snr(spec_data, src_name):
     return max_positive_snr, max_positive_snr_ch, max_positive_snr_freq
 
 
-def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, do_subtract_median=True, do_subtract_mean=False, negative_snr_threshold=-5, positive_snr_threshold=5):
+def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, do_subtract_median=True, do_subtract_mean=False, use_rms=True,  negative_snr_threshold=-5, positive_snr_threshold=5):
     """
     Function to run quality check and find candidates for absorption
     """
@@ -160,6 +176,7 @@ def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, do_subt
     # new columns
     mean_noise = np.zeros(n_src)
     median_noise = np.zeros(n_src)
+    rms = np.zeros(n_src)
     min_flux = np.zeros(n_src)
     max_flux = np.zeros(n_src)
     mean_flux = np.zeros(n_src)
@@ -173,7 +190,7 @@ def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, do_subt
     max_positive_snr_freq = np.zeros(n_src)
 
     # names of table columns
-    new_col_names = ["Mean_Noise", "Median_Noise", "Min_Flux", "Max_Flux", "Mean_Flux", "Median_Flux", "Candidate_SNR", "Max_Negative_SNR",
+    new_col_names = ["Mean_Noise", "Median_Noise", "RMS", "Min_Flux", "Max_Flux", "Mean_Flux", "Median_Flux", "Candidate_SNR", "Max_Negative_SNR",
                      "Max_Negative_SNR_Channel", "Max_Negative_SNR_Frequency", "Max_Positive_SNR", "Max_Positive_SNR_Channel", "Max_Positive_SNR_Frequency"]
     # removes these if they exists
     try:
@@ -210,12 +227,6 @@ def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, do_subt
         # get the median noise
         median_noise[src_index] = np.nanmedian(spec_data['Noise [Jy]'])
 
-        # get max flux
-        max_flux[src_index] = np.nanmax(spec_data['Flux [Jy]'])
-
-        # get min flux
-        min_flux[src_index] = np.nanmin(spec_data['Flux [Jy]'])
-
         # get mean flux
         mean_flux[src_index] = np.nanmean(spec_data['Flux [Jy]'])
 
@@ -234,13 +245,31 @@ def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, do_subt
             spec_data['Flux [Jy]'] = spec_data['Flux [Jy]'] - \
                 mean_flux[src_index]
 
-        # get maximum negative snr values
-        max_negative_snr[src_index], max_negative_snr_ch[src_index], max_negative_snr_freq[src_index] = get_max_negative_snr(
-            spec_data, src_id)
+        # get max flux
+        max_flux[src_index] = np.nanmax(spec_data['Flux [Jy]'])
 
-        # get maximum positive snr values
-        max_positive_snr[src_index], max_positive_snr_ch[src_index], max_positive_snr_freq[src_index] = get_max_positive_snr(
-            spec_data, src_id)
+        # get min flux
+        min_flux[src_index] = np.nanmin(spec_data['Flux [Jy]'])
+
+        # get the rms
+        rms[src_index] = np.nanstd(spec_data['Flux [Jy]'])
+
+        if use_rms:
+            # get maximum negative snr values
+            max_negative_snr[src_index], max_negative_snr_ch[src_index], max_negative_snr_freq[src_index] = get_max_negative_snr(
+                spec_data, src_id, rms=rms[src_index])
+
+            # get maximum positive snr values
+            max_positive_snr[src_index], max_positive_snr_ch[src_index], max_positive_snr_freq[src_index] = get_max_positive_snr(
+                spec_data, src_id, rms=rms[src_index])
+        else:
+            # get maximum negative snr values
+            max_negative_snr[src_index], max_negative_snr_ch[src_index], max_negative_snr_freq[src_index] = get_max_negative_snr(
+                spec_data, src_id)
+
+            # get maximum positive snr values
+            max_positive_snr[src_index], max_positive_snr_ch[src_index], max_positive_snr_freq[src_index] = get_max_positive_snr(
+                spec_data, src_id)
 
         # if snr_candidate[src_index] == 1:
         #     logger.debug("Found candidate for absorption (SNR = {0})".format(
@@ -251,7 +280,7 @@ def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, do_subt
         logger.info("## Processing {} ... Done".format(src_id))
 
     # for storing new table later
-    metrics_table = Table([mean_noise, median_noise, min_flux, max_flux, mean_flux, median_flux, snr_candidates,
+    metrics_table = Table([mean_noise, median_noise, rms, min_flux, max_flux, mean_flux, median_flux, snr_candidates,
                            max_negative_snr, max_negative_snr_ch, max_negative_snr_freq, max_positive_snr, max_positive_snr_ch, max_positive_snr_freq], names=new_col_names)
 
     # combine old and new table
