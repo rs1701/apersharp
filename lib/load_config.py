@@ -36,6 +36,8 @@ def load_config(config_object, config_file=None):
             'Reading default configuration file')
         default_cfg = os.path.join(os.path.dirname(
             __file__), "../apersharp_config/apersharp_default.cfg")
+        logger.debug(
+            "Default configuration file found here: {}".format(default_cfg))
         config.readfp(open(default_cfg))
 
     for sect in config.sections():
