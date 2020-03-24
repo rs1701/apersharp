@@ -28,8 +28,9 @@ class BaseModule:
     sharpener_basedir = None
     cube_dir = None
     # continuum_image_list = None
-    cont_src_resource = None
 
+    # setting that should not be changed
+    cont_src_resource = 'image'
     logfile = None
     NBEAMS = 40
 
