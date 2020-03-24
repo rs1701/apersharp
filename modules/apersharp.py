@@ -73,7 +73,7 @@ class apersharp(BaseModule):
 
             try:
 
-                if "get_data" in self.steps:
+                if "get_data" in self.steps_list:
                     logger.info("# Creating directories and getting data")
                     # create the directory structure
                     self.set_directories()
@@ -88,7 +88,7 @@ class apersharp(BaseModule):
                         "# Skippting creating directories and getting data")
 
                 # set things up for sharpener
-                if "setup_sharpener" in self.steps:
+                if "setup_sharpener" in self.steps_list:
                     logger.info("# Setting up sharpner")
 
                     self.setup_sharpener()
@@ -98,7 +98,7 @@ class apersharp(BaseModule):
                     logger.info("# Skipping setting up sharpener")
 
                 # run sharpener
-                if "run_sharpener" in self.steps:
+                if "run_sharpener" in self.steps_list:
                     logger.info("# Running sharpener")
 
                     self.run_sharpener()
@@ -108,7 +108,7 @@ class apersharp(BaseModule):
                     logger.info("# Skipping running sharpener")
 
                 # collect results from sharpener
-                if "collect_results" in self.steps:
+                if "collect_results" in self.steps_list:
                     logger.info("# Collecting results from sharpener")
 
                     self.collect_sharpener_results()
@@ -118,7 +118,7 @@ class apersharp(BaseModule):
                     logger.info("# Skipping collecting results from sharpener")
 
                 # create master table
-                if "get_master_table" in self.steps:
+                if "get_master_table" in self.steps_list:
                     logger.info(
                         "# Create master table with source information from all beams")
 
@@ -131,7 +131,7 @@ class apersharp(BaseModule):
                         "# Skipping Create master table with source information from all beams")
 
                 # match sources across beams
-                if "match_sources" in self.steps:
+                if "match_sources" in self.steps_list:
                     logger.info("# Matching sources found by sharpener")
 
                     self.match_sources()
@@ -142,7 +142,7 @@ class apersharp(BaseModule):
                     logger.info(
                         "# Skipping Matching sources found by sharpener")
 
-                if "analyse_sources" in self.steps:
+                if "analyse_sources" in self.steps_list:
                     logger.info(
                         "# Analysing spectra of sources from sharpener")
 
@@ -155,7 +155,7 @@ class apersharp(BaseModule):
                         "# Skipping analysis of spectra of sources from sharpener")
 
                 # clean up by removing the images and cubes
-                if "clean_up" in self.steps:
+                if "clean_up" in self.steps_list:
                     logger.info("# Removing cubes and continuum images")
 
                     self.clean_up()

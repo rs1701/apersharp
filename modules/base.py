@@ -21,7 +21,7 @@ class BaseModule:
     configfilename = None
     cube = None
     beam_list = None
-    steps = None
+    steps_list = None
     n_cores = None
 
     taskid = None
