@@ -513,18 +513,19 @@ class apersharp(BaseModule):
         # check the failed beams
         if len(failed_beams) == len(self.beam_list):
             abort_function(
-                "Did not find cube {0} for all beams.".format(self.cube))
+                "Cube {0}: Did not find cubes for all beams.".format(self.cube))
         elif len(failed_beams) != 0:
-            logger.warning("Could not find cube {0} for beams {1}. Removing those beams".format(self.cube,
-                                                                                                str(failed_beams)))
+            logger.warning("Cube {0}: Could not find cubes for some beams {1}. Removing those beams".format(self.cube,
+                                                                                                            str(failed_beams)))
             new_beam_list = self.beam_list.tolist()
             for beam in failed_beams:
                 new_beam_list.remove(beam)
             self.beam_list = np.array(new_beam_list)
-            logger.warning("Will only process cube {0} for {1} beams ({2})".format(
+            logger.warning("Cube {0}: Will only process cubes for {1} beams ({2})".format(
                 self.cube, len(self.beam_list), str(self.beam_list)))
         else:
-            logger.info("Found cube {0} for all beams".format(self.cube))
+            logger.info(
+                "Cube {0}: Found image cubes for all beams".format(self.cube))
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++
     def setup_sharpener(self):
