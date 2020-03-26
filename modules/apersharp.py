@@ -47,6 +47,8 @@ class apersharp(BaseModule):
     apersharp_use_rms = True
     apersharp_positive_snr_threshold = 5
     apersharp_negative_snr_threshold = 5
+    apersharp_create_plots_zip_file = True
+    apersharp_create_sources_zip_file = True
     sharpener_do_source_finding = True
     sharpener_do_spectra_extraction = True
     sharpener_do_plots = True
@@ -54,6 +56,9 @@ class apersharp(BaseModule):
 
     def __init__(self, config_file=None, **kwargs):
         self.default = load_config(self, config_file)
+
+        # making sure the list of beams is in the correct format
+        self.beam_list = np.array([str(beam) for beam in self.beam_list])
 
     def go(self):
         """
@@ -196,6 +201,7 @@ class apersharp(BaseModule):
         # Create beam directories if data is not coming from happili
         if self.data_source != "happili":
             for beam in self.beam_list:
+
                 beam_dir = os.path.join(self.cube_dir, "{}".format(beam))
                 if not os.path.exists(beam_dir):
                     try:
@@ -566,6 +572,7 @@ class apersharp(BaseModule):
 
         # go through the list of beams, copy the config file and adjust the settings
         for beam in self.beam_list:
+
             logger.info(
                 "Cube {0}: Setting up sharpener for beam {1}".format(self.cube, beam))
 
@@ -682,77 +689,83 @@ class apersharp(BaseModule):
         # Create a zip file with all the plots
         # ++++++++++++++++++++++++++++++++++++
 
-        logger.info("Creating zip files for plots")
+        if self.apersharp_create_plots_zip_file:
+            logger.info("Creating zip files for plots")
 
-        cube_beam_dir_pattern = self.get_cube_beam_dir("??")
+            cube_beam_dir_pattern = self.get_cube_beam_dir("??")
 
-        # list of plots
-        plot_list = glob.glob(os.path.join(
-            cube_beam_dir_pattern, "sharpOut/plot/*all_plots*.pdf"))
+            # list of plots
+            plot_list = glob.glob(os.path.join(
+                cube_beam_dir_pattern, "sharpOut/plot/*all_plots*.pdf"))
 
-        if len(plot_list) != 0:
+            if len(plot_list) != 0:
 
-            plot_list.sort()
+                plot_list.sort()
 
-            with zipfile.ZipFile(os.path.join(self.get_cube_dir(), "{0}_cube_{1}_all_plots.zip".format(self.taskid, self.cube)), 'w') as myzip:
+                with zipfile.ZipFile(os.path.join(self.get_cube_dir(), "{0}_cube_{1}_all_plots.zip".format(self.taskid, self.cube)), 'w') as myzip:
 
-                for plot in plot_list:
-                    myzip.write(plot, "beam_{0:s}_{1:s}".format(plot.replace(
-                        os.path.dirname(cube_beam_dir_pattern), "").split("/")[1], os.path.basename(plot)))
-                    # myzip.write(plot, os.path.basename(plot))
+                    for plot in plot_list:
+                        myzip.write(plot, "beam_{0:s}_{1:s}".format(plot.replace(
+                            os.path.dirname(cube_beam_dir_pattern), "").split("/")[1], os.path.basename(plot)))
+                        # myzip.write(plot, os.path.basename(plot))
 
-            logger.info("Creating zip files for plots ... Done")
+                logger.info("Creating zip files for plots ... Done")
+            else:
+                logger.warning("No files to zip.")
         else:
-            logger.warning("No files to zip.")
+            logger.info("Did not create zip file for plots")
 
-        logger.info("Creating zip files for source list")
+        if self.apersharp_create_sources_zip_file:
+            logger.info("Creating zip files for source files")
 
-        csv_list = glob.glob(os.path.join(
-            cube_beam_dir_pattern, "sharpOut/abs/mir_src_sharp.csv"))
-        csv_sdss_list = glob.glob(os.path.join(
-            cube_beam_dir_pattern, "sharpOut/abs/sdss_src.csv"))
-        csv_sdss_radio_list = glob.glob(os.path.join(
-            cube_beam_dir_pattern, "sharpOut/abs/radio_sdss_src_match.csv"))
-        karma_list = glob.glob(os.path.join(
-            cube_beam_dir_pattern, "sharpOut/abs/karma_src_sharpener.ann"))
+            csv_list = glob.glob(os.path.join(
+                cube_beam_dir_pattern, "sharpOut/abs/mir_src_sharp.csv"))
+            csv_sdss_list = glob.glob(os.path.join(
+                cube_beam_dir_pattern, "sharpOut/abs/sdss_src.csv"))
+            csv_sdss_radio_list = glob.glob(os.path.join(
+                cube_beam_dir_pattern, "sharpOut/abs/radio_sdss_src_match.csv"))
+            karma_list = glob.glob(os.path.join(
+                cube_beam_dir_pattern, "sharpOut/abs/karma_src_sharpener.ann"))
 
-        # do not create if there are no source at all
-        if len(csv_list) != 0:
+            # do not create if there are no source at all
+            if len(csv_list) != 0:
 
-            with zipfile.ZipFile(os.path.join(self.get_cube_dir(), "{0}_cube_{1}_all_sources.zip".format(self.taskid, self.cube)), 'w') as myzip:
+                with zipfile.ZipFile(os.path.join(self.get_cube_dir(), "{0}_cube_{1}_all_sources.zip".format(self.taskid, self.cube)), 'w') as myzip:
 
-                if len(csv_list) != 0:
-                    csv_list.sort()
-                    for csv in csv_list:
-                        myzip.write(csv, "beam_{0:s}_{1:s}".format(csv.replace(
-                            os.path.dirname(cube_beam_dir_pattern), "").split("/")[1], os.path.basename(csv)))
+                    if len(csv_list) != 0:
+                        csv_list.sort()
+                        for csv in csv_list:
+                            myzip.write(csv, "beam_{0:s}_{1:s}".format(csv.replace(
+                                os.path.dirname(cube_beam_dir_pattern), "").split("/")[1], os.path.basename(csv)))
 
-                if len(csv_sdss_list) != 0:
-                    csv_sdss_list.sort()
-                    for csv in csv_sdss_list:
-                        myzip.write(csv, "beam_{0:s}_{1:s}".format(csv.replace(
-                            os.path.dirname(cube_beam_dir_pattern), "").split("/")[1], os.path.basename(csv)))
-                        # myzip.write(csv, os.path.basename(csv))
+                    if len(csv_sdss_list) != 0:
+                        csv_sdss_list.sort()
+                        for csv in csv_sdss_list:
+                            myzip.write(csv, "beam_{0:s}_{1:s}".format(csv.replace(
+                                os.path.dirname(cube_beam_dir_pattern), "").split("/")[1], os.path.basename(csv)))
+                            # myzip.write(csv, os.path.basename(csv))
 
-                if len(csv_sdss_radio_list) != 0:
-                    csv_sdss_radio_list.sort()
-                    for csv in csv_sdss_radio_list:
-                        myzip.write(csv, "beam_{0:s}_{1:s}".format(csv.replace(
-                            os.path.dirname(cube_beam_dir_pattern), "").split("/")[1], os.path.basename(csv)))
-                        # myzip.write(csv, os.path.basename(csv))
+                    if len(csv_sdss_radio_list) != 0:
+                        csv_sdss_radio_list.sort()
+                        for csv in csv_sdss_radio_list:
+                            myzip.write(csv, "beam_{0:s}_{1:s}".format(csv.replace(
+                                os.path.dirname(cube_beam_dir_pattern), "").split("/")[1], os.path.basename(csv)))
+                            # myzip.write(csv, os.path.basename(csv))
 
-                if len(karma_list) != 0:
-                    karma_list.sort()
-                    for karma in karma_list:
-                        myzip.write(karma, "beam_{0:s}_{1:s}".format(karma.replace(
-                            os.path.dirname(cube_beam_dir_pattern), "").split("/")[1], os.path.basename(karma)))
+                    if len(karma_list) != 0:
+                        karma_list.sort()
+                        for karma in karma_list:
+                            myzip.write(karma, "beam_{0:s}_{1:s}".format(karma.replace(
+                                os.path.dirname(cube_beam_dir_pattern), "").split("/")[1], os.path.basename(karma)))
 
-            logger.info("Creating zip files for source list ... Done")
+                logger.info("Creating zip files for source files ... Done")
+            else:
+                logger.warning("No files to zip.")
         else:
-            logger.warning("No files to zip.")
+            logger.info("Did not create zip file for source files")
 
         logger.info(
-            "Cube {0}: Collecting the results from sharpener".format(self.cube))
+            "Cube {0}: Collecting the results from sharpener ... Done".format(self.cube))
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++
     def get_master_table(self):
