@@ -130,7 +130,8 @@ def run_apersharp(taskid, sharpener_basedir, apersharp_configfilename=None, step
             if beams is not None:
                 logger.info(
                     "Ovewriting default list of beams: {}".format(beams))
-                p.beam_list = np.array(beams.split(","))
+                p.beam_list = np.array([str(beam).zfill(2)
+                                        for beam in beams.split(",")])
             elif beams == "all":
                 p.beam_list = np.array(["{}".format(str(beam).zfill(2))
                                         for beam in np.arange(40)])
