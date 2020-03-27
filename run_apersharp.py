@@ -143,6 +143,7 @@ def run_apersharp(taskid, sharpener_basedir, apersharp_configfilename=None, step
 
             p.taskid = taskid
             p.sharpener_basedir = sharpener_basedir_taskid
+
             # p.data_basedir = data_basedir
             # p.data_source = data_source
             # p.output_form = output_form
@@ -164,6 +165,7 @@ def run_apersharp(taskid, sharpener_basedir, apersharp_configfilename=None, step
 
         p = apersharp(config_file=apersharp_configfilename)
         set_params(p)
+        p.logfile = logfile_taskid
         try:
             p.go()
         except Exception as e:

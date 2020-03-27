@@ -111,9 +111,16 @@ class apersharp(BaseModule):
 
                     self.run_sharpener()
 
+                    setup_logger('DEBUG', logfile=self.logfile,
+                                 new_logfile=False)
+                    logger = logging.getLogger(__name__)
+
                     logger.info("# Running sharpener ... Done")
                 else:
                     logger.info("# Skipping running sharpener")
+
+                setup_logger('DEBUG', logfile=self.logfile, new_logfile=False)
+                logger = logging.getLogger(__name__)
 
                 # collect results from sharpener
                 if "collect_results" in self.steps_list:
