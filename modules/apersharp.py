@@ -681,6 +681,9 @@ class apersharp(BaseModule):
             # setup_logger('DEBUG', logfile=self.logfile, new_logfile=False)
             # %logger = logging.getLogger(__name__)
 
+        setup_logger('DEBUG', logfile=self.logfile, new_logfile=False)
+        logger = logging.getLogger(__name__)
+
         logger.info("Cube {0}: Running sharpener ... Done".format(
             self.cube, str(self.beam_list)))
 
