@@ -24,7 +24,7 @@ def setup_logger(level="DEBUG", logfile=None, new_logfile=True):
 
     # set up handler
     fh_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s : %(message)s',
-                                     datefmt='%m/%d/%Y %I:%M:%S %p')
+                                     datefmt='%Y/%m/%d %I:%M:%S %p')
 
     if logfile is None:
         fh = logging.FileHandler("Apersched.log")
@@ -37,7 +37,7 @@ def setup_logger(level="DEBUG", logfile=None, new_logfile=True):
 
     # set up output stream to command line
     sh_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s : %(message)s',
-                                     datefmt='%m/%d/%Y %I:%M:%S %p')
+                                     datefmt='%Y/%m/%d %I:%M:%S %p')
     sh = logging.StreamHandler()
     sh.setLevel(logging.getLevelName(level))
     sh.setFormatter(sh_formatter)
