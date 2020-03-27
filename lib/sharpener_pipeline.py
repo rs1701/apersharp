@@ -40,7 +40,7 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
     logfile = os.path.join(
         beam_directory_list[beam_count], "apersharp_beam_{}.log".format(beam_name))
     setup_logger('DEBUG', logfile=logfile)
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger('SHARPENER')
 
     # get the current working directory
     cwd = os.getcwd()
@@ -62,7 +62,7 @@ def sharpener_pipeline(beam_directory_list, do_source_finding, do_spectra_extrac
     if not os.path.exists(parameter_file):
         logger.info("(Pid {0:d}) ERROR: File {1:s} not found. Abort".format(
             proc, parameter_file))
-        
+
     spar = sharpy.sharpener(parameter_file)
 
     # continue only if all files are available
