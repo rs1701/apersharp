@@ -11,7 +11,7 @@ from astropy.coordinates import SkyCoord
 logger = logging.getLogger(__name__)
 
 
-def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=None, beam_list=None, src_file="radio_sdss_src_match.csv", alt_src_file="mir_src_sharp.csv", overwrite_existing_master_table=False, create_master_table_backup=True, allow_multiple_source_entries=False):
+def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=None, beam_list=None, src_file="radio_sdss_src_match.csv", alt_src_file="mir_src_sharp.csv", overwrite_master_table=False, create_master_table_backup=True, allow_multiple_source_entries=False):
     """
     Function to collect the information from all sources in one file
 
@@ -128,7 +128,7 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
             shutil.copy2(output_file_name, table_backup_name)
 
         # overwrite existing master table or add new data
-        if overwrite_existing_master_table:
+        if overwrite_master_table:
             logger.warning("Existing master table will be overwritten")
         else:
             logger.info("Adding new sources to existing master table")
