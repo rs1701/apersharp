@@ -152,7 +152,7 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
                             "Found existing entry for {}. Overwriting data".format(new_src_id))
                         src_index_master_table = np.where(
                             src_ids_master_table == new_src_id)[0][0]
-                        for colname in src_ids_master_table.colnames:
+                        for colname in master_table.colnames:
                             master_table[colname][src_index_master_table] = full_list[colname][src_index]
                     else:
                         master_table = vstack(
