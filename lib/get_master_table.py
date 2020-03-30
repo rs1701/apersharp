@@ -139,26 +139,26 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
             if allow_multiple_source_entries:
                 logger.warning(
                     "Adding new sources without checking if they already exists. Source ID may not be unique any more.")
-                full_list = vstack([master_table, new_src_table])
+                full_list = vstack([master_table, full_list])
             # check for existing entry and remove if found, then add
             else:
-                src_ids_master_table = master_table["Source_ID"]
-                # go through the list of new sources
-                for src_index in range(np.size(full_list["Source_ID"])):
-                    new_src_id = full_list["Source_ID"][src_index]
-                    # if src id exists in master table overwrite entries with new data
-                    if new_src_id in src_ids_master_table:
+                # get list of unique beams from new table
+                new_beam_list = np.unique(full_list["Beam"])
+
+                # go through the list of beams
+                for new_beam in new_beam_list:
+                    new_beam_in_master_indices = np.where(
+                        (master_table["Cube"] == int(cube_nr)) & (master_table["Beam"] == new_beam))[0]
+                    # remove all entries of this beam from master table
+                    if np.size(new_beam_in_master_indices) != 0:
                         logger.warning(
-                            "Found existing entry for {}. Overwriting data".format(new_src_id))
-                        src_index_master_table = np.where(
-                            src_ids_master_table == new_src_id)[0][0]
-                        for colname in master_table.colnames:
-                            master_table[colname][src_index_master_table] = full_list[colname][src_index]
+                            "Found data for beam {}. Will be replaced".format(new_beam))
+                        master_table.remove_rows(new_beam_in_master_indices)
                     else:
-                        master_table = vstack(
-                            [master_table, full_list[src_index]])
-                # overwrite new table with updated master table
-                full_list = master_table.copy()
+                        continue
+
+                # combine master table with new data
+                full_list = vstack([master_table, full_list])
 
             # sort by source id to easily spot multiple entries
             full_list.sort("Source_ID")
