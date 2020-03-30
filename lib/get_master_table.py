@@ -149,7 +149,7 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
                     # if src id exists in master table overwrite entries with new data
                     if new_src_id in src_ids_master_table:
                         logger.warning(
-                            "Found existing entry for {}. Overwriting data".format(src))
+                            "Found existing entry for {}. Overwriting data".format(new_src_id))
                         src_index_master_table = np.where(
                             src_ids_master_table == new_src_id)[0][0]
                         for colname in src_ids_master_table.colnames:
