@@ -121,7 +121,7 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
                 cube_dir, "master_table_backup")
             if not os.path.exists(table_backup_dir):
                 os.mkdir(table_backup_dir)
-            table_backup_name = os.path.join(table_backup_dir, output_file_name.replace(
+            table_backup_name = os.path.join(table_backup_dir, os.path.basename(output_file_name).replace(
                 ".csv", "_{}.csv".format(datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))))
             logger.info("Creating a copy of current master table in {}".format(
                 table_backup_name))
