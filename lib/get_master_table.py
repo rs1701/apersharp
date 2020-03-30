@@ -1,22 +1,3 @@
-"""
-Functionality to match sources across beams (maybe also cubes)
-
-1. get all the sources from all beams and create dict with source name, RA, DEC, cube and beam
-2. Sort by beam
-3. Go through the list of sources
-    3.0.5 Check if source already has a match
-    3.1. Remove sources with beams that do not overlap
-    3.2. Remove sources with same beam
-    3.3. Calculate distance on sky based on SkyCoord
-    3.4. Check whether there is one or more sources with distance < 2 arcsec
-        - One beam can overlap with up to 2 other beams for this comparison
-        - except beam 00 which could have 3 other beams
-    3.5. if match is found add source name, RA, DEC and beam of match to the selected source and its matches
-
-2. determine ratio of flux to noise
-3. keep source only if ratio is below -3sigma (assumes good continuum subtraction)
-"""
-
 import os
 import numpy as np
 import glob
@@ -28,11 +9,12 @@ from astropy.coordinates import SkyCoord
 logger = logging.getLogger(__name__)
 
 
-def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=None, beam_list=None, src_file="radio_sdss_src_match.csv"):
+def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=None, beam_list=None, src_file="radio_sdss_src_match.csv", alt_src_file="mir_src_sharp.csv"):
     """
     Function to collect the information from all sources in one file
 
-    Use the radio-SDSS source file
+    Use the radio-SDSS source file or the source file without SDSS,
+    but then add SDSS columns.
     """
 
     # if the cube number was not given, try to get from the name
@@ -72,14 +54,32 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
         # make sure the file exists
         if not os.path.exists(csv_file_name):
             logger.warning(
-                "Could not find source file {}".format(csv_file_name))
-            continue
-
-        # read the data
-        src_data = Table.read(csv_file_name, format="ascii.csv")
-
-        # number of sources
-        n_src = np.size(src_data['ID'])
+                "Could not find source file {}.from radio-sdss cross-match by SHARPener.".format(csv_file_name))
+            # alternative source file
+            alt_csv_file_name = os.path.join(
+                cube_dir, "{0}/sharpOut/abs/{1}".format(beam, alt_src_file))
+            logger.warning("Checking alternative source file {} and adding emtpy SDSS columns".format(
+                alt_csv_file_name))
+            if not os.path.exists(alt_csv_file_name):
+                logger.error(
+                    "Did not find alternative source file. No source information available for beam {}".format(beam))
+                continue
+            # read in file
+            src_data = Table.read(alt_csv_file_name, format="ascii.csv")
+            # get number of sources
+            n_src = np.size(src_data['ID'])
+            # add sdss columns
+            src_data['sdss_id'] = Column(np.zeros(n_radio_src), dtype=int)
+            src_data['sdss_ra'] = Column(np.zeros(n_radio_src))
+            src_data['sdss_dec'] = Column(np.zeros(n_radio_src))
+            src_data['sdss_radio_sep'] = Column(np.zeros(n_radio_src))
+            src_data['sdss_redshift'] = Column(np.zeros(n_radio_src))
+        else:
+            # read the data
+            src_data = Table.read(csv_file_name, format="ascii.csv")
+            # number of sources
+            n_src = np.size(src_data['ID'])
+        
         logger.debug("Found {} sources".format(n_src))
 
         # rename the ID column
