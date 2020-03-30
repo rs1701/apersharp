@@ -42,6 +42,9 @@ class apersharp(BaseModule):
     # logfile = None
     # logger = None
     cube = None
+    apersharp_overwrite_master_table = False
+    apersharp_create_master_table_backup = True
+    apersharp_allow_multiple_source_entries = False
     apersharp_do_subtract_median = True
     apersharp_do_subtract_mean = False
     apersharp_use_rms = True
@@ -797,7 +800,10 @@ class apersharp(BaseModule):
             pass
 
         get_all_sources_of_cube(src_cat_file_name, self.cube_dir,
-                                taskid=self.taskid, cube_nr=self.cube, beam_list=self.beam_list)
+                                taskid=self.taskid, cube_nr=self.cube, beam_list=self.beam_list,
+                                overwrite_master_table=self.apersharp_overwrite_master_table,
+                                create_master_table_backup=self.apersharp_create_master_table_backup,
+                                allow_multiple_source_entries=self.apersharp_allow_multiple_source_entries)
 
         logger.info(
             "Cube {}: Collecting source information from different beams ... Done".format(self.cube))
