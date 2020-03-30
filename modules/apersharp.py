@@ -793,11 +793,6 @@ class apersharp(BaseModule):
 
         # first collect all sources, but check if this has been done before
         src_cat_file_name = self.get_src_csv_file_name()
-        if os.path.exists(src_cat_file_name):
-            logger.warning(
-                "{} already exists. File will be overwritten".format(src_cat_file_name))
-        else:
-            pass
 
         get_all_sources_of_cube(src_cat_file_name, self.cube_dir,
                                 taskid=self.taskid, cube_nr=self.cube, beam_list=self.beam_list,
