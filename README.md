@@ -75,7 +75,7 @@ SHARPener requires a configuration file, too. Apersharp comes with a default con
 
 ## Using Apersharp output
 
-Steps 5 till 7 of Apersharp will create a master table for the cube that was processed. The file location will be 
+Steps 5 till 7 of Apersharp will create a master table for the cube that was processed and table with candidates for absorption based on a basic signal-to-noise test. The file locations will be 
 ```
 <output_directory>/<taskid>/cube_<cube_number>/<taskid>_Cube<cube_number>_all_sources.csv
 ``` 
@@ -84,6 +84,8 @@ and
 <output_directory>/<taskid>/cube_<cube_number>/<taskid>_Cube<cube_number>_snr_candidates.csv
 ```
 It is strongly recommended to use these files when checking the plots of the spectra and any other further analysis. These files contain all information on the continuuum source location coming from `IMSAD`, in addition to information on a possible SDSS match, match of the source in other beams and quantities derived from the spectrum (more documentation will follow).
+
+It might be useful to run beams separately. In this case the master table `*all_sources.csv` might already exists. The default behaviour is the following: A backup will be created of the table in a new directory `backup_master_table` and the date of the backup will be added to the file name. The existing master table will be appended by the data from the new beams. If there are already data from a "new" beam in the master table, the existing entries will be replaced. See the config file of Apersharp to adjust this behaviour.
 
 In addition, step 4 (`collect_results`) will create zip files with the plots of spectra from each beam 
 ```
