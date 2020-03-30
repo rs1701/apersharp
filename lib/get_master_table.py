@@ -11,7 +11,7 @@ from astropy.coordinates import SkyCoord
 logger = logging.getLogger(__name__)
 
 
-def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=None, beam_list=None, src_file="radio_sdss_src_match.csv", alt_src_file="mir_src_sharp.csv", create_master_table_backup=True, allow_multiple_source_entries=False):
+def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=None, beam_list=None, src_file="radio_sdss_src_match.csv", alt_src_file="mir_src_sharp.csv", overwrite_existing_master_table=False, create_master_table_backup=True, allow_multiple_source_entries=False):
     """
     Function to collect the information from all sources in one file
 
@@ -114,9 +114,11 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
     # check if master table already exists
     if os.path.exists(output_file_name):
         logger.info("Master table already exists.")
+
+        # create a copy in the backup directory
         if create_master_table_backup:
-            # create a copy in the backup directory
-            table_backup_dir = os.path.join(cube_dir, "master_table_backup")
+            table_backup_dir = os.path.join(
+                cube_dir, "master_table_backup")
             if not os.path.exists(table_backup_dir):
                 os.mkdir(table_backup_dir)
             table_backup_name = os.path.join(table_backup_dir, output_file_name.replace(
@@ -125,36 +127,41 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
                 table_backup_name))
             shutil.copy2(output_file_name, table_backup_name)
 
-        logger.info("Adding new sources to existing master table")
-        # read current master table
-        master_table = Table.read(output_file_name, format="ascii.csv")
-        # add new sources
-        # add without checking if they exists
-        if allow_multiple_source_entries:
-            logger.warning(
-                "Adding new sources without checking if they already exists. Source ID may not be unique any more.")
-            full_list = vstack([master_table, new_src_table])
-        # check for existing entry and remove if found, then add
+        # overwrite existing master table or add new data
+        if overwrite_existing_master_table:
+            logger.warning("Existing master table will be overwritten")
         else:
-            src_ids_master_table = master_table["Source_ID"]
-            # go through the list of new sources
-            for src_index in range(np.size(full_list["Source_ID"])):
-                new_src_id = new_src_entry["Source_ID"][src_index]
-                # if src id exists in master table overwrite entries with new data
-                if new_src_id in src_ids_master_table:
-                    logger.warning(
-                        "Found existing entry for {}. Overwriting data".format(src))
-                    src_index_master_table = np.where(
-                        src_ids_master_table == new_src_id)[0][0]
-                    for colname in src_ids_master_table.colnames:
-                        master_table[colname][src_index_master_table] = full_list[colname][src_index]
-                else:
-                    master_table = vstack([master_table, full_list[src_index]])
-            # overwrite new table with updated master table
-            full_list = full_list.copy()
+            logger.info("Adding new sources to existing master table")
+            # read current master table
+            master_table = Table.read(output_file_name, format="ascii.csv")
+            # add new sources
+            # add without checking if they exists
+            if allow_multiple_source_entries:
+                logger.warning(
+                    "Adding new sources without checking if they already exists. Source ID may not be unique any more.")
+                full_list = vstack([master_table, new_src_table])
+            # check for existing entry and remove if found, then add
+            else:
+                src_ids_master_table = master_table["Source_ID"]
+                # go through the list of new sources
+                for src_index in range(np.size(full_list["Source_ID"])):
+                    new_src_id = new_src_entry["Source_ID"][src_index]
+                    # if src id exists in master table overwrite entries with new data
+                    if new_src_id in src_ids_master_table:
+                        logger.warning(
+                            "Found existing entry for {}. Overwriting data".format(src))
+                        src_index_master_table = np.where(
+                            src_ids_master_table == new_src_id)[0][0]
+                        for colname in src_ids_master_table.colnames:
+                            master_table[colname][src_index_master_table] = full_list[colname][src_index]
+                    else:
+                        master_table = vstack(
+                            [master_table, full_list[src_index]])
+                # overwrite new table with updated master table
+                full_list = full_list.copy()
 
-        # sort by source id to easily spot multiple entries
-        full_list.sort("Source_ID")
+            # sort by source id to easily spot multiple entries
+            full_list.sort("Source_ID")
 
     # save the file if there is something to save
     if np.size(full_list) != 0:
