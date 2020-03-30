@@ -2,7 +2,7 @@ import os
 import numpy as np
 import glob
 import logging
-from astropy.table import Table, vstack, hstack
+from astropy.table import Table, vstack, hstack, Column
 import astropy.units as units
 from astropy.coordinates import SkyCoord
 
@@ -79,7 +79,7 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
             src_data = Table.read(csv_file_name, format="ascii.csv")
             # number of sources
             n_src = np.size(src_data['ID'])
-        
+
         logger.debug("Found {} sources".format(n_src))
 
         # rename the ID column
