@@ -69,11 +69,11 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
             # get number of sources
             n_src = np.size(src_data['ID'])
             # add sdss columns
-            src_data['sdss_id'] = Column(np.zeros(n_radio_src), dtype=int)
-            src_data['sdss_ra'] = Column(np.zeros(n_radio_src))
-            src_data['sdss_dec'] = Column(np.zeros(n_radio_src))
-            src_data['sdss_radio_sep'] = Column(np.zeros(n_radio_src))
-            src_data['sdss_redshift'] = Column(np.zeros(n_radio_src))
+            src_data['sdss_id'] = Column(np.zeros(n_src), dtype=int)
+            src_data['sdss_ra'] = Column(np.zeros(n_src))
+            src_data['sdss_dec'] = Column(np.zeros(n_src))
+            src_data['sdss_radio_sep'] = Column(np.zeros(n_src))
+            src_data['sdss_redshift'] = Column(np.zeros(n_src))
         else:
             # read the data
             src_data = Table.read(csv_file_name, format="ascii.csv")
