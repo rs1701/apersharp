@@ -158,7 +158,7 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
                         master_table = vstack(
                             [master_table, full_list[src_index]])
                 # overwrite new table with updated master table
-                full_list = full_list.copy()
+                full_list = master_table.copy()
 
             # sort by source id to easily spot multiple entries
             full_list.sort("Source_ID")
