@@ -145,7 +145,7 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
                 src_ids_master_table = master_table["Source_ID"]
                 # go through the list of new sources
                 for src_index in range(np.size(full_list["Source_ID"])):
-                    new_src_id = new_src_entry["Source_ID"][src_index]
+                    new_src_id = full_list["Source_ID"][src_index]
                     # if src id exists in master table overwrite entries with new data
                     if new_src_id in src_ids_master_table:
                         logger.warning(
