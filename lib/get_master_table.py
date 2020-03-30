@@ -94,7 +94,7 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
         src_id = np.array(["{0}_C{1}_B{2}_{3}_J{4}".format(
             taskid, cube_nr, beam.zfill(2), src_data['Beam_Source_ID'][k], src_data['J2000'][k]) for k in range(n_src)])
         src_beam = np.array([beam for i in range(n_src)])
-        src_cube = np.array([cube_nr for i in range(n_src)])
+        src_cube = np.array([int(cube_nr) for i in range(n_src)])
 
         # create a new table with these three columns
         new_table = Table([src_id, src_cube, src_beam],
