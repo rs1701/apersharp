@@ -56,7 +56,7 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
         # make sure the file exists
         if not os.path.exists(csv_file_name):
             logger.warning(
-                "Could not find source file {}.from radio-sdss cross-match by SHARPener.".format(csv_file_name))
+                "Could not find source file {} from radio-sdss cross-match by SHARPener.".format(csv_file_name))
             # alternative source file
             alt_csv_file_name = os.path.join(
                 cube_dir, "{0}/sharpOut/abs/{1}".format(beam, alt_src_file))
