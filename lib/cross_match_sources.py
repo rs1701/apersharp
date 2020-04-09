@@ -180,6 +180,10 @@ def match_sources_of_beams(src_table_file, max_sep=3):
 
         # get the sources for this beam
         src_data_beam = src_data[np.where(src_data['Beam'] == beam)]
+        # The following test will not work with astropy 4.0 and higher
+        # but this will only matter if Apersharp is upgraded to Python3
+        if src_data_beam.masked:
+            src_data_beam = src_data_beam.filled()
 
         # get the beams that overlap
         overlapping_beam_list = np.where(beam_matrix[int(beam)] == 1)[0]
@@ -200,14 +204,12 @@ def match_sources_of_beams(src_table_file, max_sep=3):
         src_ids_overlapping_beam = np.array([])
         src_ra_overlapping_beam = np.array([])
         src_dec_overlapping_beam = np.array([])
-        src_coords_overlapping_beam = None
         for overlapping_beam in overlapping_beam_list:
             # check if beam is in master table before proceeding
             if overlapping_beam in beam_list:
                 # avoid using the same beam
                 src_data_overlapping_beam = src_data[np.where(
                     src_data['Beam'] == overlapping_beam)]
-                logger.debug(src_data_overlapping_beam)
                 src_ids_overlapping_beam = np.concatenate(
                     [src_ids_overlapping_beam, src_data_overlapping_beam['Source_ID']])
                 src_ra_overlapping_beam = np.concatenate(
@@ -223,8 +225,6 @@ def match_sources_of_beams(src_table_file, max_sep=3):
             for src in src_data_beam['Source_ID']:
                 match_list.append("-")
         else:
-            logger.debug(src_ra_overlapping_beam)
-            logger.debug(src_dec_overlapping_beam)
             src_coords_overlapping_beam = SkyCoord(
                 src_ra_overlapping_beam, src_dec_overlapping_beam, unit=(units.hourangle, units.deg), frame='fk5')
             n_src_overlapping_beams = np.size(src_ids_overlapping_beam)
