@@ -160,6 +160,8 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
                 # fix the column type
                 master_table['FFLAG'] = np.array(
                     [str(flag) for flag in master_table['FFLAG']])
+                logger.debug(master_table['FFLAG'].dtype)
+                logger.debug(full_list['FFLAG'].dtype)
                 # combine master table with new data
                 full_list = vstack([master_table, full_list])
 
