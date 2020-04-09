@@ -158,6 +158,7 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
                         continue
 
                 # fix the column type
+                logger.debug(master_table['FFLAG'].dtype)
                 master_table['FFLAG'] = np.array(
                     [str(flag) for flag in master_table['FFLAG']])
                 logger.debug(master_table['FFLAG'].dtype)
