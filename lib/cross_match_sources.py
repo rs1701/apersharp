@@ -152,6 +152,17 @@ def match_sources_of_beams(src_table_file, max_sep=3):
     # reading in file
     src_data = Table.read(src_table_file, format="ascii.csv")
 
+    # try to remove column created by this function
+    # in case it was executed already on this table
+    new_col_names = ["Matching_Sources"]
+    # removes these if they exists
+    try:
+        src_data.remove_columns(new_col_names)
+    except Exception as e:
+        pass
+    else:
+        logger.debug("Removed table entries from previous analysis run")
+
     # number of sources
     n_src = np.size(src_data['Source_ID'])
     logger.debug("Found {} sources".format(n_src))
@@ -246,7 +257,7 @@ def match_sources_of_beams(src_table_file, max_sep=3):
 
     # creating a Table for the matched sources and added it to the existing one
     matched_src_table = Table(
-        [np.array(match_list)], names=["Matching_Sources"])
+        [np.array(match_list)], names=new_col_names)
     src_data_expanded = hstack([src_data, matched_src_table])
 
     # save the file
