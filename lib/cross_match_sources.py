@@ -207,6 +207,7 @@ def match_sources_of_beams(src_table_file, max_sep=3):
                 # avoid using the same beam
                 src_data_overlapping_beam = src_data[np.where(
                     src_data['Beam'] == overlapping_beam)]
+                logger.debug(src_data_overlapping_beam)
                 src_ids_overlapping_beam = np.concatenate(
                     [src_ids_overlapping_beam, src_data_overlapping_beam['Source_ID']])
                 src_ra_overlapping_beam = np.concatenate(
