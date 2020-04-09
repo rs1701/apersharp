@@ -151,12 +151,24 @@ def get_max_positive_snr(spec_data, src_name, rms=None):
     return max_positive_snr, max_positive_snr_ch, max_positive_snr_freq
 
 
-def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, do_subtract_median=True, do_subtract_mean=False, use_rms=True,  negative_snr_threshold=-5, positive_snr_threshold=5):
+def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, do_subtract_median=True, do_subtract_mean=False, use_rms=True,  negative_snr_threshold=-5, positive_snr_threshold=5, create_candidate_table_backup=True):
     """
     Function to run quality check and find candidates for absorption
     """
 
     logger.info("#### Searching for candidates")
+
+    # check for existing candidate table
+    if create_candidate_table_backup and os.path.exists(output_file_name_candidates):
+        table_backup_dir = os.path.join(
+            cube_dir, "candidate_table_backup")
+        if not os.path.exists(table_backup_dir):
+            os.mkdir(table_backup_dir)
+        table_backup_name = os.path.join(table_backup_dir, os.path.basename(output_file_name_candidates).replace(
+            ".csv", "_{}.csv".format(datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))))
+        logger.info("Creating a copy of current candidate table in {0}".format(
+            table_backup_name))
+        shutil.copy2(output_file_name_candidates, table_backup_name)
 
     # get the source data
     if not os.path.exists(src_cat_file):

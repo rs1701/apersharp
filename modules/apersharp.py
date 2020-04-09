@@ -44,6 +44,7 @@ class apersharp(BaseModule):
     cube = None
     apersharp_overwrite_master_table = False
     apersharp_create_master_table_backup = True
+    apersharp_create_candidate_table_backup = True
     apersharp_allow_multiple_source_entries = False
     apersharp_do_subtract_median = True
     apersharp_do_subtract_mean = False
@@ -859,7 +860,7 @@ class apersharp(BaseModule):
 
         # analyze spectra of sources
         analyse_spectra(
-            src_cat_file_name, self.get_src_csv_file_name_candidates(), cube_dir, do_subtract_median=self.apersharp_do_subtract_median, do_subtract_mean=self.apersharp_do_subtract_mean, use_rms=self.apersharp_use_rms, negative_snr_threshold=self.apersharp_negative_snr_threshold, positive_snr_threshold=self.apersharp_positive_snr_threshold)
+            src_cat_file_name, self.get_src_csv_file_name_candidates(), cube_dir, do_subtract_median=self.apersharp_do_subtract_median, do_subtract_mean=self.apersharp_do_subtract_mean, use_rms=self.apersharp_use_rms, negative_snr_threshold=self.apersharp_negative_snr_threshold, positive_snr_threshold=self.apersharp_positive_snr_threshold, create_candidate_table_backup=self.apersharp_create_candidate_table_backup)
 
         logger.info(
             "Cube {}: Analysing spectra of sources from different beams ... Done".format(self.cube))
