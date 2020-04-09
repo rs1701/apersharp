@@ -173,6 +173,7 @@ def match_sources_of_beams(src_table_file, max_sep=3):
     # get a list of beams
     beam_list = np.unique(src_data['Beam'])
     if type(beam_list) is MaskedColumn:
+        logger.debug("Unmasking beam list")
         beam_list = beam_list.filled()
 
     # got through each source
@@ -185,6 +186,7 @@ def match_sources_of_beams(src_table_file, max_sep=3):
         # The following test will not work with astropy 4.0 and higher
         # but this will only matter if Apersharp is upgraded to Python3
         if src_data_beam.masked:
+            logger.debug("Unmasking sub-table")
             src_data_beam = src_data_beam.filled()
 
         # get the beams that overlap
