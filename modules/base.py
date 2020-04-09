@@ -97,6 +97,6 @@ class BaseModule:
         """
 
         if self.all_src_csv_file_name_candidates is None:
-            return self.get_src_csv_file_name().replace("_all_sources.csv", "_snr_candidates.csv")
+            return self.get_src_csv_file_name().replace("_master_table.csv", "_snr_candidates.csv")
         else:
             return self.all_src_csv_file_name_candidates
