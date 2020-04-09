@@ -12,6 +12,7 @@ import numpy as np
 import glob
 import logging
 import datetime
+import shutil
 from astropy.table import Table, hstack, vstack
 
 logger = logging.getLogger(__name__)
