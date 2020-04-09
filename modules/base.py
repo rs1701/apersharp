@@ -75,7 +75,7 @@ class BaseModule:
         """
 
         if self.all_src_csv_file_name is None:
-            return os.path.join(self.get_cube_dir(), "{0}_Cube{1}_all_sources.csv".format(self.taskid, self.cube))
+            return os.path.join(self.get_cube_dir(), "{0}_cube_{1}_master_table.csv".format(self.taskid, self.cube))
         else:
             return self.all_src_csv_file_name
 
