@@ -88,7 +88,8 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
         src_data.rename_column('ID', 'Beam_Source_ID')
 
         # fix the column type
-        src_data['FFLAG'] = np.array([str(flag) for flag in src_data['FFLAG']])
+        src_data['FFLAG'] = np.array(["{}".format(flag)
+                                      for flag in src_data['FFLAG']])
 
         # create a new columns for ID, taskid, beam and cube
         src_id = np.array(["{0}_C{1}_B{2}_{3}_J{4}".format(
@@ -160,7 +161,7 @@ def get_all_sources_of_cube(output_file_name, cube_dir, taskid=None, cube_nr=Non
                 # fix the column type
                 logger.debug(master_table['FFLAG'].dtype)
                 master_table['FFLAG'] = np.array(
-                    [str(flag) for flag in master_table['FFLAG']])
+                    ["{}".format(flag) for flag in master_table['FFLAG']])
                 logger.debug(master_table['FFLAG'].dtype)
                 logger.debug(full_list['FFLAG'].dtype)
                 # combine master table with new data
