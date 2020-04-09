@@ -212,6 +212,13 @@ def analyse_spectra(src_cat_file, output_file_name_candidates, cube_dir, do_subt
     else:
         logger.debug("Removed table entries from previous analysis run")
 
+    # The following test will not work with astropy 4.0 and higher
+    # but this will only matter if Apersharp is upgraded to Python3
+    if src_data.masked:
+        logger.debug("Found masked table")
+        src_data = src_data.filled()
+        logger.debug("Table umasked")
+
     # go through the each source files
     for src_index in range(n_src):
 
