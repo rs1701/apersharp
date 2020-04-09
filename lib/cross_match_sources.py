@@ -201,57 +201,68 @@ def match_sources_of_beams(src_table_file, max_sep=3):
         src_ra_overlapping_beam = np.array([])
         src_dec_overlapping_beam = np.array([])
         for overlapping_beam in overlapping_beam_list:
-            # avoid using the same beam
-            src_data_overlapping_beam = src_data[np.where(
-                src_data['Beam'] == overlapping_beam)]
-            src_ids_overlapping_beam = np.concatenate(
-                [src_ids_overlapping_beam, src_data_overlapping_beam['Source_ID']])
-            src_ra_overlapping_beam = np.concatenate(
-                [src_ra_overlapping_beam, src_data_overlapping_beam['ra']])
-            src_dec_overlapping_beam = np.concatenate(
-                [src_dec_overlapping_beam, src_data_overlapping_beam['dec']])
-        src_coords_overlapping_beam = SkyCoord(
-            src_ra_overlapping_beam, src_dec_overlapping_beam, unit=(units.hourangle, units.deg), frame='fk5')
-        n_src_overlapping_beams = np.size(src_ids_overlapping_beam)
-
-        # go through the list of sources for this beam
-        for src_index in range(np.size(src_data_beam['Source_ID'])):
-
-            src_name = src_data_beam['Source_ID'][src_index]
-
-            logger.debug(
-                "Searching for matches for {0} within {1} arcsec".format(src_name, max_sep))
-
-            src_coord = SkyCoord(src_data_beam['ra'][src_index], src_data_beam['dec'][src_index], unit=(
-                units.hourangle, units.deg), frame='fk5')
-
-            # to store the sources that match as strings
-            matched_src = ""
-
-            # calculate the distance of this source to  through the list of overlapping beams
-            src_distance = np.array([src_coord.separation(k).to("arcsec").value
-                                     for k in src_coords_overlapping_beam], dtype=SkyCoord)
-            # for k in range(n_src_overlapping_beams):
-
-            #     # calculate the distance of the source
-            #     src_distance[k] = src_coord.separation(
-            #         src_coords_overlapping_beam[k])
-
-            # check if there are sources within the limits
-            matched_distance = np.where(
-                src_distance < max_sep)[0]
-            if len(matched_distance) != 0:
-                matched_src = ",".join(
-                    src_ids_overlapping_beam[matched_distance])
-                logger.debug("Searching for matches for {0} within {1} arcsec: Found the following matches: {2}".format(
-                    src_name, max_sep, matched_src))
+            # check if beam is in master table before proceeding
+            if overlapping_beam in beam_list:
+                # avoid using the same beam
+                src_data_overlapping_beam = src_data[np.where(
+                    src_data['Beam'] == overlapping_beam)]
+                src_ids_overlapping_beam = np.concatenate(
+                    [src_ids_overlapping_beam, src_data_overlapping_beam['Source_ID']])
+                src_ra_overlapping_beam = np.concatenate(
+                    [src_ra_overlapping_beam, src_data_overlapping_beam['ra']])
+                src_dec_overlapping_beam = np.concatenate(
+                    [src_dec_overlapping_beam, src_data_overlapping_beam['dec']])
             else:
-                logger.debug(
-                    "Searching for matches for {0} within {1} arcsec: Did not find any matches".format(src_name, max_sep))
-                matched_src = "-"
+                logger.debug("Did not find information for overlapping beam {} in master table".format(
+                    overlapping_beam))
+        if np.size(src_ids_overlapping_beam) == 0:
+            logger.debug(
+                "Could not match source in beam {0} to other beams because overlapping beams are not available in the master table.".format(beam))
+            for src in src_data_beam['Source_ID']:
+                match_list.append("-")
+        else:
+            src_coords_overlapping_beam = SkyCoord(
+                src_ra_overlapping_beam, src_dec_overlapping_beam, unit=(units.hourangle, units.deg), frame='fk5')
+            n_src_overlapping_beams = np.size(src_ids_overlapping_beam)
 
-            # add to the list of matched sources
-            match_list.append(matched_src)
+            # go through the list of sources for this beam
+            for src_index in range(np.size(src_data_beam['Source_ID'])):
+
+                src_name = src_data_beam['Source_ID'][src_index]
+
+                logger.debug(
+                    "Searching for matches for {0} within {1} arcsec".format(src_name, max_sep))
+
+                src_coord = SkyCoord(src_data_beam['ra'][src_index], src_data_beam['dec'][src_index], unit=(
+                    units.hourangle, units.deg), frame='fk5')
+
+                # to store the sources that match as strings
+                matched_src = ""
+
+                # calculate the distance of this source to  through the list of overlapping beams
+                src_distance = np.array([src_coord.separation(k).to("arcsec").value
+                                         for k in src_coords_overlapping_beam], dtype=SkyCoord)
+                # for k in range(n_src_overlapping_beams):
+
+                #     # calculate the distance of the source
+                #     src_distance[k] = src_coord.separation(
+                #         src_coords_overlapping_beam[k])
+
+                # check if there are sources within the limits
+                matched_distance = np.where(
+                    src_distance < max_sep)[0]
+                if len(matched_distance) != 0:
+                    matched_src = ",".join(
+                        src_ids_overlapping_beam[matched_distance])
+                    logger.debug("Searching for matches for {0} within {1} arcsec: Found the following matches: {2}".format(
+                        src_name, max_sep, matched_src))
+                else:
+                    logger.debug(
+                        "Searching for matches for {0} within {1} arcsec: Did not find any matches".format(src_name, max_sep))
+                    matched_src = "-"
+
+                # add to the list of matched sources
+                match_list.append(matched_src)
 
         logger.debug("Processing sources from beam {} ... Done".format(beam))
 
