@@ -55,7 +55,7 @@ This is what SHARPener does in a nutshell:
 ## Running Apersharp
 (Work in progress)
 
-Apersharp comes with a default configuration file. It can be found in `$HOME/sharp/apersharp/apersharp_config/apersharp_default.cfg`. The default configuration will process all beams of cubes 0, 1 and 2 with all steps using 1 core. This can be executed in the following way
+Apersharp comes with a default configuration file. It can be found in `$HOME/sharp/apersharp/apersharp_config/apersharp_default.cfg`. The default configuration will process all beams of cubes 0, 1 and 2 with all steps mentioned in the previous section using 1 core. This can be executed in the following way
 ```
 python2 $HOME/sharp/apersharp/run_apersharp.py <taskid> <output_directory>
 ```
@@ -64,9 +64,9 @@ When running `run_apersharp.py`, it is possible to overwrite the parameters for 
 ```
 python2 $HOME/sharp/apersharp/run_apersharp.py --steps="get_data,setup_sharpener,run_sharpener,collect_results,get_master_table,match_sources,analyse_sources" --cube="0,1" --beams="10,11" <taskid> <output_directory>
 ```
-Note that the clean-up step is left out here.
+Note that the `clean-up` step is left out here.
 
-It is also possible to change the configuration file. To this purpose, it is recommended to copy the default configuration into a different location and edit it there. Apersharp can be executed with a user-specific configuration file like this:
+It is also possible to change the configuration file. To this purpose, it is highly recommended to copy the default configuration into a different location and edit it there. Apersharp can be executed with a user-specific configuration file like this:
 ```
 python2 $HOME/sharp/apersharp/run_apersharp.py --config="/path/to/apersharp/config/file" <taskid> <output_directory>
 ```
@@ -75,9 +75,9 @@ SHARPener requires a configuration file, too. Apersharp comes with a default con
 
 ## Using Apersharp output
 
-Steps 5 till 7 of Apersharp will create a master table for the cube that was processed and table with candidates for absorption based on a basic signal-to-noise test. The file locations will be 
+Steps 5 till 7 of Apersharp will create a master table for the cube that was processed and a table with candidates for absorption based on a basic signal-to-noise test. The file locations will be 
 ```
-<output_directory>/<taskid>/cube_<cube_number>/<taskid>_Cube<cube_number>_all_sources.csv
+<output_directory>/<taskid>/cube_<cube_number>/<taskid>_Cube<cube_number>_master_table.csv
 ``` 
 and 
 ```
@@ -85,7 +85,9 @@ and
 ```
 It is strongly recommended to use these files when checking the plots of the spectra and any other further analysis. These files contain all information on the continuuum source location coming from `IMSAD`, in addition to information on a possible SDSS match, match of the source in other beams and quantities derived from the spectrum (more documentation will follow).
 
-It might be useful to run beams separately. In this case the master table `*all_sources.csv` might already exists. The default behaviour is the following: A backup will be created of the existing table in a new directory `backup_master_table` and the date of the backup will be added to the file name. The existing master table will be appended by the data from the new beams. If there are already data from a "new" beam in the master table, the existing data for that beam will be replaced. In the Apersharp config file change some of this behaviour, i.e., it is possible to enable overwriting an existing master table entirely, turn off creating the backup, and replacing data. However, changing the latter might lead to multiple entries of the same source.
+It might be useful to run beams separately. In this case the master table `*master_table.csv` might already exists. The default behaviour is the following: A backup will be created of the existing table in a new directory `backup_master_table` and the date of the backup will be added to the file name. The existing master table will be appended by the data from the new beams. If there are already data from a "new" beam in the master table, the existing data for that beam will be replaced. In the Apersharp config file change some of this behaviour, i.e., it is possible to enable overwriting an existing master table entirely, turn off creating the backup, and replacing data. However, changing the latter might lead to multiple entries of the same source.
+
+If the candidate table `*snr_candidates.csv` already exists, Apersharp will create a backup in  `backup_candidate_table` by default. This can also be deactivated in the Apersharp config. In any case, the existing candidate table will be replaced since its content is based entirely on the master table and not the number of beams given to Apersharp.
 
 In addition, step 4 (`collect_results`) will create zip files with the plots of spectra from each beam 
 ```
