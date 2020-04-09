@@ -21,7 +21,7 @@ import os
 import numpy as np
 import glob
 import logging
-from astropy.table import Table, vstack, hstack
+from astropy.table import Table, vstack, hstack, Column, MaskedColumn
 import astropy.units as units
 from astropy.coordinates import SkyCoord
 
@@ -172,6 +172,8 @@ def match_sources_of_beams(src_table_file, max_sep=3):
 
     # get a list of beams
     beam_list = np.unique(src_data['Beam'])
+    if type(beam_list) is MaskedColumn:
+        beam_list = beam_list.filled()
 
     # got through each source
     for beam in beam_list:
