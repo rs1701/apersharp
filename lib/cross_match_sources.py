@@ -214,6 +214,12 @@ def match_sources_of_beams(src_table_file, max_sep=3):
                 # avoid using the same beam
                 src_data_overlapping_beam = src_data[np.where(
                     src_data['Beam'] == overlapping_beam)]
+                # The following test will not work with astropy 4.0 and higher
+                # but this will only matter if Apersharp is upgraded to Python3
+                if src_data_overlapping_beam.masked:
+                    logger.debug("Unmasking sub-table")
+                    src_data_overlapping_beam = src_data_overlapping_beam.filled()
+
                 src_ids_overlapping_beam = np.concatenate(
                     [src_ids_overlapping_beam, src_data_overlapping_beam['Source_ID']])
                 src_ra_overlapping_beam = np.concatenate(
